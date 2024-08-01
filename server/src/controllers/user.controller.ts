@@ -9,7 +9,7 @@ try {
     if (isExistingUser) {
         return res.status(400).json({ message: 'User already exists' });
     }
-    const user = await db.User.create({ username, password, googleId: '' });
+    const user = await db.User.create({ username, password });
     res.status(201).json({ message: 'User registered successfully', user });
 } catch (error) {
     handleControllerError(res, error, 'An error occurred while creating the user.');
