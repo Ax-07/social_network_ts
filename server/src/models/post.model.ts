@@ -7,8 +7,8 @@ interface PostAttributes {
   userId: string;
   title: string;
   content: string;
-  picture?: string;
-  video?: string;
+  picture?: string | null;
+  video?: string | null;
   likers?: string[];
   dislikers?: string[];
 }
@@ -20,8 +20,8 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public userId!: string;
   public title!: string;
   public content!: string;
-  public picture!: string;
-  public video!: string;
+  public picture!: string | null;
+  public video!: string | null;
   public likers!: string[];
   public dislikers!: string[];
 
@@ -65,11 +65,11 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         allowNull: true,
       },
       likers: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
+        type: DataTypes.JSON,
         allowNull: true,
       },
       dislikers: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
+        type: DataTypes.JSON,
         allowNull: true,
       },
     },
@@ -83,4 +83,4 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
   return Post;
 };
 
-export { Post, initializePostModel };
+export { Post, PostAttributes, initializePostModel };
