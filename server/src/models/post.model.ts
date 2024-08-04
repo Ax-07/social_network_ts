@@ -53,7 +53,7 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         allowNull: false,
       },
       content: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       picture: {

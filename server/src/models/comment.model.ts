@@ -60,12 +60,12 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         allowNull: true,
       },
       likers: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
+        type: DataTypes.JSON,
         allowNull: false,
         defaultValue: 0,
       },
       dislikers: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
+        type: DataTypes.JSON,
         allowNull: false,
         defaultValue: 0,
       },
