@@ -79,15 +79,15 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
         allowNull: true, // Champ facultatif
       },
       bio: {
-        type: DataTypes.TEXT, // Type de donnée pour la biographie
+        type: DataTypes.STRING, // Type de donnée pour la biographie
         allowNull: true, // Champ facultatif
       },
       followers: {
-        type: DataTypes.ARRAY(DataTypes.UUID), // Type de donnée pour la liste des abonnés
+        type: DataTypes.JSON, // Type de donnée pour la liste des abonnés
         allowNull: true, // Champ facultatif
       },
       followings: {
-        type: DataTypes.ARRAY(DataTypes.UUID), // Type de donnée pour la liste des abonnements
+        type: DataTypes.JSON, // Type de donnée pour la liste des abonnements
         allowNull: true, // Champ facultatif
       },
     },
@@ -106,4 +106,4 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
   return User; // Retourne le modèle utilisateur initialisé
 };
 
-export { User, initializeUserModel }; // Exportation de la fonction pour pouvoir l'utiliser ailleurs dans votre application
+export { User, UserAttributes, initializeUserModel }; // Exportation de la fonction pour pouvoir l'utiliser ailleurs dans votre application
