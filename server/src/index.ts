@@ -5,6 +5,7 @@ import path from "path";
 import userRoutes from "./routes/user.routes";
 import postRoutes from "./routes/post.routes";
 import commentRoutes from "./routes/comment.routes";
+import likeRoutes from "./routes/likes.routes";
 import db from "./models";
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api", userRoutes);
 app.use("/api", postRoutes);
 app.use("/api", commentRoutes);
+app.use('/api', likeRoutes);
 
 // Synchronisation de la base de données et lancement du serveur
 const PORT = process.env.PORT || 5000;
