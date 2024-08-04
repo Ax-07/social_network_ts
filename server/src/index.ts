@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import * as dotenv from "dotenv";
-import formData from 'express-form-data';
+import path from "path";
 import userRoutes from "./routes/user.routes";
 import postRoutes from "./routes/post.routes";
 import commentRoutes from "./routes/comment.routes";
@@ -13,7 +13,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(formData.parse());
+app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+app.use('/videos', express.static(path.join(__dirname, '..', 'public', 'videos')));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
