@@ -26,14 +26,6 @@ const validatePostEntry = (entry: PostEntry) => {
         errors.push('Video must be a string');
     }
 
-    if (entry.likers !== undefined && !Array.isArray(entry.likers)) {
-        errors.push('Likers must be an array of strings');
-    }
-
-    if (entry.dislikers !== undefined && !Array.isArray(entry.dislikers)) {
-        errors.push('Dislikers must be an array of strings');
-    }
-
     return errors;
 }
 
