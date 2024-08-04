@@ -10,10 +10,7 @@ const upload = multer({ storage: storage });
 
 // Fonction pour traiter l'image avec Sharp
 const processImage = async (file: Express.Multer.File, host: string): Promise<string> => {
-  if (!file) {
-    throw new Error("File is undefined");
-  }
-
+  if (!file) throw new Error("File is undefined");
   const originalName = file.originalname.replace(/\s+/g, '_'); // Remplacer les espaces par des underscores
   const date = new Date().toISOString().replace(/:/g, "-").split("T")[0]; // Date actuelle
   const imagePath = `${date}_${originalName.split(".").slice(0, -1).join("_")}.webp`; // Nom du fichier
@@ -30,25 +27,13 @@ const processImage = async (file: Express.Multer.File, host: string): Promise<st
 };
 
 // Fonction pour traiter les vidéos en les enregistrant simplement sur le disque
-const processVideo = async (
-  file: Express.Multer.File,
-  host: string
-): Promise<string> => {
-  if (!file) {
-    throw new Error("File is undefined");
-  }
+const processVideo = async (file: Express.Multer.File, host: string): Promise<string> => {
+  if (!file) throw new Error("File is undefined");
   const originalName = file.originalname.replace(/\s+/g, '_'); // Remplacer les espaces par des underscores
   const date = new Date().toISOString().replace(/:/g, "-").split("T")[0]; // Date actuelle
   const videoPath = `${date}_${originalName}`;
   const dbPath = host + "/videos/" + videoPath; // Chemin de la vidéo dans la base de données
-  const outputPath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "public",
-    "videos",
-    videoPath
-  ); // Chemin de la vidéo sur le disque
+  const outputPath = path.join(__dirname, "..", "..", "public", "videos", videoPath); // Chemin de la vidéo sur le disque
 
   console.log("Output Path:", outputPath);
 
@@ -59,11 +44,7 @@ const processVideo = async (
 };
 
 // Middleware d'upload et de traitement d'image ou de vidéo
-const uploadFileMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const host = req.protocol + "://" + req.get("host");
 
   // Utilisation de upload.any() pour accepter plusieurs fichiers avec différents champs
@@ -89,8 +70,7 @@ const uploadFileMiddleware = (
     console.log("Uploaded files:", req.files);
 
     if (!req.files || req.files.length === 0) {
-      console.error("No files were uploaded.");
-      return res.status(400).json({ error: "No files were uploaded." });
+      return next();
     }
 
     try {
