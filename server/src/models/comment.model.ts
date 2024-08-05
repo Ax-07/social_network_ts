@@ -79,4 +79,4 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
   return Comment;
 };
 
-export { Comment, initializeCommentModel };
+export { Comment, CommentAttributes, initializeCommentModel };
