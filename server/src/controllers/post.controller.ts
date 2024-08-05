@@ -18,7 +18,7 @@ const createPost = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Validation error', message: errors });
   }
   try {
-    const post = await db.Post.create({ userId, title, content, picture });
+    const post = await db.Post.create({ userId, title, content, picture, video });
     res.status(201).json({ message: 'Post created successfully', post });
   } catch (error) {
     handleControllerError(res, error, 'An error occurred while creating the post.');
