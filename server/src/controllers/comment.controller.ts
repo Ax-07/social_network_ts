@@ -1,11 +1,18 @@
 import { Request, Response } from 'express';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
+import validateCommentEntry from '../utils/functions/validateCommentEntry';
 
 const createComment = async (req: Request, res: Response) => {
-  const { postId, userId, content, picture, video } = req.body;
+  const { postId, userId, content } = req.body;
+  const picture = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
+  const video = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
   if (!postId || !userId || !content) {
     return res.status(400).json({ message: 'Missing required information' });
+  }
+  const errors = validateCommentEntry({ postId, userId, content, picture, video });
+  if (errors.length > 0) {
+    return res.status(400).json({ message: 'Validation error', errors });
   }
   try {
     const comment = await db.Comment.create({ postId, userId, content, picture, video });
@@ -25,8 +32,12 @@ const getAllComments = async (req: Request, res: Response) => {
 };
 
 const getCommentById = async (req: Request, res: Response) => {
+  const commentId = req.params.id;
+  if (!commentId) {
+    return res.status(400).json({ message: 'Comment ID is required' });
+  }
   try {
-    const comment = await db.Comment.findByPk(req.params.id);
+    const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
       res.status(404).json({ message: 'Comment not found' });
     } else {
@@ -38,8 +49,12 @@ const getCommentById = async (req: Request, res: Response) => {
 };
 
 const updateComment = async (req: Request, res: Response) => {
+  const commentId = req.params.id;
+  if (!commentId) {
+    return res.status(400).json({ message: 'Comment ID is required' });
+  }
   try {
-    const comment = await db.Comment.findByPk(req.params.id);
+    const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
       res.status(404).json({ message: 'Comment not found' });
     } else {
@@ -52,8 +67,12 @@ const updateComment = async (req: Request, res: Response) => {
 };
 
 const deleteComment = async (req: Request, res: Response) => {
+  const commentId = req.params.id;
+  if (!commentId) {
+    return res.status(400).json({ message: 'Comment ID is required' });
+  }
   try {
-    const comment = await db.Comment.findByPk(req.params.id);
+    const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
       res.status(404).json({ message: 'Comment not found' });
     } else {
