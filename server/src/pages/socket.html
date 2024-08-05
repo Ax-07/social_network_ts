@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Socket.IO chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #form {
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.25rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      height: 3rem;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+    }
+
+    #input {
+      border: none;
+      padding: 0 1rem;
+      flex-grow: 1;
+      border-radius: 2rem;
+      margin: 0.25rem;
+    }
+
+    #input:focus {
+      outline: none;
+    }
+
+    #form > button {
+      background: #333;
+      border: none;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 3px;
+      outline: none;
+      color: #fff;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages > li {
+      padding: 0.5rem 1rem;
+    }
+
+    #messages > li:nth-child(odd) {
+      background: #efefef;
+    }
+
+    .tooltip {
+      display: none;
+    }
+
+    .tooltip.shown {
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="user" placeholder="User name" autocomplete="off"><br>
+    <input id="room" placeholder="Room ID" autocomplete="off" value="1"><br>
+    <input id="input" autocomplete="off" placeholder="Message">
+    <button>Send</button>
+  </form>
+  <button id="emoji-picker">emoji</button>
+  <div class="tooltip" role="tooltip" data-popper-placement="bottom" style="position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 29px);">
+    <emoji-picker></emoji-picker>
+  </div>
+  <form id="uploadForm" action="/api/upload" method="post" enctype="multipart/form-data">
+    <input type="file" id="file" name="file">
+    <button type="submit">Upload</button>
+  </form>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script type="module">
+      import * as Popper from 'https://cdn.jsdelivr.net/npm/@popperjs/core@^2/dist/esm/index.js'
+    const button = document.querySelector('#emoji-picker')
+    const tooltip = document.querySelector('.tooltip')
+    Popper.createPopper(button, tooltip)
+  
+    document.querySelector('#emoji-picker').onclick = () => {
+      tooltip.classList.toggle('shown')
+      console.log('emoji picker clicked')
+    }
+    var token = "YOUR_JWT_TOKEN";  // Remplacez par le token JWT authentifié
+    var socket = io({
+      auth: {
+        token: token
+      }
+    });
+
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+    var messages = document.getElementById('messages');
+    var user = document.getElementById('user');
+    var roomInput = document.getElementById('room');
+    var uploadForm = document.getElementById('uploadForm');
+    var fileInput = document.getElementById('file');
+    const emojiPicker = document.querySelector('emoji-picker');
+    var currentRoom = '';
+    var userName = '';
+
+        // Gérer la sélection d'un emoji
+        emojiPicker.addEventListener('emoji-click', (event) => {
+      input.value += event.detail.unicode;
+      // emojiPickerContainer.style.display = 'none';
+      tooltip.classList.toggle('shown'); console.log('emoji picker clicked')
+      tooltip.classList.add('hidden');
+    });
+
+    // Définir le nom de l'utilisateur
+    user.addEventListener('blur', function () {
+      userName = user.value.trim();
+      if (userName) {
+        socket.emit('setUser', { userId: userName });
+        console.log(`Nom de l'utilisateur: ${userName}`);
+      }
+    });
+
+    // Rejoindre une salle
+    roomInput.addEventListener('blur', function () {
+      var roomId = roomInput.value.trim();
+      if (roomId && roomId !== currentRoom) {
+        currentRoom = roomId;
+        socket.emit('joinRoom', { roomId: currentRoom, userId: userName });
+        console.log(`Rejoint la salle: ${currentRoom}`);
+      }
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (input.value && currentRoom && userName) {
+        socket.emit('chat message', { roomId: currentRoom, message: input.value });
+        input.value = '';
+      }
+    });
+
+    // Upload de fichier
+    uploadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var formData = new FormData(uploadForm);
+      fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.filePath) {
+            socket.emit('media', { roomId: currentRoom, filePath: data.filePath });
+          }
+        })
+        .catch(error => {
+          console.error('Error uploading file:', error);
+        });
+    });
+
+    socket.on('chat message', function (data) {
+      var item = document.createElement('li');
+      item.textContent = `${data.userId}: ${data.message}`;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    socket.on('media', function (data) {
+      var item = document.createElement('li');
+      if (data.filePath.endsWith('.mp4') || data.filePath.endsWith('.mov')) {
+        var video = document.createElement('video');
+        video.src = data.filePath;
+        video.controls = true;
+        item.appendChild(video);
+      } else {
+        var img = document.createElement('img');
+        img.src = data.filePath;
+        item.appendChild(img);
+      }
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    socket.on('userJoined', function (data) {
+      var item = document.createElement('li');
+      item.textContent = `User ${data.userId} joined the room`;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
+
+</body>
+</html>
