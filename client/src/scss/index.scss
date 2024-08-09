@@ -1,0 +1,17 @@
+// globals styles
+@import './global/themes.scss';
+@import './global/mixin.scss';
+@import './global/fonts.scss';
+@import './global/reset.scss';
+
+// layout styles
+@import '../layouts/feed/feed.scss';
+@import '../layouts/sideColumn/sideColumn.scss';
+@import '../layouts/sideMenu/sideMenu.scss';
+
+// components styles
+@import '../components/userProfile/userProfile.scss';
+@import '../components/tabList/tablist.scss';
+
+// pages styles
+@import '../pages/home/home.scss';
