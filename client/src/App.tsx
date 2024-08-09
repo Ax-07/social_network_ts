@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import SideMenu from "./layouts/sideMenu/SideMenu";
+import SideColumn from "./layouts/sideColumn/SideColumn";
+import Home from "./pages/home/Home";
+import Explore from "./pages/explore/Explore";
+import Notifications from "./pages/notifications/Notifications";
+import Messages from "./pages/messages/Messages";
+import BooKmarks from "./pages/bookmarks/BooKmarks";
+import Lists from "./pages/lists/Lists";
+import Profile from "./pages/profile/Profile";
+import More from "./pages/more/More";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app">
+      <picture className="picture-background">
+        <source srcSet={"/src/assets/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp"} media="(max-width: 600px)" />
+        <source
+          srcSet="src/assets/images/app-background/tablet-unsplash_eNoeWZkO7Zc.webp"
+          media="(min-width: 601px) and (max-width: 1024px)"
+        />
+        <source srcSet="/src/assets/images/app-background/desktop-unsplash_eNoeWZkO7Zc.webp" media="(min-width: 1025px)" />
+        <img src="/src/assets/images/app-background/mobile-image.webp" alt="image de fond de l'application" loading="lazy" />
+      </picture>
+      <SideMenu />
+      <main>
+        <Routes>
+          <Route path="/home/*" element={<Home />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/bookmarks" element={<BooKmarks />} />
+          <Route path="/lists" element={<Lists />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/more" element={<More />} />
+        </Routes>
+      </main>
+      <SideColumn />
+    </div>
+  );
 }
 
-export default App
+export default App;
