@@ -1,21 +1,20 @@
 .tablist {
-    @include flex(row, center, flex-start, 10px);
+    position: sticky;
+    z-index: 2;
+    top: 0px;
+    @include flex(row, center, flex-start);
     width: 100%;
-    margin-top: 20px;
+    background-color:rgba(28, 39, 51, 0.7);
+    backdrop-filter: blur(8px);
 
     &__item {
         @include flex(column, flex-start, center);
         flex: 1;
         height: 53px;
-        border-radius: 8px;
-        overflow: hidden;
 
         &:hover {
             background-color: rgba($color-light, 0.1);
             cursor: pointer;
-        }
-        &:has(>.tablist__link.active) {
-            box-shadow: 0 0 10px 0px rgba($color-primary, 0.5);
         }
     }
 
