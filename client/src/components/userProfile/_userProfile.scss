@@ -1,0 +1,29 @@
+.userprofile {
+    &__picture {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+    }
+
+    &__thumbnail {
+        position: relative;
+        @include flex(row, flex-start, center);
+        width: 100%;
+
+        @media screen and (max-width: 1280px) {
+            justify-content: center;
+        }
+
+        &-info {
+            margin-left: 10px;
+        }
+
+        & span {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+
+        }
+    }
+}
