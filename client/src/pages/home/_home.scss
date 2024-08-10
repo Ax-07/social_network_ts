@@ -1,0 +1,9 @@
+.home {
+    position: relative;
+    @include flex(column, flex-start, center);
+    @extend .background-blur;
+    width: 100%;
+    max-width: 600px;
+    min-height: 100vh;
+
+}
