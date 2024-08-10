@@ -9,7 +9,7 @@ const TabList: FunctionComponent<TabListProps> = (props) => {
   return (
     <menu className="tablist">
       {props.links.map((link) => (
-        <div key={link.name}  className="tablist__item background-blur">
+        <div key={link.name}  className="tablist__item">
         <NavLink to={link.to} className="tablist__link">
           {link.name}
         </NavLink>
