@@ -5,13 +5,15 @@
 @import './global/reset.scss';
 
 // layout styles
-@import '../layouts/feed/feed.scss';
 @import '../layouts/sideColumn/sideColumn.scss';
 @import '../layouts/sideMenu/sideMenu.scss';
 
 // components styles
 @import '../components/userProfile/userProfile.scss';
 @import '../components/tabList/tablist.scss';
+@import '../components/post/addPost.scss';
+@import '../components/post/post.scss';
+@import '../components/addPicture/addPicture.scss';
 
 // pages styles
 @import '../pages/home/home.scss';
