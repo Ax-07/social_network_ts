@@ -1,0 +1,48 @@
+.post {
+    width: 100%;
+    background-color:rgba(28, 39, 51, 0.5);
+
+    &__list {
+        width: 100%;
+    }
+
+    &__card {
+        position: relative;
+        @include flex(row, flex-start, flex-start);
+        padding: 12px 10px;
+        border-bottom: $color-light 1px solid;
+        &-user {
+            width:40px;
+            height: 40px;
+            margin-right: 8px;
+            background-color: $color-light;
+            
+            & > img {
+                width: 100%;
+                border-radius: 50%;
+            }
+        }
+
+        &-wrapper {
+            @include flex(column, flex-start, flex-start);
+            width: 100%;
+            border-radius: 14px;
+        }
+        &-title {
+            @extend .font-title-card;
+        }
+        &-content {
+            @extend .fs-15-600;
+        }
+        & img, video {
+            width: 516px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid $color-light;
+        }
+
+    }
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
