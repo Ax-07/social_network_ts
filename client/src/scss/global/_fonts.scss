@@ -1,0 +1,49 @@
+h1, h2, h3, h4, h5, h6, p {
+    font-family: 'Roboto', sans-serif;
+    line-height: 125%;
+}
+
+.font-logo {
+    font-size: 2.5rem;
+
+    @media screen and (max-width: 768px) {
+        font-size: 2rem;
+    }
+}
+
+.font-title-card {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: $color-light;
+
+    @media screen and (max-width: 768px) {
+        font-size: 1rem;
+    }
+}
+
+.fs-15-700 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.fs-15-600 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.fs-16-700 {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.fs-16-600 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $color-dark-gray;
+}
+
+.fs-24-700 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
