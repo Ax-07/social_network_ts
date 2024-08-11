@@ -1,0 +1,43 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    @extend .background-blur;
+    position: relative;
+    border: none;
+    padding: 0;
+    background: rgba($color-primary, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 80%;
+    max-width: 600px;
+    min-height: 310px;
+    max-height: 80vh;
+
+    & > .addpost > .addpost__avatar {
+        min-height: 310px;
+      
+    }
+  }
+  
+  .modal-close {
+    position: absolute;
+    z-index: 1000;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
