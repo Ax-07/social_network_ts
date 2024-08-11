@@ -10,14 +10,19 @@ import Lists from "./pages/lists/Lists";
 import Profile from "./pages/profile/Profile";
 import More from "./pages/more/More";
 import { useWindowSize } from "./utils/hooks/useWindowSize";
+import Modal from "./components/modal/Modal";
+import AddPost from "./components/post/AddPost";
+import {useModal} from "./components/modal/useModal"; // Assurez-vous que le chemin est correct
 
 function App() {
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1020;
+  const { modals } = useModal();
+
   return (
     <div className="app">
       <picture className="picture-background">
-        <source srcSet={"src/assets/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp"} media="(max-width: 600px)" />
+        <source srcSet="src/assets/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp" media="(max-width: 600px)" />
         <source
           srcSet="src/assets/images/app-background/tablet-unsplash_eNoeWZkO7Zc.webp"
           media="(min-width: 601px) and (max-width: 1024px)"
@@ -37,7 +42,12 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/more" element={<More />} />
         </Routes>
-      {!isTablet && <SideColumn />}
+        {!isTablet && <SideColumn />}
+        {modals && (
+          <Modal modalName="Post">
+            <AddPost origin="modal"/>
+          </Modal>
+        )}
       </main>
     </div>
   );
