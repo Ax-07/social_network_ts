@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import { NavLink } from "react-router-dom";
 import UserProfileThumbnail from "../../components/userProfile/UserProfileThumbnail";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
+import ButtonModal from "../../components/modal/ButtonModal";
 
 const SideMenu = () => {
   const { windowWidth } = useWindowSize();
@@ -24,6 +25,9 @@ const SideMenu = () => {
             <MenuLink to="/lists" name="Lists" icon="📚" />
             <MenuLink to="/profile" name="Profile" icon="👤" />
             <MenuLink to="/more" name="More" icon="⚙️" />
+            <ButtonModal modalName={"Post"}>
+              Poster
+            </ButtonModal>
           </ul>
         </div>
         <UserProfileThumbnail />
