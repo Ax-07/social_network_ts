@@ -1,26 +1,39 @@
-import type { FunctionComponent } from 'react';
+import { FunctionComponent, ChangeEvent } from 'react';
+import { useRef } from 'react';
 
-interface InputPicureProps {
-    setImage: (image: File) => void;
-    setPreview: (preview: string) => void;
-    onCancel: () => void;
+interface InputPictureProps {
+  setImage: (file: File) => void;
 }
 
-const InputPicure: FunctionComponent<InputPicureProps> = (props) => {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            props.setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(e.target.files![0]);
-        props.setImage(e.target.files![0]);
-    };
+const InputPicture: FunctionComponent<InputPictureProps> = ({ setImage }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+    }
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div className='add-picture__imput'>
-        <label htmlFor="file"><img src="" alt="" /></label>
-        <input id='file' type="file" onChange={handleChange} />
+    <div className="input-picture">
+      <div onClick={handleUploadClick} className="custom-file-upload">
+        <img src="src/assets/icons/icon_image.svg" alt="" />
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
     </div>
   );
 };
 
-export default InputPicure;
+export default InputPicture;
