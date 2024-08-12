@@ -18,12 +18,12 @@ const validateCommentEntry = (entry: CommentEntry) => {
         errors.push('Content must be a non-empty string');
     }
 
-    if (entry.picture && (typeof entry.picture !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.picture))) {
-        errors.push('Picture must be a string');
+    if (entry.media && (typeof entry.media !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.media))) {
+        errors.push('Media must be a string');
     }
 
-    if (entry.video && (typeof entry.video !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.video))) {
-        errors.push('Video must be a string');
+    if (entry.commentedPostId && (typeof entry.commentedPostId !== 'string' || entry.commentedPostId.length === 0)) {
+        errors.push('CommentedPostId must be a non-empty string');
     }
 
     return errors;
