@@ -2,7 +2,7 @@ import { Optional } from "sequelize";
 import { PostAttributes } from "../../models/post.model";
 import { UserAttributes } from "../../models/user.model";
 
-interface LikeEntry extends Optional<PostAttributes, "id">, Optional<UserAttributes, "id"> {
+interface LikeEntry extends Optional<PostAttributes & UserAttributes, "id"> {
   postId: string;
   likerId: string;
   dislikerId: string;
