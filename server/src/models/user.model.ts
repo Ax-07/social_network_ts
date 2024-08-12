@@ -13,6 +13,7 @@ interface UserAttributes {
   bio?: string; // Biographie
   followers?: string[]; // Liste des abonnés
   followings?: string[]; // Liste des abonnements
+  bookmarks?: string[]; // Liste des signets
 }
 
 // Certaines propriétés peuvent être optionnelles lors de la création
@@ -35,6 +36,7 @@ class User
   public bio!: string;
   public followers?: string[];
   public followings?: string[];
+  public bookmarks?: string[];
 
   // Timestamps pour les opérations de création et de mise à jour
   public readonly createdAt!: Date;
@@ -90,6 +92,10 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
         type: DataTypes.JSON, // Type de donnée pour la liste des abonnements
         allowNull: true, // Champ facultatif
       },
+      bookmarks: {
+        type: DataTypes.JSON, // Type de donnée pour la liste des signets
+        allowNull: true, // Champ facultatif
+      },
     },
     {
       tableName: "users", // Nom de la table dans la base de données
@@ -101,6 +107,12 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
   // Cette fonction est exécutée automatiquement par Sequelize avant de sauvegarder un nouvel utilisateur dans la base de données
   User.beforeCreate(async (user: User) => {
     user.password = await bcrypt.hash(user.password, 10); // Hachage du mot de passe avec un coût de 10
+  });
+  // Hook pour hacher le mot de passe avant la mise à jour de l'utilisateur
+  User.beforeUpdate(async (user: User) => {
+    if (user.changed('password')) {
+      user.password = await bcrypt.hash(user.password, 10); // Hachage du mot de passe avec un coût de 10
+    }
   });
 
   return User; // Retourne le modèle utilisateur initialisé
