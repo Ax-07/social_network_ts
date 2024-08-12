@@ -3,7 +3,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export interface Post {
   id: number;
   userId: string;
-  title: string;
   content: string;
   picture?: string | null;
   video?: string | null;
