@@ -4,24 +4,82 @@ import { handleControllerError } from '../utils/errors/controllers.error';
 import validatePostEntry from '../utils/functions/validatePostEntry';
 
 const createPost = async (req: Request, res: Response) => {
-  const { userId, title, content } = req.body;
-  const picture = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
-  const video = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
-  if (!userId || !title || !content) {
+  const { userId, content } = req.body;
+  const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
+  if (!userId  || !content) {
     return res.status(400).json({
       error: 'Validation error',
-      message: 'userId, title, and content are required',
+      message: 'userId, and content are required',
     });
   }
-  const errors = validatePostEntry({ userId, title, content, picture, video });
+  const errors = validatePostEntry({ userId, content, media });
   if (errors.length > 0) {
     return res.status(400).json({ error: 'Validation error', message: errors });
   }
   try {
-    const post = await db.Post.create({ userId, title, content, picture, video });
+    const post = await db.Post.create({ userId, content, media });
     res.status(201).json({ message: 'Post created successfully', post });
   } catch (error) {
     handleControllerError(res, error, 'An error occurred while creating the post.');
+  }
+};
+
+const rePost = async (req: Request, res: Response) => {
+  const { userId, originalPostId } = req.body; console.log(req.body);
+
+  if (!userId || !originalPostId) {
+    return res.status(400).json({
+      error: 'Validation error',
+      message: 'userId and originalPostId are required',
+    });
+  }
+
+  const errors = validatePostEntry({ userId, originalPostId });
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Validation error', message: errors });
+  }
+  try {
+    // Commencer une transaction pour garantir l'intégrité des données
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const user = await db.User.findByPk(userId, { transaction });
+      if (!user) {
+        await transaction.rollback();
+        return res.status(404).json({ message: 'User not found' });
+      }
+      const post = await db.Post.findByPk(originalPostId, { transaction });
+
+      if (!post) {
+        await transaction.rollback();
+        return res.status(404).json({ message: `Post ${originalPostId} not found` });
+      }
+
+      // Ajoutez l'utilisateur à la liste des reposters
+      const reposters = post.reposters || [];
+      if (!reposters.includes(userId)) {
+        reposters.push(userId);
+        await post.update({ reposters }, { transaction });
+      }
+
+      const rePost = await db.Post.create({
+        userId,
+        content: post.content,
+        media: post.media,
+        originalPostId: post.id, // Référence au post original
+        likers: [],
+        dislikers: [],
+      }, { transaction });
+
+      await transaction.commit();
+
+      return res.status(201).json({ message: 'Post reposted successfully', rePost, post });
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  } catch (error) {
+    return handleControllerError(res, error, 'An error occurred while reposting the post.');
   }
 };
 
@@ -91,4 +149,4 @@ const deletePost = async (req: Request, res: Response) => {
   }
 };
 
-export { createPost, getAllPosts, getPostById, updatePost , deletePost };
+export { createPost, rePost, getAllPosts, getPostById, updatePost , deletePost };
