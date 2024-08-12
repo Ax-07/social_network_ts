@@ -1,29 +1,28 @@
-// src/models/post.model.ts
 import { Sequelize, DataTypes, Model, Optional, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasManyHasAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin } from 'sequelize';
 import { Comment } from './comment.model';
 
 interface PostAttributes {
-  id: number;
+  id: string;
   userId: string;
-  title: string;
-  content: string;
-  picture?: string | null;
-  video?: string | null;
+  content?: string;
+  media?: string | null;
   likers?: string[];
   dislikers?: string[];
+  reposters?: string[] | null; // Ajout du rePosterId pour les reposts
+  originalPostId?: string | null;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
 
 class Post extends Model<PostAttributes, PostCreationAttributes> implements PostAttributes {
-  public id!: number;
+  public id!: string;
   public userId!: string;
-  public title!: string;
   public content!: string;
-  public picture!: string | null;
-  public video!: string | null;
+  public media!: string | null;
   public likers!: string[];
   public dislikers!: string[];
+  public reposters!: string[] | null;
+  public originalPostId!: string | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -45,22 +44,18 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
-      },
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
       },
       content: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      picture: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      video: {
+      media: {
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -72,13 +67,25 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         type: DataTypes.JSON,
         allowNull: true,
       },
+      reposters: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: []
+      },
+      originalPostId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: 'posts',
+          key: 'id',
+        },
+      },
     },
     {
       tableName: 'posts',
       sequelize,
     }
   );
-
 
   return Post;
 };
