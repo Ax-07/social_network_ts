@@ -10,20 +10,16 @@ const validatePostEntry = (entry: PostEntry) => {
         errors.push('UserId must be a non-empty string');
     }
 
-    if (entry.title && (typeof entry.title !== 'string' || entry.title.length === 0)) {
-        errors.push('Title must be a non-empty string');
-    }
-
     if (entry.content && (typeof entry.content !== 'string' || entry.content.length === 0)) {
         errors.push('Content must be a non-empty string');
     }
 
-    if (entry.picture && (typeof entry.picture !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.picture))) {
+    if (entry.media && (typeof entry.media !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.media))) {
         errors.push('Picture must be a string');
     }
 
-    if (entry.video && (typeof entry.video !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.video))) {
-        errors.push('Video must be a string');
+    if (entry.originalPostId && (typeof entry.originalPostId !== 'string')) {
+        errors.push(`OriginalPostId must be a non-empty string, entry is ${typeof entry.originalPostId}`);
     }
 
     return errors;
