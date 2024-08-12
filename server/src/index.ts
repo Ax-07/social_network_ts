@@ -21,7 +21,7 @@ const io = new Server(server);
 configureSocket(io);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
 app.use('/videos', express.static(path.join(__dirname, '..', 'public', 'videos')));
