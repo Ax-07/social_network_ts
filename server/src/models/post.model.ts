@@ -62,6 +62,7 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
       likers: {
         type: DataTypes.JSON,
         allowNull: true,
+        defaultValue: []
       },
       dislikers: {
         type: DataTypes.JSON,
