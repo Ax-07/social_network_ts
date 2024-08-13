@@ -12,7 +12,7 @@ const Home = () => {
           { name: "Abonnements", to: "/home/abonnements" },
         ]}
       />
-      <AddPost />
+      <AddPost origin="page" />
       <Routes>
         <Route path="/posts" element={<PostList />} />
         <Route path="/abonnements" element={<h2>Abonnements</h2>} />
