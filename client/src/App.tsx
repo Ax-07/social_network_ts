@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate  } from "react-router-dom";
 import SideMenu from "./layouts/sideMenu/SideMenu";
 import SideColumn from "./layouts/sideColumn/SideColumn";
 import Home from "./pages/home/Home";
@@ -13,6 +13,7 @@ import { useWindowSize } from "./utils/hooks/useWindowSize";
 import Modal from "./components/modal/Modal";
 import AddPost from "./components/post/AddPost";
 import {useModal} from "./components/modal/useModal"; // Assurez-vous que le chemin est correct
+import AuthPage from "./pages/auth/AuthPage";
 
 function App() {
   const { windowWidth } = useWindowSize();
@@ -22,17 +23,19 @@ function App() {
   return (
     <div className="app">
       <picture className="picture-background">
-        <source srcSet="src/assets/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp" media="(max-width: 600px)" />
+        <source srcSet="/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp" media="(max-width: 600px)" />
         <source
-          srcSet="src/assets/images/app-background/tablet-unsplash_eNoeWZkO7Zc.webp"
+          srcSet="/images/app-background/tablet-unsplash_eNoeWZkO7Zc.webp"
           media="(min-width: 601px) and (max-width: 1024px)"
         />
-        <source srcSet="src/assets/images/app-background/desktop-unsplash_eNoeWZkO7Zc.webp" media="(min-width: 1025px)" />
-        <img src="src/assets/images/app-background/mobile-image.webp" alt="image de fond de l'application" loading="lazy" />
+        <source srcSet="/images/app-background/desktop-unsplash_eNoeWZkO7Zc.webp" media="(min-width: 1025px)" />
+        <img src="/images/app-background/mobile-image.webp" alt="image de fond de l'application" loading="lazy" />
       </picture>
       <SideMenu />
       <main>
         <Routes>
+        <Route path="/" element={<Navigate to="/home/posts" />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/home/*" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/notifications" element={<Notifications />} />
