@@ -1,14 +1,18 @@
 import type { FunctionComponent } from 'react';
 
 interface PreviewPictureProps {
-  image: string;
+  media: string;
+  mimetype: string;
   onCancel: () => void;
 }
 
-const PreviewPicture: FunctionComponent<PreviewPictureProps> = ({ image, onCancel }) => {
+const PreviewPicture: FunctionComponent<PreviewPictureProps> = ({ media, mimetype, onCancel }) => {
+  const isPicture = mimetype === 'image/webp' || mimetype === 'image/png' || mimetype === 'image/jpeg';
+  const isVideo = mimetype === 'video/mp4';
   return (
     <div className='preview-media'>
-      <img src={image} alt="Preview" />
+      {isPicture && <img src={media} alt="Preview" />}
+      {isVideo && <video src={media} controls />}
       <button className='btn-close-top-right' type="button" onClick={onCancel}>✖️</button>
     </div>
   );
