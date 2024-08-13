@@ -41,6 +41,11 @@ class User
   // Timestamps pour les opérations de création et de mise à jour
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  
+  // Méthode pour comparer le mot de passe haché avec un mot de passe en clair
+  public comparePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
 
 // Fonction pour initialiser le modèle utilisateur
