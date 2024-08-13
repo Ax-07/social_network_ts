@@ -9,6 +9,7 @@ import postRoutes from "./routes/post.routes";
 import commentRoutes from "./routes/comment.routes";
 import likeRoutes from "./routes/likes.routes";
 import msgRoutes from "./routes/messenging.routes";
+import authRoutes from "./routes/auth.routes";
 import db from "./models";
 import { configureSocket } from "./services/webSocket";
 import serverError from "./utils/errors/server.error";
@@ -33,6 +34,7 @@ app.get("/socket", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '..','src', 'pages', 'socket.html'));
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", postRoutes);
 app.use("/api", commentRoutes);
