@@ -1,11 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface Post {
-  id: number;
+  id: string;
   userId: string;
   content: string;
-  picture?: string | null;
-  video?: string | null;
+  media?: string | null;
   likers?: string[];
   dislikers?: string[];
   createdAt?: string;
@@ -44,6 +43,20 @@ export const postApi = createApi({
         method: "DELETE",
       }),
     }),
+    likePost: builder.mutation<Post, { id: string; likers: string }>({
+      query: ({ id, likers }) => ({
+        url: `/like-post`,
+        method: "PATCH",
+        body: { postId: id, likerId: likers },
+      }),
+    }),
+    repost: builder.mutation<Post, { id: string; reposters: string }>({
+      query: ({ id, reposters }) => ({
+        url: `/reposts`,
+        method: "POST",
+        body: { originalPostId: id, userId: reposters },
+      }),
+    }),
   }),
 });
 
@@ -53,4 +66,6 @@ export const {
   useAddPostMutation,
   useUpdatePostMutation,
   useDeletePostMutation,
+  useLikePostMutation,
+  useRepostMutation,
 } = postApi;
