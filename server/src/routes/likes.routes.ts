@@ -1,13 +1,10 @@
 import { Router } from 'express';
-import { likePost, unlikePost, dislikePost, unDislikePost, likeComment, unlikeComment } from '../controllers/likes.controller';
+import { likePost, likeComment } from '../controllers/likes.controller';
+import { checkAuth } from '../middleware/checkAuth.middelware';
 
 const router = Router();
 
-router.patch('/like-post', likePost);
-router.patch('/unlike-post', unlikePost);
-router.patch('/dislike-post', dislikePost);
-router.patch('/undislike-post', unDislikePost);
-router.patch('/like-comment', likeComment);
-router.patch('/unlike-comment', unlikeComment);
+router.patch('/like-post', checkAuth, likePost);
+router.patch('/like-comment', checkAuth, likeComment);
 
 export default router;
