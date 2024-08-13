@@ -10,11 +10,11 @@ import { ModalProvider } from "./components/modal/ModalContext.tsx";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <ModalProvider>
-      {/* <PersistGate loading={null} persistor={persistor}> */}
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-      {/* </PersistGate> */}
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PersistGate>
     </ModalProvider>
   </Provider>
 );
