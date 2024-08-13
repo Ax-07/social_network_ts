@@ -1,0 +1,62 @@
+@mixin flex ($direction: row, $justify: center, $align: center,  $gap: 0) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+    gap: $gap;
+}
+
+@mixin container-fill-absolute {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+@mixin absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@mixin boxStyle {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: linear-gradient(-66deg, #666666, #000000) padding-box, linear-gradient(-5deg, #000 15%, #666 100%) border-box;
+    box-shadow: 0 0 10px 0px rgba($color-dark, 0.8);
+
+    &:hover {
+        border: 2px solid transparent;
+        animation: rotateGradientPad 2s ease-in-out infinite;
+        box-shadow: 0 0 10px 0px rgba($color-secondary, 0.8);
+    }
+}
+
+@mixin btn-theme-default {
+    background: linear-gradient(-66deg, #666666, #000000);
+    box-shadow: $color-dark-gray 4px -4px 4px 0px;
+}
+
+@mixin CustomInputNumber {
+    text-align: center;
+        font-size: 1rem;
+        border: none;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-light;
+
+        &:focus {
+            outline-color: $color-secondary;
+            box-shadow: $box-shadow-secondary;
+        }
+
+        &:hover {
+            box-shadow: $box-shadow-secondary;
+        }
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+}
