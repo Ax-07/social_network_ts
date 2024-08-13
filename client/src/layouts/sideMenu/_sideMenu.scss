@@ -47,6 +47,11 @@
         @include flex(column, flex-start, flex-start);
         width: 100%;
         padding: 20px 10px;
+
+        @media screen and (max-width: 1280px) {
+            justify-content: center;
+            align-items: center;
+        }
     }
 
     &__item {
@@ -55,6 +60,10 @@
         height: 60px;
         padding: 0 10px;
         cursor: pointer;
+
+        @media screen and (max-width: 1280px) {
+            justify-content: center;
+        }
     }
 
     &__link {
