@@ -1,0 +1,32 @@
+#gsi_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+  }
+  
+  .gsi-material-button {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px; /* Rend le bouton rond */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // overflow: hidden; /* Cache les éléments débordants */
+  }
+  
+  .gsi-material-button:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  .gsi-material-button span {
+    display: none; /* Cache le texte pour ne laisser que l'icône */
+  }
+  
+  iframe[name="callout"] {
+    display: none !important; /* Cache les iframes */
+  }
