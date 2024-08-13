@@ -1,23 +1,21 @@
-import { FunctionComponent, ChangeEvent } from 'react';
-import { useRef } from 'react';
+import { FunctionComponent, ChangeEvent, RefObject } from 'react';
 
 interface InputPictureProps {
-  setImage: (file: File) => void;
+  setMedia: (file: File) => void;
+  inputRef: RefObject<HTMLInputElement>;
 }
 
-const InputPicture: FunctionComponent<InputPictureProps> = ({ setImage }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+const InputPicture: FunctionComponent<InputPictureProps> = ({ setMedia, inputRef }) => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
+      setMedia(file);
     }
   };
 
   const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
@@ -27,7 +25,7 @@ const InputPicture: FunctionComponent<InputPictureProps> = ({ setImage }) => {
         <img src="src/assets/icons/icon_image.svg" alt="" />
       </div>
       <input
-        ref={fileInputRef}
+        ref={inputRef}
         type="file"
         onChange={handleFileChange}
         style={{ display: 'none' }}
