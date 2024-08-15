@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import type { FunctionComponent } from 'react';
 import { Post, useLikePostMutation } from '../../services/api/postApi';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../../services/stores';
 interface BtnLikeProps {
   post: Post;
 }
 
 const BtnLike: FunctionComponent<BtnLikeProps> = ({ post }) => {
+  const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [likePost] = useLikePostMutation();
-  const userId = post.userId;
   const postId = post.id;
   const [likes, setLikes] = useState(post.likers?.length || 0);
 
   const handleLike = async () => {
     try {
-      const response = await likePost({ id: postId, likers: userId });
+      const response = await likePost({ id: postId, likers: userId ?? '' });
       if (response.data) {
         const updatedLikers = response.data.likers;
         setLikes(updatedLikers?.length ?? 0);
