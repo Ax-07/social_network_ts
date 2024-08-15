@@ -22,7 +22,7 @@ const InputPicture: FunctionComponent<InputPictureProps> = ({ setMedia, inputRef
   return (
     <div className="input-picture">
       <div onClick={handleUploadClick} className="custom-file-upload">
-        <img src="src/assets/icons/icon_image.svg" alt="" />
+        <img src="/src/assets/icons/icon_image.svg" alt="" />
       </div>
       <input
         ref={inputRef}
