@@ -7,23 +7,74 @@
 
     &__thumbnail {
         position: relative;
+        z-index: 2;
         @include flex(row, flex-start, center);
         width: 100%;
+        padding: 10px;
+        border-radius: 34px;
+        cursor: pointer;
 
         @media screen and (max-width: 1280px) {
             justify-content: center;
+        }
+
+        &:hover {
+            background-color: $color-dark-gray;
         }
 
         &-info {
             margin-left: 10px;
         }
 
-        & span {
+        & > span {
             position: absolute;
-            right: 0;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
+        }
 
+        &-menu {
+            position: absolute;
+            z-index: 100;
+            left: 10px;
+            bottom: 100px;
+            @include flex(column, flex-start, flex-start, 5px);
+            width: 300px;
+            padding: 10px;
+            border-radius: 10px;
+            @extend .background-blur;
+            background: $color-dark-gray;
+
+            & > a {
+                width: 100%;
+                padding: 10px;
+                border-radius: 10px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: $color-light-gray;
+                    color: $color-dark-gray;
+                }
+            }
+
+            &-square {
+                position: absolute;
+                bottom: -5px;
+                left: 30px;
+                width: 10px;
+                height: 10px;
+                transform: rotate(45deg);
+                background-color: $color-dark-gray;
+            }
+
+            &-overlay {
+                position: fixed;
+                z-index: 2;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
         }
     }
 }
