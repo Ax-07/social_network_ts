@@ -1,4 +1,3 @@
-import type { FunctionComponent } from 'react';
 import { useEffect, useRef } from "react";
 import { useGoogleLoginMutation } from "../../services/auth/googleAuthApi";
 import { useDispatch } from 'react-redux';
