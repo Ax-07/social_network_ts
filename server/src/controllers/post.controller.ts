@@ -17,6 +17,12 @@ const createPost = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Validation error', message: errors });
   }
   try {
+        // Vérifier que l'utilisateur existe
+        const user = await db.User.findByPk(userId);
+        if (!user) {
+          return res.status(404).json({ error: 'User not found', message: `The specified ${userId} user does not exist.` });
+        }
+
     const post = await db.Post.create({ userId, content, media });
     res.status(201).json({ message: 'Post created successfully', post });
   } catch (error) {
@@ -68,7 +74,6 @@ const rePost = async (req: Request, res: Response) => {
         media: post.media,
         originalPostId: post.id, // Référence au post original
         likers: [],
-        dislikers: [],
       }, { transaction });
 
       await transaction.commit();
