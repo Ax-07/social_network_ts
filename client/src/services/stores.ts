@@ -1,17 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { persistStore, persistReducer } from "redux-persist";
-import storageSession from "redux-persist/lib/storage/session";
+// import storageSession from "redux-persist/lib/storage/session";
 import { postApi } from "./api/postApi";
 import { UserApi } from "./api/userApi";
 import { authApi } from "./auth/authApi";
 import { googleAuthApi } from "./auth/googleAuthApi";
 import authSlice from "./auth/authSlice";
+import localStorage from "redux-persist/lib/storage";
 
 const persistConfig = {
     key: "root",
-    storage: storageSession,
-}
+    //storage: storageSession, // Use session storage
+    storage: localStorage, // Use local storage
+};
 
 const persistedAuthSlice = persistReducer(persistConfig, authSlice);
 
@@ -32,5 +34,8 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 setupListeners(store.dispatch);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 export { store, persistor };
