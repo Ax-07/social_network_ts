@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+import { RootState } from "../stores";
 export interface Post {
   id: string;
   userId: string;
   content: string;
   media?: string | null;
-  likers?: string[];
+  likers?: string[] | null;
   dislikers?: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -15,7 +15,16 @@ const localUrl = "http://localhost:8080/api";
 
 export const postApi = createApi({
   reducerPath: "postApi",
-  baseQuery: fetchBaseQuery({ baseUrl: localUrl }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: localUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     getPosts: builder.query<Post[], void>({
       query: () => "/posts",
