@@ -3,14 +3,16 @@ import bcrypt from "bcrypt";
 
 // Définir les attributs du modèle utilisateur
 interface UserAttributes {
-  id: number; // Identifiant unique de l'utilisateur
+  id: string; // Identifiant unique de l'utilisateur
   googleId?: string; // Identifiant Google pour l'authentification OAuth
   username: string; // Nom d'utilisateur
+  handle?: string; // Nom d'utilisateur unique
   email?: string; // Adresse e-mail
   password: string; // Mot de passe haché
   profilPicture?: string; // Image de profil
   coverPicture?: string; // Image de couverture
   bio?: string; // Biographie
+  birthdate?: Date; // Date de naissance
   followers?: string[]; // Liste des abonnés
   followings?: string[]; // Liste des abonnements
   bookmarks?: string[]; // Liste des signets
@@ -18,7 +20,7 @@ interface UserAttributes {
 
 // Certaines propriétés peuvent être optionnelles lors de la création
 // Par exemple, 'id' sera auto-généré par la base de données
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+interface UserCreationAttributes extends Optional<UserAttributes, "id" | "handle"> {}
 
 // Définir le modèle utilisateur en étendant la classe Sequelize Model
 // Cela permet de bénéficier de la complétion de code et des vérifications de type
@@ -26,14 +28,16 @@ class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  public id!: number; // Le point d'exclamation indique que cette propriété est toujours définie après initialisation
+  public id!: string; // Le point d'exclamation indique que cette propriété est toujours définie après initialisation
   public googleId!: string;
   public username!: string;
+  public handle!: string;
   public email!: string;
   public password!: string;
   public profilPicture!: string;
   public coverPicture!: string;
   public bio!: string;
+  public birthdate!: Date;
   public followers?: string[];
   public followings?: string[];
   public bookmarks?: string[];
@@ -68,10 +72,18 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
         allowNull: false, // Champ obligatoire
         unique: true, // Valeur unique
       },
+      handle: {
+        type: DataTypes.STRING, // Type de donnée pour le nom d'utilisateur unique
+        allowNull: true, // Champ facultatif
+        unique: true, // Valeur unique
+      },
       email: {
         type: DataTypes.STRING, // Type de donnée pour l'adresse e-mail
         allowNull: true, // Champ facultatif
         unique: true, // Valeur unique
+        validate: {
+          isEmail: true, // Validation de l'adresse e-mail
+        },
       },
       password: {
         type: DataTypes.STRING, // Type de donnée pour le mot de passe
@@ -89,17 +101,24 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
         type: DataTypes.STRING, // Type de donnée pour la biographie
         allowNull: true, // Champ facultatif
       },
+      birthdate: {
+        type: DataTypes.DATE, // Type de donnée pour la date de naissance
+        allowNull: true, // Champ facultatif
+      },
       followers: {
         type: DataTypes.JSON, // Type de donnée pour la liste des abonnés
         allowNull: true, // Champ facultatif
+        defaultValue: [], // Valeur par défaut vide
       },
       followings: {
         type: DataTypes.JSON, // Type de donnée pour la liste des abonnements
         allowNull: true, // Champ facultatif
+        defaultValue: [], // Valeur par défaut vide
       },
       bookmarks: {
         type: DataTypes.JSON, // Type de donnée pour la liste des signets
         allowNull: true, // Champ facultatif
+        defaultValue: [], // Valeur par défaut vide
       },
     },
     {
