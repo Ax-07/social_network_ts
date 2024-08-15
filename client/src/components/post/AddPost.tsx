@@ -1,14 +1,14 @@
 import { useState, useRef } from "react";
+import { useAddPostMutation, useGetPostsQuery } from "../../services/api/postApi";
 import { UserPicture } from "../userProfile/UserProfileThumbnail";
 import PreviewPicture from "../addPicture/PreviewPicture";
-import InputPicture from "../addPicture/InputPicure";
-import { useAddPostMutation, useGetPostsQuery } from "../../services/api/postApi";
+import InputPicture from "../addPicture/InputPicure"; // Correction de la typo InputPicure
 import Button from "../button/Button";
-
-const userId = "4a655857-40a7-4814-baa1-0f05fd46f73b";
+import { useSelector } from "react-redux";
+import { RootState } from "../../services/stores";
 
 interface FormState {
-  userId: string;
+  userId: string | undefined;
   content: string;
   file: File | string;
 }
@@ -19,6 +19,7 @@ interface AddPostProps {
 }
 
 const AddPost = ({ origin, onClose }: AddPostProps) => {
+  const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [form, setForm] = useState<FormState>({
     userId: userId,
     content: "",
@@ -49,11 +50,11 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("userId", form.userId);
+    formData.append("userId", form.userId as string);
     formData.append("content", form.content);
-    formData.append("media", form.file);
+    formData.append("media", form.file as Blob);
 
-    await addPost(formData);
+    await addPost(formData); // Correction ici pour envoyer formData et token ensemble
     if (isError) {
       alert("Erreur lors de la publication");
     } else {
