@@ -8,7 +8,9 @@
     font-size: 15px;
     font-weight: 600;
     transition: background-color 0.3s;
-
+    &:hover {
+        background-color: darken($color: $color-primary, $amount: 10%);
+    }
     &:disabled {
         background-color: lighten($color: $color-primary, $amount: 30%);
         cursor: not-allowed;
@@ -33,6 +35,8 @@
                 width: 20px;
                 height: 20px;
             }
+
+
         }
     }
 }
