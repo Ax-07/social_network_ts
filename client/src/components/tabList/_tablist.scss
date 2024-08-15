@@ -9,8 +9,9 @@
 
     &__item {
         @include flex(column, flex-start, center);
-        flex: 1;
+        flex: 1 1 auto;
         height: 53px;
+        @extend .fs-15-500;
 
         &:hover {
             background-color: rgba($color-light, 0.1);
