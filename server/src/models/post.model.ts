@@ -1,13 +1,11 @@
-import { Sequelize, DataTypes, Model, Optional, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasManyHasAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin } from 'sequelize';
-import { Comment } from './comment.model';
+import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 
 interface PostAttributes {
   id: string;
   userId: string;
   content?: string;
   media?: string | null;
-  likers?: string[];
-  dislikers?: string[];
+  likers?: string[] | null; // Ajout du likerId pour les likes
   reposters?: string[] | null; // Ajout du rePosterId pour les reposts
   originalPostId?: string | null;
 }
@@ -19,20 +17,12 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public userId!: string;
   public content!: string;
   public media!: string | null;
-  public likers!: string[];
-  public dislikers!: string[];
+  public likers!: string[] | null;
   public reposters!: string[] | null;
   public originalPostId!: string | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  // Association avec les commentaires
-  public getComments!: HasManyGetAssociationsMixin<Comment>;
-  public addComment!: HasManyAddAssociationMixin<Comment, number>;
-  public hasComment!: HasManyHasAssociationMixin<Comment, number>;
-  public countComments!: HasManyCountAssociationsMixin;
-  public createComment!: HasManyCreateAssociationMixin<Comment>;
 }
 
 const initializePostModel = (sequelize: Sequelize): typeof Post => {
@@ -63,10 +53,6 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         type: DataTypes.JSON,
         allowNull: true,
         defaultValue: []
-      },
-      dislikers: {
-        type: DataTypes.JSON,
-        allowNull: true,
       },
       reposters: {
         type: DataTypes.JSON,
