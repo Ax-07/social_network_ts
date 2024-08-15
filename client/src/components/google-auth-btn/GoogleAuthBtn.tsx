@@ -32,7 +32,7 @@ const GoogleAuthBtn = () => {
         const idToken = google_response.credential; console.log(idToken);
         try {
           const response = await googleLogin({ token: idToken });
-          dispatch(loginSuccess({ user: response.data.user, token: response.data.token }));
+          dispatch(loginSuccess({ user: response.data.data.user, token: response.data.data.token }));
         } catch (error) {
           console.log(error);
         } finally {
