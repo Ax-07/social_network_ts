@@ -12,6 +12,7 @@ const SideMenu = () => {
   const isUserConnected = useSelector(
     (state: { auth: AuthState }) => state.auth.isAuthenticated
   );
+  const userId = useSelector((state: { auth: AuthState }) => state.auth.user?.id);
 
   return (
     <header className="sidemenu">
@@ -28,7 +29,7 @@ const SideMenu = () => {
             <MenuLink to="/messages" name="Messages" icon="✉️" />
             <MenuLink to="/bookmarks" name="Bookmarks" icon="🔖" />
             <MenuLink to="/lists" name="Lists" icon="📚" />
-            <MenuLink to="/profile" name="Profile" icon="👤" />
+            <MenuLink to={`/profile/${userId}`} name="Profile" icon="👤" />
             <MenuLink to="/more" name="More" icon="⚙️" />
             <ButtonModal modalName={"Post"}>{isTablet ? <img src="/src/assets/icons/faPenToSquare.svg" alt="icon pen to square"/> : "Poster"}</ButtonModal>
           </ul>
