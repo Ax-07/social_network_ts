@@ -1,11 +1,15 @@
 import { useState, useRef } from "react";
-import { useAddPostMutation, useGetPostsQuery } from "../../services/api/postApi";
+import {
+  useAddPostMutation,
+  useGetPostsQuery,
+} from "../../services/api/postApi";
 import { UserPicture } from "../userProfile/UserProfileThumbnail";
 import PreviewPicture from "../addPicture/PreviewPicture";
 import InputPicture from "../addPicture/InputPicure"; // Correction de la typo InputPicure
 import Button from "../button/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
+import { autoResizeTextarea } from "../../utils/functions/autoResizeTextarea";
 
 interface FormState {
   userId: string | undefined;
@@ -52,7 +56,12 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
     const formData = new FormData();
     formData.append("userId", form.userId as string);
     formData.append("content", form.content);
-    formData.append("media", form.file as Blob);
+    // formData.append("media", form.file as Blob | string);
+    if(typeof form.file === "string") {
+      formData.append("media", form.content); console.log("form file: ", form.content);
+    } else {
+      formData.append("media", form.file as Blob); console.log("form file: ", form.file);
+    }
 
     await addPost(formData); // Correction ici pour envoyer formData et token ensemble
     if (isError) {
@@ -74,6 +83,27 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
     reader.readAsDataURL(image);
   };
 
+  const extractYoutubeId = (url: string): string | null => {
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const content = e.target.value;
+    const youtubeId = extractYoutubeId(content);
+
+    if (youtubeId) {
+      const youtubeUrl = `https://www.youtube.com/embed/${youtubeId}`;
+      setPreview(youtubeUrl);
+      setForm({ ...form, content, file: youtubeUrl }); console.log("form file: ", form.file);
+      setMimetype("video/youtube");
+    } else {
+      setForm({ ...form, content });
+      setPreview("");
+    }
+  };
+
   return (
     <div className={`addpost addpost--${origin}`}>
       <div className="addpost__avatar">
@@ -92,8 +122,9 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
           name="content"
           id="content"
           rows={1}
-          onChange={(e) => setForm({ ...form, content: e.target.value })}
+          onChange={handleContentChange}
           value={form.content}
+          onInput={(e) =>  autoResizeTextarea(e.currentTarget)}
         />
         {isPreview && (
           <PreviewPicture
@@ -111,7 +142,11 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
         )}
         <div className="addpost__bottom">
           <InputPicture setMedia={handleFileChange} inputRef={inputFileRef} />
-          <Button type="submit" className="btn__post-submit" disabled={!isValidForm}>
+          <Button
+            type="submit"
+            className="btn__post-submit"
+            disabled={!isValidForm}
+          >
             Publier
           </Button>
         </div>
