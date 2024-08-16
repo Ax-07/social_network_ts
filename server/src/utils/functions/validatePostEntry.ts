@@ -14,8 +14,8 @@ const validatePostEntry = (entry: PostEntry) => {
         errors.push('Content must be a non-empty string');
     }
 
-    if (entry.media && (typeof entry.media !== 'string' || !/^https?:\/\/\S+\.\S+$/.test(entry.media))) {
-        errors.push('Picture must be a string');
+    if (entry.media && (typeof entry.media !== 'string' || (!entry.media.startsWith('http://') && !entry.media.startsWith('https://')))) {
+        errors.push('Media must be a valid URL');
     }
 
     if (entry.originalPostId && (typeof entry.originalPostId !== 'string')) {
