@@ -23,7 +23,7 @@ const Profile = () => {
       <div className="profile__info">
         <div className="profile__info-header">
             <img className="profile__info-picture"
-              src={user?.profilPicture || "/src/assets/images/noAvatar.png"}
+              src={user?.profilPicture || "/images/Default-user-picture.png"}
               alt="Avatar"
             />
             <button className="btn">Configurer le profil</button>
