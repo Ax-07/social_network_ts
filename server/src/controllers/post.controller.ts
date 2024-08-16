@@ -5,7 +5,13 @@ import validatePostEntry from '../utils/functions/validatePostEntry';
 
 const createPost = async (req: Request, res: Response) => {
   const { userId, content } = req.body;
-  const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
+  let media = req.body.media; // URL passée dans le body
+
+  // Si l'URL n'est pas passée dans le body, utiliser le fichier uploadé
+  if (!media && res.locals.filePath) {
+    media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals par le middleware
+  }
+  console.log("Media:", media);
   if (!userId  || !content) {
     return res.status(400).json({
       error: 'Validation error',
