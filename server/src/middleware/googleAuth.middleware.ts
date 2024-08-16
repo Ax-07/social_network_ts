@@ -19,7 +19,7 @@ const verifyGoogleToken = async (token: string) => {
 }
 
 const googleAuthMiddleware = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    const token = req.body.token;
+    const token = req.body.token || req.body.refreshToken;
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
