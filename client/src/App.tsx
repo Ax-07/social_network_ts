@@ -14,11 +14,26 @@ import Modal from "./components/modal/Modal";
 import AddPost from "./components/post/AddPost";
 import {useModal} from "./components/modal/useModal"; // Assurez-vous que le chemin est correct
 import AuthPage from "./pages/auth/AuthPage";
+import { useEffect } from "react";
+import { useGoogleRefreshTokenMutation } from "./services/auth/googleAuthApi";
+import { useSelector } from "react-redux";
+import { RootState } from "./services/stores";
 
 function App() {
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1020;
   const { modals } = useModal();
+  const refreshToken = useSelector((state: RootState) => state.auth?.refreshToken);
+  const isAuth = useSelector((state: RootState) => state.auth?.isAuthenticated);
+  const [ googleRefreshToken ] = useGoogleRefreshTokenMutation();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isAuth || !refreshToken) return;
+      googleRefreshToken({refreshToken: refreshToken});
+    }, 1000 * 60 * 15); // 15 minutes
+    return () => clearInterval(interval);
+  }, [isAuth, refreshToken, googleRefreshToken]);
 
   return (
     <div className="app">
@@ -42,16 +57,16 @@ function App() {
           <Route path="/messages" element={<Messages />} />
           <Route path="/bookmarks" element={<BooKmarks />} />
           <Route path="/lists" element={<Lists />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/more" element={<More />} />
         </Routes>
-        {!isTablet && <SideColumn />}
         {modals && (
           <Modal modalName="Post">
             <AddPost origin="modal"/>
           </Modal>
         )}
       </main>
+        {!isTablet && <SideColumn />}
     </div>
   );
 }
