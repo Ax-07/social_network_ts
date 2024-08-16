@@ -122,7 +122,6 @@ main {
   display: flex;
   gap: 20px;
   flex: 1 1 auto;
-  margin: 0 auto;
   max-width: 600px;
   width: 100%;
 }
@@ -147,8 +146,8 @@ main {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-  flex: 1;
   min-width: 88px;
+  max-width: 275px;
 }
 .sidemenu__container {
   display: flex;
@@ -163,6 +162,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
 }
 .sidemenu__logo > img {
   width: 50px;
@@ -173,6 +173,7 @@ main {
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
+  width: 50%;
 }
 .sidemenu__list {
   display: flex;
@@ -439,6 +440,9 @@ main {
      object-fit: cover;
   border-radius: 14px;
   border: 1px solid #f4f4f4;
+}
+.post__card-content {
+  word-break: break-word;
 }
 .post::-webkit-scrollbar {
   display: none;
