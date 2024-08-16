@@ -3,7 +3,8 @@ import { User } from "../api/userApi";
 
 interface AuthState {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -11,7 +12,8 @@ interface AuthState {
 
 export interface LoginSuccessPayload {
   user: User;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 interface LoginFailPayload {
@@ -20,7 +22,8 @@ interface LoginFailPayload {
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   isAuthenticated: false,
   loading: false,
   error: null,
@@ -37,7 +40,11 @@ const authSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
-      state.token = action.payload.token;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+    },
+    refreshToken(state, action: PayloadAction<string>) {
+      state.accessToken = action.payload;
     },
     loginFail: (state, action: PayloadAction<LoginFailPayload>) => {
       state.loading = false;
@@ -47,7 +54,8 @@ const authSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = false;
       state.user = null;
-      state.token = null;
+      state.accessToken = null;
+      state.refreshToken = null;
     },
   },
 });

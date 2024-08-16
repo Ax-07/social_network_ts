@@ -3,9 +3,12 @@ import { User } from "../api/userApi";
 
 const localUrl = "http://localhost:8080/api";
 
-interface LoginResponse {
-  user: User;
-  token: string;
+export interface LoginResponse {
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export const authApi = createApi({

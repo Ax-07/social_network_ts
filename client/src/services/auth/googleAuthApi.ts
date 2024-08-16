@@ -17,7 +17,18 @@ export const googleAuthApi = createApi({
             }),
             invalidatesTags: ["User"],
         }),
+        googleRefreshToken: builder.mutation({
+            query: (body) => ({
+                url: "/auth/google/refresh-token",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body,
+            }),
+            invalidatesTags: ["User"],
+        }),
     }),
 });
 
-export const { useGoogleLoginMutation } = googleAuthApi;
+export const { useGoogleLoginMutation, useGoogleRefreshTokenMutation } = googleAuthApi;
