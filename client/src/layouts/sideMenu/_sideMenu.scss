@@ -5,32 +5,22 @@
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    flex: 1;
     min-width: 88px;
+    max-width: 275px;
 
-    @media screen and (max-width: 1280px) {
-        // display: block;
-        // width: 275px;
-    }
-    
     &__container{
         @include flex(column, space-between, flex-start);
         @extend .background-blur;
-
-        // width: 275px;
         height: 100vh;
         padding: 20px 10px;
 
-    }
-
-    &__wrapper {
-        // width: 100%;
     }
 
     &__logo {
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 10px;
         &>img {
             width: 50px;
             aspect-ratio: 1/1;
@@ -43,6 +33,7 @@
         font-size: 1.5rem;
         font-weight: 700;
         text-align: center;
+    width: 50%;
     }
 
     &__list {
@@ -63,8 +54,6 @@
         padding: 0px 10px;
         margin: 10px 0;
         cursor: pointer;
-
-
 
         @media screen and (max-width: 1280px) {
             justify-content: center;
