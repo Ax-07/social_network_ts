@@ -27,11 +27,16 @@ const GoogleAuthBtn = () => {
     const buttonRef = useRef<HTMLDivElement>(null);
     const [googleLogin] = useGoogleLoginMutation();
     const google_client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID as string; // Assurez-vous que cette variable est correctement configurée
+    
     const handleCredentialResponse = async (google_response: GoogleResponse) => {
         const idToken = google_response.credential; console.log(idToken);
         try {
           const response = await googleLogin({ token: idToken });
-          dispatch(loginSuccess({ user: response.data.data.user, token: response.data.data.token }));
+          dispatch(loginSuccess({
+            user: response.data.data.user, 
+            accessToken: response.data.data.accessToken,
+            refreshToken: response.data.data.refreshToken
+          }));
         } catch (error) {
           console.log(error);
         } finally {
@@ -48,7 +53,8 @@ const GoogleAuthBtn = () => {
           const params = {
             client_id: google_client_id,
             callback: handleCredentialResponse,
-            context: "use" // Configure le bouton pour afficher uniquement le logo
+            context: "use", // Configure le bouton pour afficher uniquement le logo
+            auto_select: true // Sélectionne automatiquement le compte Google actuellement connecté
           };
     
           window.google.accounts.id.initialize(params);
