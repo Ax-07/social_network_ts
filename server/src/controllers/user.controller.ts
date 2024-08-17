@@ -2,161 +2,131 @@ import { Request, Response } from "express";
 import db from "../models";
 import { handleControllerError } from "../utils/errors/controllers.error";
 import validateUserEntry from "../utils/functions/validateUserEntry";
-import {
-  deleteCoverPicture,
-  deleteProfilPicture,
-} from "../utils/functions/deletePicture";
+import { deleteCoverPicture,  deleteProfilPicture } from "../utils/functions/deletePicture";
+import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 const createUser = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const errors = validateUserEntry(req.body);
   if (errors.length > 0) {
-    return res.status(400).json({ errors });
+    return apiError(res, "Validation error", errors, 400);
   }
   try {
     const isExistingUser = await db.User.findOne({ where: { username } });
     if (isExistingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return apiError(res, "Username already exist", 400);
     }
     const user = await db.User.create({ username, password });
-    res.status(201).json({ message: "User registered successfully", user });
+    return apiSuccess(res, "User created successfully", user, 201);
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while creating the user."
-    );
+    return handleControllerError(res, error, "An error occurred while creating the user.");
   }
 };
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await db.User.findAll();
-    res.status(200).json(users);
+    return apiSuccess(res, "All users", users);
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while getting all users."
-    );
+    return handleControllerError(res, error, "An error occurred while getting all users.");
   }
 };
 
 const getUserById = async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return apiError(res, "User ID is required", 400);
   }
   try {
     const user = await db.User.findByPk(userId);
     if (user === null) {
-      res.status(404).json({ message: "User not found" });
+      return apiError(res, "User not found", 404);
     } else {
-      res.status(200).json(user);
+      return apiSuccess(res, `User ${userId} found`, user);
     }
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while getting the user."
-    );
+    return handleControllerError(res, error, "An error occurred while getting the user.");
   }
 };
 
 const updateUser = async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return apiError(res, "User ID is required", 400);
   }
   const errors = validateUserEntry(req.body);
   if (errors.length > 0) {
-    return res.status(400).json({ errors });
+    return apiError(res, "Validation error", errors, 400);
   }
   try {
     const user = await db.User.findByPk(userId);
     if (user === null) {
-      res.status(404).json({ message: "User not found" });
+      return apiError(res, "User not found", 404);
     } else {
       await user.update(req.body);
-      res.status(200).json({ message: "User updated successfully", user });
+      return apiSuccess(res, `User ${userId} updated successfully`, user);
     }
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while updating the user."
-    );
+    return handleControllerError(res, error, "An error occurred while updating the user.");
   }
 };
 
 const updatePictureProfile = async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return apiError(res, "User ID is required", 400);
   }
   const profilPicture = res.locals.filePath;
   if (!profilPicture) {
-    return res.status(400).json({ message: "Profile picture is required" });
+    return apiError(res, "Profile picture is required", 400);
   }
   const errors = validateUserEntry(profilPicture);
   if (errors.length > 0) {
-    return res.status(400).json({ errors });
+    return apiError(res, "Validation error", errors, 400);
   }
   try {
     const user = await db.User.findByPk(userId);
     if (user === null) {
-      res.status(404).json({ message: "User not found" });
+      return apiError(res, "User not found", 404);
     } else {
       await user.update({ profilPicture: profilPicture });
-      res
-        .status(200)
-        .json({ message: "Profile picture added successfully", user });
+      return apiSuccess(res, "Profile picture added successfully", user);
     }
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while adding the profile picture."
-    );
+    return handleControllerError(res, error, "An error occurred while adding the profile picture.");
   }
 };
 
 const updateCoverPicture = async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return apiError(res, "User ID is required", 400);
   }
   const coverPicture = res.locals.filePath;
   if (!coverPicture) {
-    return res.status(400).json({ message: "Cover picture is required" });
+    return apiError(res, "Cover picture is required", 400);
   }
   const errors = validateUserEntry(coverPicture);
   if (errors.length > 0) {
-    return res.status(400).json({ errors });
+    return apiError(res, "Validation error", errors, 400);
   }
   try {
     const user = await db.User.findByPk(userId);
     if (user === null) {
-      res.status(404).json({ message: "User not found" });
+      return apiError(res, "User not found", 404);
     } else {
       await user.update({ coverPicture: coverPicture });
-      res
-        .status(200)
-        .json({ message: "Cover picture added successfully", user });
+      return apiSuccess(res, "Cover picture added successfully", user);
     }
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while adding the cover picture."
-    );
+    return handleControllerError(res, error, "An error occurred while adding the cover picture.");
   }
 };
 
 const deleteUser = async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return apiError(res, "User ID is required", 400);
   }
   try {
     const user = await db.User.findByPk(userId);
@@ -166,14 +136,10 @@ const deleteUser = async (req: Request, res: Response) => {
       await deleteProfilPicture(user.profilPicture);
       await deleteCoverPicture(user.coverPicture);
       await user.destroy();
-      res.status(204).json({ message: "User deleted successfully" });
+      return apiSuccess(res, `User ${userId} deleted successfully`, { id: userId });
     }
   } catch (error) {
-    handleControllerError(
-      res,
-      error,
-      "An error occurred while deleting the user."
-    );
+    return handleControllerError(res, error, "An error occurred while deleting the user.");
   }
 };
 
