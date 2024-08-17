@@ -1,24 +1,25 @@
 import { Request, Response } from 'express';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
+import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 const addToBookmarks = async (req: Request, res: Response) => {
   const userId = req.params.id;
   const { postId } = req.body;
 
   if (!userId || !postId) {
-    return res.status(400).json({ error: 'Entry error', message: 'userId and postId are required' });
+    return apiError(res, 'Missing fields', 400);
   }
 
   try {
     const user = await db.User.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return apiError(res, 'User not found', 404);
     }
 
     const post = await db.Post.findByPk(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return apiError(res, 'Post not found', 404);
     }
 
     const bookmarks = user.bookmarks || [];
@@ -27,9 +28,9 @@ const addToBookmarks = async (req: Request, res: Response) => {
       await user.update({ bookmarks });
     }
 
-    res.status(201).json({ message: 'Post added to bookmarks', user });
+    return apiSuccess(res, 'Post added to bookmarks successfully', bookmarks);
   } catch (error) {
-    handleControllerError(res, error, 'An error occurred while adding post to bookmarks');
+    return handleControllerError(res, error, 'An error occurred while adding post to bookmarks');
   }
 };
 
