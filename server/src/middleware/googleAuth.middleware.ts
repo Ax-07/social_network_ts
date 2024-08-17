@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import { Response, NextFunction } from "express";
 import { CustomRequest } from '../utils/types/customRequest';
+import { apiError } from "../utils/functions/apiResponses";
 
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -14,7 +15,7 @@ const verifyGoogleToken = async (token: string) => {
         const payload = ticket.getPayload();
         return payload; // Add this line to return the payload
     } catch (error) {
-        console.error(error);
+        throw new Error('Invalid token');
     }
 }
 
@@ -28,7 +29,7 @@ const googleAuthMiddleware = async (req: CustomRequest, res: Response, next: Nex
         req.user = payload as CustomRequest['user'];
         next();
     } catch (error) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return apiError(res, 'Unauthorized', 'Invalid token', 401);
     }
 }
 
