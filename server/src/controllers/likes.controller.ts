@@ -2,25 +2,26 @@ import { Request, Response } from "express";
 import db from "../models";
 import { handleControllerError } from '../utils/errors/controllers.error';
 import validateLikeEntry from "../utils/functions/validateLikeEntry";
+import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const likePost = async (req: Request, res: Response) => {
     const { postId, likerId } = req.body; console.log(req.body);
     const errors = validateLikeEntry(req.body);
     if (errors.length > 0) {
-        return res.status(400).json({ message: 'Validation error', errors });
+        return apiError(res, 'Validation error', errors, 400);
     }
 
     try {
         if (!postId || !likerId) {
-            return res.status(400).json({ message: 'Missing fields' });
+            return apiError(res, 'Missing fields', 400);
         }
         const post = await db.Post.findByPk(postId);
         if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
+            return apiError(res, 'Post not found', 404);
         }
         const liker = await db.User.findByPk(likerId);
         if (!liker) {
-            return res.status(404).json({ message: 'User not found' });
+            return apiError(res, 'User not found', 404);
         }
 
         let likers;
@@ -28,15 +29,15 @@ const likePost = async (req: Request, res: Response) => {
             // Retirer le like
             likers = post.likers.filter(id => id !== likerId);
             await post.update({ likers: likers });
-            return res.status(200).json({ message: 'Post unliked successfully', likers });
+            return apiSuccess(res, 'Post unliked successfully', likers);
         } else {
             // Ajouter le like
             likers = [...(post.likers || []), likerId];
             await post.update({ likers: likers });
-            return res.status(200).json({ message: 'Post liked successfully', likers });
+            return apiSuccess(res, 'Post liked successfully', likers);
         }
     } catch (error) {
-        handleControllerError(res, error, 'An error occurred while liking the post.');
+        return handleControllerError(res, error, 'An error occurred while liking the post.');
     }
 };
 
@@ -45,15 +46,15 @@ const likeComment = async (req: Request, res: Response) => {
 
     try {
         if (!commentId || !likerId) {
-            return res.status(400).json({ message: 'Missing fields' });
+            return apiError(res, 'Missing fields', 400);
         }
         const comment = await db.Comment.findByPk(commentId);
         if (!comment) {
-            return res.status(404).json({ message: 'Comment not found' });
+            return apiError(res, 'Comment not found', 404);
         }
         const liker = await db.User.findByPk(likerId);
         if (!liker) {
-            return res.status(404).json({ message: 'User not found' });
+            return apiError(res, 'User not found', 404);
         }
 
         let likers;
@@ -61,15 +62,15 @@ const likeComment = async (req: Request, res: Response) => {
             // Retirer le like
             likers = comment.likers.filter(id => id !== likerId);
             await comment.update({ likers: likers });
-            return res.status(200).json({ message: 'Comment unliked successfully', likers });
+            return apiSuccess(res, 'Comment unliked successfully', likers);
         } else {
             // Ajouter le like
             likers = [...(comment.likers || []), likerId];
             await comment.update({ likers: likers });
-            return res.status(200).json({ message: 'Comment liked successfully', likers });
+            return apiSuccess(res, 'Comment liked successfully', likers);
         }
     } catch (error) {
-        handleControllerError(res, error, 'An error occurred while liking the comment.');
+        return handleControllerError(res, error, 'An error occurred while liking the comment.');
     }
 };
 
