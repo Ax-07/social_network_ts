@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
 import validateCommentEntry from '../utils/functions/validateCommentEntry';
+import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 
 const createComment = async (req: Request, res: Response) => {
@@ -9,17 +10,15 @@ const createComment = async (req: Request, res: Response) => {
   const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
 
   if (!postId || !userId || (!content && !media && !commentedPostId)) {
-    return res.status(400).json({ message: 'Missing required information' });
+    return apiError(res, 'Validation error', 'postId, userId, content, media, or commentedPostId is required', 400);
   }
 
   const errors = validateCommentEntry({ postId, userId, content, media, commentedPostId });
   if (errors.length > 0) {
-    return res.status(400).json({ message: 'Validation error', errors });
+    return apiError(res, 'Validation error', errors, 400);
   }
-
   // Commencer une transaction
   const transaction = await db.sequelize.transaction();
-
   try {
     // Créer le commentaire
     const comment = await db.Comment.create(
@@ -32,86 +31,84 @@ const createComment = async (req: Request, res: Response) => {
       const commentedPost = await db.Post.findByPk(commentedPostId, { transaction });
       if (!commentedPost) {
         await transaction.rollback();
-        return res.status(404).json({ message: `Commented post ${commentedPostId} not found` });
+        return apiError(res, `The specified ${commentedPostId} post does not exist.`, 404);
       }
-
       const reposters = commentedPost.reposters || [];
       if (!reposters.includes(userId)) {
         reposters.push(userId);
         await commentedPost.update({ reposters }, { transaction });
       }
     }
-
     // Valider la transaction
     await transaction.commit();
 
-    res.status(201).json({ message: 'Comment created successfully', comment });
+    return apiSuccess(res, 'Comment created successfully', comment, 201);
   } catch (error) {
     // Annuler la transaction en cas d'erreur
     await transaction.rollback();
-    handleControllerError(res, error, 'An error occurred while creating the comment.');
+    return handleControllerError(res, error, 'An error occurred while creating the comment.');
   }
 };
 
 const getAllComments = async (req: Request, res: Response) => {
   try {
     const comments = await db.Comment.findAll();
-    res.status(200).json(comments);
+    return apiSuccess(res, 'All comments', comments);
   } catch (error) {
-    handleControllerError(res, error, 'An error occurred while getting all comments.');
+    return handleControllerError(res, error, 'An error occurred while getting all comments.');
   }
 };
 
 const getCommentById = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return res.status(400).json({ message: 'Comment ID is required' });
+    return apiError(res, 'Comment ID is required', 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      res.status(404).json({ message: 'Comment not found' });
+      return apiError(res, 'Comment not found', 404);
     } else {
-      res.status(200).json(comment);
+      return apiSuccess(res, `Comment ${commentId} found`, comment);
     }
   } catch (error) {
-    handleControllerError(res, error, 'An error occurred while getting the comment.');
+    return handleControllerError(res, error, 'An error occurred while getting the comment.');
   }
 };
 
 const updateComment = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return res.status(400).json({ message: 'Comment ID is required' });
+    return apiError(res, 'Comment ID is required', 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      res.status(404).json({ message: 'Comment not found' });
+      return apiError(res, 'Comment not found', 404);
     } else {
       await comment.update(req.body);
-      res.status(200).json({ message: 'Comment updated successfully', comment });
+      return apiSuccess(res, 'Comment updated successfully', comment);
     }
   } catch (error) {
-    handleControllerError(res, error, 'An error occurred while updating the comment.');
+    return handleControllerError(res, error, 'An error occurred while updating the comment.');
   }
 };
 
 const deleteComment = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return res.status(400).json({ message: 'Comment ID is required' });
+    return apiError(res, 'Comment ID is required', 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      res.status(404).json({ message: 'Comment not found' });
+      return apiError(res, 'Comment not found', 404);
     } else {
       await comment.destroy();
-      res.status(200).json({ message: 'Comment deleted successfully' });
+      return apiSuccess(res, 'Comment deleted successfully');
     }
   } catch (error) {
-    handleControllerError(res, error, 'An error occurred while deleting the comment.');
+    return handleControllerError(res, error, 'An error occurred while deleting the comment.');
   }
 };
 
