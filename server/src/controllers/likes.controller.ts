@@ -29,12 +29,12 @@ const likePost = async (req: Request, res: Response) => {
             // Retirer le like
             likers = post.likers.filter(id => id !== likerId);
             await post.update({ likers: likers });
-            return apiSuccess(res, 'Post unliked successfully', likers);
+            return apiSuccess(res, 'Post unliked successfully', {likers: likers}, 200);
         } else {
             // Ajouter le like
             likers = [...(post.likers || []), likerId];
             await post.update({ likers: likers });
-            return apiSuccess(res, 'Post liked successfully', likers);
+            return apiSuccess(res, 'Post liked successfully', {likers: likers}, 200);
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while liking the post.');
