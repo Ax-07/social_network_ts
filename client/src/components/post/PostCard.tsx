@@ -1,12 +1,12 @@
 import type { FunctionComponent } from "react";
-import type { Post } from "../../services/api/postApi";
 import BtnLike from "../btn-like/BtnLike";
 import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { getTimeSinceCreation } from "../../utils/functions/formatedDate";
 import { NavLink } from "react-router-dom";
+import { PostTypes } from "../../utils/types/post.types";
 
 export type PostProps = {
-  post: Post;
+  post: PostTypes;
 };
 
 const PostCard: FunctionComponent<PostProps> = ({ post }) => {
@@ -16,12 +16,6 @@ const PostCard: FunctionComponent<PostProps> = ({ post }) => {
   const isMp4 = post.media?.endsWith(".mp4");
   const isYoutubeVideo = post.media?.includes("youtube.com");
   const timeSinceCreation = getTimeSinceCreation(post.createdAt as string);
-
-  const embedYoutube = (url: string) => {
-    console.log("url: ", url);
-    const embedVideo = url.replace("watch?v=", "embed/").split('&')[0]; console.log("embedVideo: ", embedVideo);
-    return embedVideo;
-  }
 
   return (
     <article className="post__card">
@@ -57,7 +51,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post }) => {
           <iframe
           style={{ width: "100%", aspectRatio: "16/9" }}
             className="post__card-youtube"
-            src={embedYoutube(post.media)}
+            src={post.media}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
