@@ -12,7 +12,7 @@ const Modal: FunctionComponent<ModalProps> = ({ children, modalName }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button onClick={()=>closeModal(modalName)} className="modal-close">❌</button>
+        <button onClick={()=> closeModal(modalName)} className="modal-close">❌</button>
         {children}
       </div>
     </div>
