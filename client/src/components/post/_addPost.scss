@@ -10,8 +10,19 @@
     }
 
     &__header {
+        display: flex;
+        justify-content: space-between;
         height: 36px;
         padding-bottom: 12px;
+
+        &> p {
+            padding: 5px 10px;
+            font-weight: 700;
+            line-height: 100%;
+            border-radius: 15px;
+            color: $color-light;
+            background-color: $color-danger;
+        }
     }
 
     &__input {
