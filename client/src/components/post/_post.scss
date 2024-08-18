@@ -45,6 +45,8 @@
 
         &-content {
             @extend .fs-15-600;
+            word-break: break-word;
+
         }
     }
     &::-webkit-scrollbar {
