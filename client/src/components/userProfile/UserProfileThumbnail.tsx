@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
 import { RootState } from "../../services/stores";
 import { NavLink } from "react-router-dom";
@@ -6,7 +6,8 @@ import { logout } from "../../services/auth/authSlice";
 import { useState } from "react";
 
 export const UserPicture = () => {
-  const user = useSelector((state: RootState) => state.auth?.user);
+  const user = useSelector((state: RootState) => state.auth?.user, shallowEqual);
+
   return (
     <NavLink to={`/profile/${user?.id}`}>
       <img
