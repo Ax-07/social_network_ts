@@ -1,8 +1,5 @@
-import { useState, useRef } from "react";
-import {
-  useAddPostMutation,
-  useGetPostsQuery,
-} from "../../services/api/postApi";
+import { useState, useRef, useCallback } from "react";
+import { useAddPostMutation } from "../../services/api/postApi";
 import { UserPicture } from "../userProfile/UserProfileThumbnail";
 import PreviewPicture from "../addPicture/PreviewPicture";
 import InputPicture from "../addPicture/InputPicure"; // Correction de la typo InputPicure
@@ -10,6 +7,7 @@ import Button from "../button/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import { autoResizeTextarea } from "../../utils/functions/autoResizeTextarea";
+import { usePushToast } from "../toast/Toasts";
 
 interface FormState {
   userId: string | undefined;
@@ -21,6 +19,7 @@ interface AddPostProps {
   origin: "modal" | "page";
   onClose?: () => void;
 }
+
 
 const AddPost = ({ origin, onClose }: AddPostProps) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
@@ -36,12 +35,12 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
   const inputFileRef = useRef<HTMLInputElement>(null); // Référence pour l'entrée de fichier
 
   const isPreview = form.file !== "";
-  const isValidForm = form.content;
+  const isValidForm = form.content.trim().length > 0;
 
-  const [addPost, { isError, isLoading }] = useAddPostMutation();
-  const { refetch } = useGetPostsQuery();
+  const [addPost, { isLoading }] = useAddPostMutation();
+  const pushToast = usePushToast();
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setForm({
       userId: userId,
       content: "",
@@ -49,61 +48,64 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
     });
     setPreview("");
     setMimetype("");
-  };
+  }, [userId]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("userId", form.userId as string);
-    formData.append("content", form.content);
-    // formData.append("media", form.file as Blob | string);
-    if(typeof form.file === "string") {
-      formData.append("media", form.content); console.log("form file: ", form.content);
-    } else {
-      formData.append("media", form.file as Blob); console.log("form file: ", form.file);
-    }
+    try {
+      const formData = new FormData();
+      formData.append("userId", form.userId as string);
+      formData.append("content", form.content);
+      if (typeof form.file === "string") {
+        formData.append("media", form.file);
+      } else {
+        formData.append("media", form.file as Blob);
+      }
 
-    await addPost(formData); // Correction ici pour envoyer formData et token ensemble
-    if (isError) {
-      alert("Erreur lors de la publication");
-    } else {
+      const response = await addPost(formData).unwrap();
+      if( response.status !== 201) {
+          pushToast({ message: response.message, type: "error" });
+        }
+      pushToast({ message: response.message, type: "success" });
+    } catch (error) {
+      pushToast({ message: (error as Error).message, type: "error" });
+    } finally {
       resetForm();
-      refetch();
-      if (onClose) onClose();
+      onClose && onClose();
     }
   };
 
-  const handleFileChange = (image: File) => {
-    setForm({ ...form, file: image });
+  const handleFileChange = useCallback((image: File) => {
+    setForm((prevForm) => ({ ...prevForm, file: image }));
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result as string);
       setMimetype(image.type);
     };
     reader.readAsDataURL(image);
-  };
+  }, []);
 
-  const extractYoutubeId = (url: string): string | null => {
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  };
+  const embedYoutube = (url: string) => {
+    console.log("url: ", url);
+    const embedVideo = url.replace("watch?v=", "embed/").split('&')[0];
+    return embedVideo;
+  }
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const content = e.target.value;
-    const youtubeId = extractYoutubeId(content);
-
-    if (youtubeId) {
-      const youtubeUrl = `https://www.youtube.com/embed/${youtubeId}`;
+    if (content.includes('youtube.com')) {
+      const youtubeUrl = embedYoutube(content);
       setPreview(youtubeUrl);
-      setForm({ ...form, content, file: youtubeUrl }); console.log("form file: ", form.file);
+      setForm((prevForm) => ({ ...prevForm, content, file: youtubeUrl }));
       setMimetype("video/youtube");
     } else {
-      setForm({ ...form, content });
+      setForm((prevForm) => ({ ...prevForm, content }));
       setPreview("");
     }
-  };
+  }, []);
 
+  if (isLoading) return <p>Publication en cours...</p>;
+  
   return (
     <div className={`addpost addpost--${origin}`}>
       <div className="addpost__avatar">
