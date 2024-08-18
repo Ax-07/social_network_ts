@@ -23,14 +23,14 @@ const SideMenu = () => {
             {!isTablet && <h2 className="sidemenu__title">Social Network</h2>}
           </NavLink>
           <ul className="sidemenu__list">
-            <MenuLink to="/home/posts" name="Home" icon="🏠" />
-            <MenuLink to="/explore" name="Explore" icon="🔍" />
-            <MenuLink to="/notifications" name="Notifications" icon="🔔" />
-            <MenuLink to="/messages" name="Messages" icon="✉️" />
-            <MenuLink to="/bookmarks" name="Bookmarks" icon="🔖" />
-            <MenuLink to="/lists" name="Lists" icon="📚" />
-            <MenuLink to={`/profile/${userId}`} name="Profile" icon="👤" />
-            <MenuLink to="/more" name="More" icon="⚙️" />
+            <MenuLink to="/home/posts" name="Home" icon="/src/assets/icons/faHome.svg" />
+            <MenuLink to="/explore" name="Explore" icon="/src/assets/icons/faSearch.svg" />
+            <MenuLink to="/notifications" name="Notifications" icon="/src/assets/icons/faBell.svg" />
+            <MenuLink to="/messages" name="Messages" icon="/src/assets/icons/faEnvelope.svg" />
+            <MenuLink to="/bookmarks" name="Bookmarks" icon="/src/assets/icons/faBookmark.svg" />
+            <MenuLink to="/lists" name="Lists" icon="/src/assets/icons/faListDots.svg" />
+            <MenuLink to={`/profile/${userId}`} name="Profile" icon="/src/assets/icons/faUser.svg" />
+            <MenuLink to="/more" name="More" icon="/src/assets/icons/faEllipsis.svg" />
             <ButtonModal modalName={"Post"}>{isTablet ? <img src="/src/assets/icons/faPenToSquare.svg" alt="icon pen to square"/> : "Poster"}</ButtonModal>
           </ul>
         </div>
@@ -58,7 +58,9 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon }) => {
   return (
     <li className="sidemenu__item">
       <NavLink to={to} className="sidemenu__link">
-        {icon} {!isTablet && name}
+        <img src={icon} alt={`icon ${name}`} />
+        {/* {icon} */}
+        {!isTablet && name}
       </NavLink>
     </li>
   );
