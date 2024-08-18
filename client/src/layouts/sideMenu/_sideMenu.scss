@@ -5,11 +5,10 @@
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    min-width: 88px;
     max-width: 275px;
 
-    &__container{
-        @include flex(column, space-between, flex-start);
+    &__container {
+        @include flex(column, space-between, center);
         @extend .background-blur;
         height: 100vh;
         padding: 20px 10px;
@@ -21,19 +20,24 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+        border-radius: 34px;
+
         &>img {
             width: 50px;
             aspect-ratio: 1/1;
             cursor: pointer;
         }
 
+        &:hover {
+            background-color: $color-dark-gray;
+        }
     }
 
     &__title {
         font-size: 1.5rem;
         font-weight: 700;
         text-align: center;
-    width: 50%;
+        width: 50%;
     }
 
     &__list {
@@ -61,6 +65,9 @@
     }
 
     &__link {
+        display: flex;
+        align-items: center;
+        gap: 20px;
         font-size: 1.2rem;
         font-weight: 500;
         width: 100%;
@@ -73,6 +80,11 @@
 
         &.active {
             color: $color-primary;
+        }
+
+        &>img {
+            height: 26px;
+            aspect-ratio: 1/1;
         }
     }
 }
