@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import type { FunctionComponent } from 'react';
-import { Post, useLikePostMutation } from '../../services/api/postApi';
+import { FunctionComponent } from 'react';
+import { useLikePostMutation } from '../../services/api/postApi';
+import { PostTypes } from '../../utils/types/post.types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
+import { usePushToast } from '../toast/Toasts';
+
 interface BtnLikeProps {
-  post: Post;
+  post: PostTypes;
 }
 
 const BtnLike: FunctionComponent<BtnLikeProps> = ({ post }) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [likePost] = useLikePostMutation();
   const postId = post.id;
-  const [likes, setLikes] = useState(post.likers?.length || 0);
+  const pushToast = usePushToast();
 
   const handleLike = async () => {
     try {
-      const response = await likePost({ id: postId, likers: userId ?? '' });
-      if (response.data) {
-        const updatedLikers = response.data.likers;
-        setLikes(updatedLikers?.length ?? 0);
-      }
+      const response = await likePost({ id: postId, likerId: userId ?? '' }).unwrap();
+      pushToast({ type: 'success', message: response.message });
     } catch (error) {
+      pushToast({ type: 'error', message: 'An error occurred' });
       console.error(error);
     }
-  }
+  };
 
   return (
     <div>
       <button onClick={handleLike}>Like</button>
-      <p>{likes}</p>
+      <p>{post.likers?.length || 0}</p>
     </div>
   );
 };
