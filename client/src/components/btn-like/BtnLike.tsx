@@ -4,6 +4,7 @@ import { PostTypes } from '../../utils/types/post.types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { usePushToast } from '../toast/Toasts';
+import { ApiError } from '../../utils/types/api.types';
 
 interface BtnLikeProps {
   post: PostTypes;
@@ -20,7 +21,7 @@ const BtnLike: FunctionComponent<BtnLikeProps> = ({ post }) => {
       const response = await likePost({ id: postId, likerId: userId ?? '' }).unwrap();
       pushToast({ type: 'success', message: response.message });
     } catch (error) {
-      pushToast({ type: 'error', message: 'An error occurred' });
+      pushToast({ type: 'error', message: (error as ApiError).data.message });
       console.error(error);
     }
   };
