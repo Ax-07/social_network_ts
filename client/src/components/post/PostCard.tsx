@@ -2,14 +2,16 @@ import type { FunctionComponent } from "react";
 import BtnLike from "../btn-like/BtnLike";
 import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { getTimeSinceCreation } from "../../utils/functions/formatedDate";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { PostTypes } from "../../utils/types/post.types";
+import ButtonModal from "../modal/ButtonModal";
 
 export type PostProps = {
   post: PostTypes;
+  origin?: string;
 };
 
-const PostCard: FunctionComponent<PostProps> = ({ post }) => {
+const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const posterId = post.userId;
   const poster = useGetUserByIdQuery(posterId);
   const isWebp = post.media?.endsWith(".webp");
@@ -18,16 +20,19 @@ const PostCard: FunctionComponent<PostProps> = ({ post }) => {
   const timeSinceCreation = getTimeSinceCreation(post.createdAt as string);
 
   return (
+    <>
+    {origin != "post-page" && <NavLink to={`/home/posts/${post.id}`} className="post__card-link">
+    </NavLink>}
     <article className="post__card">
       <div className="post__card-user">
-        <NavLink to={`/profile/${posterId}`}>
+        <Link to={`/profile/${posterId}`}>
         <img
           className="userprofile__picture"
           src={poster.data?.profilPicture ? poster.data?.profilPicture : "/images/Default-user-picture.png"}
           alt="User Profile Thumbnail"
           loading="lazy"
         />
-        </NavLink>
+        </Link>
       </div>
       <div className="post__card-wrapper">
         <div className="post__card-header">
@@ -57,9 +62,16 @@ const PostCard: FunctionComponent<PostProps> = ({ post }) => {
             allowFullScreen
           ></iframe>
         )}
-        <BtnLike post={post} />
+        <div className="post__card-footer">
+          <ButtonModal modalName="modal-comment-post" postId={post.id}>
+            <img src="/src/assets/icons/faMessage.svg" alt="icon comment" />
+          </ButtonModal>
+          <div>{post.commentsCount}</div>
+          <BtnLike post={post} />
+        </div>
       </div>
     </article>
+    </>
   );
 };
 
