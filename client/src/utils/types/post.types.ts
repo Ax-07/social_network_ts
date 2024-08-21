@@ -4,19 +4,19 @@ export interface PostTypes {
   content: string;
   media?: string | null;
   likers?: string[];
-  dislikers?: string[];
+  commentsCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface PostResponseTypes {
-  status: number;
+export interface PostResponseArray {
+  status: string;
   data: PostTypes[];
   message: string;
 }
 
 export interface PostResponse {
-  status: number;
+  status: string;
   data: PostTypes;
   message: string;
 }
