@@ -1,0 +1,5 @@
+.post-page {
+    @extend .home;
+    &__header {}
+    &__link {}
+}
