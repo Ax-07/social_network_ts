@@ -1,5 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import { useModal } from './useModal';
+import { useModal } from './hook/useModal';
 
 interface ModalProps extends PropsWithChildren<{
   modalName: string;
