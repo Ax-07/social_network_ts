@@ -1,37 +1,85 @@
-import { Request, Response } from 'express';
-import db from '../models';
-import { handleControllerError } from '../utils/errors/controllers.error';
-import validateCommentEntry from '../utils/functions/validateCommentEntry';
-import { apiError, apiSuccess } from '../utils/functions/apiResponses';
-
+import { Request, Response } from "express";
+import db from "../models";
+import { handleControllerError } from "../utils/errors/controllers.error";
+import validateCommentEntry from "../utils/functions/validateCommentEntry";
+import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const createComment = async (req: Request, res: Response) => {
-  const { postId, userId, content, commentedPostId } = req.body;
+  const postId = req.body.postId;
+  const commentId = req.body.commentId;
+  console.log("postId", postId, "commentId", commentId);
+
+  const { userId, content, commentedPostId } = req.body;
   const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
 
-  if (!postId || !userId || (!content && !media && !commentedPostId)) {
-    return apiError(res, 'Validation error', 'postId, userId, content, media, or commentedPostId is required', 400);
+  if (
+    (!postId && !commentId) ||
+    !userId ||
+    (!content && !media && !commentedPostId)
+  ) {
+    return apiError(
+      res,
+      "Validation error",
+      "postId, userId, content, media, or commentedPostId is required",
+      400
+    );
   }
 
-  const errors = validateCommentEntry({ postId, userId, content, media, commentedPostId });
+  const errors = validateCommentEntry({
+    postId,
+    commentId,
+    userId,
+    content,
+    media,
+    commentedPostId,
+  });
   if (errors.length > 0) {
-    return apiError(res, 'Validation error', errors, 400);
+    return apiError(res, "Validation error", errors, 400);
   }
+  console.log(errors);
   // Commencer une transaction
   const transaction = await db.sequelize.transaction();
   try {
-    // Créer le commentaire
-    const comment = await db.Comment.create(
-      { postId, userId, content, media, commentedPostId },
-      { transaction }
-    );
+    let comment;
+
+    if (postId && !commentId) {
+      console.log("postId is defined");
+      comment = await db.Comment.create(
+        { postId, userId, content, media, commentedPostId },
+        { transaction }
+      );
+      // Incrémenter le nombre de commentaires du post
+      const post = await db.Post.findByPk(postId, { transaction });
+      if (post) {
+        await post.increment("commentsCount", { by: 1, transaction });
+      }
+    } else if (commentId && !postId) {
+      // Vérifiez d'abord que le commentaire parent existe
+      const parentComment = await db.Comment.findByPk(commentId);
+      if (!parentComment) {
+        await transaction.rollback();
+        return apiError( res, "Validation error", "The specified parent comment does not exist", 400 );
+      }
+
+      comment = await db.Comment.create(
+        { commentId, userId, content, media, commentedPostId },
+        { transaction }
+      );
+      // Incrémenter le nombre de commentaires du commentaire parent
+      await parentComment.increment("commentsCount", { by: 1, transaction });
+      console.log("Comment created with commentId:", comment);
+    } else {
+      console.log("Neither postId nor commentId is properly defined.");
+    }
 
     // Mettre à jour le post partagé en ajoutant l'utilisateur aux reposters, s'il y a un commentedPostId
-    if (commentedPostId) {
-      const commentedPost = await db.Post.findByPk(commentedPostId, { transaction });
+    if (commentedPostId && postId) {
+      const commentedPost = await db.Post.findByPk(commentedPostId, {
+        transaction,
+      });
       if (!commentedPost) {
         await transaction.rollback();
-        return apiError(res, `The specified ${commentedPostId} post does not exist.`, 404);
+        return apiError( res, `The specified ${commentedPostId} post does not exist.`, 404 );
       }
       const reposters = commentedPost.reposters || [];
       if (!reposters.includes(userId)) {
@@ -42,74 +90,133 @@ const createComment = async (req: Request, res: Response) => {
     // Valider la transaction
     await transaction.commit();
 
-    return apiSuccess(res, 'Comment created successfully', comment, 201);
+    return apiSuccess(res, "Comment created successfully", comment, 201);
   } catch (error) {
     // Annuler la transaction en cas d'erreur
     await transaction.rollback();
-    return handleControllerError(res, error, 'An error occurred while creating the comment.');
+    return handleControllerError( res, error, "An error occurred while creating the comment." );
   }
 };
 
 const getAllComments = async (req: Request, res: Response) => {
   try {
     const comments = await db.Comment.findAll();
-    return apiSuccess(res, 'All comments', comments);
+    return apiSuccess(res, "All comments", comments);
   } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while getting all comments.');
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while getting all comments."
+    );
+  }
+};
+
+const getCommentsByPostId = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  console.log(postId);
+  if (!postId) {
+    return apiError(res, "Post ID is required", 400);
+  }
+  try {
+    const comments = await db.Comment.findAll({ where: { postId } });
+    return apiSuccess(res, `Comments for post ${postId}`, comments);
+  } catch (error) {
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while getting the comments."
+    );
+  }
+};
+
+const getCommentsByCommentId = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+  if (!commentId) {
+    return apiError(res, "Comment ID is required", 400);
+  }
+  try {
+    const comments = await db.Comment.findAll({ where: { commentId } });
+    return apiSuccess(res, `Comments for comment ${commentId}`, comments);
+  } catch (error) {
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while getting the comments."
+    );
   }
 };
 
 const getCommentById = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return apiError(res, 'Comment ID is required', 400);
+    return apiError(res, "Comment ID is required", 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      return apiError(res, 'Comment not found', 404);
+      return apiError(res, "Comment not found", 404);
     } else {
       return apiSuccess(res, `Comment ${commentId} found`, comment);
     }
   } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while getting the comment.');
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while getting the comment."
+    );
   }
 };
 
 const updateComment = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return apiError(res, 'Comment ID is required', 400);
+    return apiError(res, "Comment ID is required", 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      return apiError(res, 'Comment not found', 404);
+      return apiError(res, "Comment not found", 404);
     } else {
       await comment.update(req.body);
-      return apiSuccess(res, 'Comment updated successfully', comment);
+      return apiSuccess(res, "Comment updated successfully", comment);
     }
   } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while updating the comment.');
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while updating the comment."
+    );
   }
 };
 
 const deleteComment = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   if (!commentId) {
-    return apiError(res, 'Comment ID is required', 400);
+    return apiError(res, "Comment ID is required", 400);
   }
   try {
     const comment = await db.Comment.findByPk(commentId);
     if (comment === null) {
-      return apiError(res, 'Comment not found', 404);
+      return apiError(res, "Comment not found", 404);
     } else {
       await comment.destroy();
-      return apiSuccess(res, 'Comment deleted successfully');
+      return apiSuccess(res, "Comment deleted successfully");
     }
   } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while deleting the comment.');
+    return handleControllerError(
+      res,
+      error,
+      "An error occurred while deleting the comment."
+    );
   }
 };
 
-export { createComment, getAllComments, getCommentById, updateComment, deleteComment };
+export {
+  createComment,
+  getAllComments,
+  getCommentById,
+  updateComment,
+  deleteComment,
+  getCommentsByPostId,
+  getCommentsByCommentId,
+};
