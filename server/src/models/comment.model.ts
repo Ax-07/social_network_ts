@@ -3,12 +3,13 @@ import { Sequelize, DataTypes, Model, Optional } from "sequelize";
 
 interface CommentAttributes {
   id: number;
-  postId: string;
+  postId?: string;
+  commentId?: string;
   userId: string;
   content: string;
   media?: string;
-  likers?: string[];
-  dislikers?: string[];
+  commentsCount?: number;
+  likers?: string[] | [];
   commentedPostId?: string;
 }
 
@@ -20,9 +21,11 @@ class Comment
 {
   public id!: number;
   public postId!: string;
+  public commentId!: string;
   public userId!: string;
   public content!: string;
   public media!: string;
+  public commentsCount?: number;
   public likers!: string[];
   public dislikers!: string[];
   public commentedPostId!: string;
@@ -41,9 +44,17 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
       },
       postId: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "posts",
+          key: "id",
+        },
+      },
+      commentId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        references: {
+          model: "comments",
           key: "id",
         },
       },
@@ -63,15 +74,15 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      commentsCount: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
+      },
       likers: {
         type: DataTypes.JSON,
         allowNull: false,
-        defaultValue: 0,
-      },
-      dislikers: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: 0,
+        defaultValue: [],
       },
       commentedPostId: {
         type: DataTypes.UUID,
