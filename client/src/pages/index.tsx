@@ -7,9 +7,13 @@ import Lists from './lists/Lists';
 import Profile from './profile/Profile';
 import More from './more/More';
 import AuthPage from './auth/AuthPage';
+import PostPage from './post/PostPage';
+import CommentPage from './post/CommentPage';
 
 const Pages = {
   Home,
+  PostPage,
+  CommentPage,
   Explore,
   Notifications,
   Messages,
