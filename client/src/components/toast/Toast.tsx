@@ -55,22 +55,13 @@ const Toast: FunctionComponent<ToastType> = ({ type, message }) => {
 
   return (
     <div className="toast" style={{boxShadow: `3px 3px 10px ${color}`}}>
-      <div className={`toast__icon-wrapper toast__icon-wrapper-${name}`}>
-      </div>
-        <img
-          className="toast__icon"
-          src={icon}
-          alt={`icon ${name}`}
-        />
+      <div className={`toast__icon-wrapper toast__icon-wrapper-${name}`}></div>
+      <img className="toast__icon" src={icon} alt={`icon ${name}`} />
       <div className="toast__content">
         <h3 className="toast__title">{title}</h3>
         <p className="toast__message">{message}</p>
       </div>
-      <div
-        className="toast__progress"
-        style={{ background: `${color}` }}
-      ></div>
-    
+      <div className="toast__progress" style={{ background: `${color}` }}></div>
     </div>
   );
 };
