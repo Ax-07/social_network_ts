@@ -4,6 +4,7 @@ interface PostAttributes {
   id: string;
   userId: string;
   content?: string;
+  commentsCount?: number;
   media?: string | null;
   likers?: string[] | null; // Ajout du likerId pour les likes
   reposters?: string[] | null; // Ajout du rePosterId pour les reposts
@@ -17,6 +18,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public userId!: string;
   public content!: string;
   public media!: string | null;
+  public commentsCount!: number;
   public likers!: string[] | null;
   public reposters!: string[] | null;
   public originalPostId!: string | null;
@@ -48,6 +50,11 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
       media: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      commentsCount: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
       },
       likers: {
         type: DataTypes.JSON,
