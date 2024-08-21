@@ -21,6 +21,8 @@
     &-submit {
     }
     &-modal {
+        position: relative;
+        z-index: 1000;
         width: 100%;
         margin: 20px 0;
     }
