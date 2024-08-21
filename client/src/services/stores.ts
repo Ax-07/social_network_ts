@@ -6,6 +6,7 @@ import { postApi } from "./api/postApi";
 import { UserApi } from "./api/userApi";
 import { authApi } from "./auth/authApi";
 import { googleAuthApi } from "./auth/googleAuthApi";
+import { commentApi } from "./api/commentApi";
 import authSlice from "./auth/authSlice";
 import localStorage from "redux-persist/lib/storage";
 
@@ -23,12 +24,13 @@ const store = configureStore({
         [UserApi.reducerPath]: UserApi.reducer,
         [authApi.reducerPath]: authApi.reducer,
         [googleAuthApi.reducerPath]: googleAuthApi.reducer,
+        [commentApi.reducerPath]: commentApi.reducer,
         auth: persistedAuthSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,
-        }).concat(postApi.middleware, UserApi.middleware, authApi.middleware, googleAuthApi.middleware),
+        }).concat(postApi.middleware, UserApi.middleware, authApi.middleware, googleAuthApi.middleware, commentApi.middleware),
 });
 
 const persistor = persistStore(store);
