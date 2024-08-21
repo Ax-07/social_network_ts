@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../stores";
-import { PostResponse, PostResponseTypes, PostTypes } from "../../utils/types/post.types";
+import { PostResponse, PostResponseArray, PostTypes } from "../../utils/types/post.types";
+import { updatePostCacheAfterAdd, updatePostCacheAfterDelete, updatePostCacheAfterLike, updatePostCacheAfterRepost, updatePostCacheAfterUpdate } from "../utils/postApiHelpers";
 
 const localUrl = "http://localhost:8080/api";
 
@@ -18,7 +19,7 @@ export const postApi = createApi({
   }),
   tagTypes: ["Posts"],
   endpoints: (builder) => ({
-    getPosts: builder.query<PostResponseTypes, void>({
+    getPosts: builder.query<PostResponseArray, void>({
       query: () => "/posts",
       providesTags: (result) =>
         result && Array.isArray(result.data)
@@ -39,16 +40,7 @@ export const postApi = createApi({
         body: formData,
       }),
       onQueryStarted: async (_formData, { dispatch, queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(
-            postApi.util.updateQueryData('getPosts', undefined, (draftPosts) => {
-              draftPosts.data.unshift(data.data); // Ajouter le nouveau post en tête de la liste
-            })
-          );
-        } catch (error) {
-          console.error("Failed to update cache after adding post:", error);
-        }
+        updatePostCacheAfterAdd(dispatch, queryFulfilled);
       },
     }),
     updatePost: builder.mutation<PostTypes, { id: string; patch: Partial<PostTypes> }>({
@@ -57,14 +49,18 @@ export const postApi = createApi({
         method: "PATCH",
         body: patch,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: "Posts", id }],
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        updatePostCacheAfterUpdate(dispatch, id, queryFulfilled);
+      },
     }),
     deletePost: builder.mutation<{ success: boolean; id: string }, string>({
       query: (id) => ({
         url: `/posts/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (_result, _error, id) => [{ type: "Posts", id }],
+      onQueryStarted: async (id, { dispatch }) => {
+        updatePostCacheAfterDelete(dispatch, id);
+      }
     }),
     likePost: builder.mutation<PostResponse, { id: string; likerId: string }>({
       query: ({ id, likerId }) => ({
@@ -73,24 +69,7 @@ export const postApi = createApi({
         body: { postId: id, likerId },
       }),
       onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(
-            postApi.util.updateQueryData('getPostById', id, (draft) => {
-              draft.data.likers = data.data.likers;
-            })
-          );
-          dispatch(
-            postApi.util.updateQueryData('getPosts', undefined, (draftPosts) => {
-              const postToUpdate = draftPosts.data.find(post => post.id === id);
-              if (postToUpdate) {
-                postToUpdate.likers = data.data.likers;
-              }
-            })
-          );
-        } catch (error) {
-          console.error("Failed to update cache after liking post:", error);
-        }
+        updatePostCacheAfterLike(dispatch, id, queryFulfilled);
       },
     }),
     repost: builder.mutation<PostTypes, { id: string; reposterId: string }>({
@@ -99,7 +78,9 @@ export const postApi = createApi({
         method: "POST",
         body: { originalPostId: id, userId: reposterId },
       }),
-      invalidatesTags: [{ type: "Posts", id: "LIST" }],
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        updatePostCacheAfterRepost(dispatch, id, queryFulfilled);
+      },
     }),
   }),
 });
