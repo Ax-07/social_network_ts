@@ -6,8 +6,12 @@ interface CommentEntry extends Optional<CommentAttributes, "id"> {};
 const validateCommentEntry = (entry: CommentEntry) => {
     const errors: string[] = [];
 
-    if (entry.postId && (typeof entry.postId !== 'string' || entry.postId.length === 0)) {
+    if ((entry.postId && !entry.commentId) &&  (typeof entry.postId !== 'string' || entry.postId.length === 0)) {
         errors.push('PostId must be a non-empty string');
+    }
+
+    if ((entry.commentId && !entry.postId) && (typeof entry.commentId !== 'string' || entry.commentId.length === 0)) {
+        errors.push('CommentId must be a non-empty string');
     }
 
     if (entry.userId && (typeof entry.userId !== 'string' || entry.userId.length === 0)) {
