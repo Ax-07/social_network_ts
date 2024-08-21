@@ -42,6 +42,9 @@ db.Post.belongsTo(db.Post, { foreignKey: 'originalPostId', as: 'originalPost' })
 db.Post.hasMany(db.Comment, { foreignKey: 'commentedPostId', as: 'commentedPosts' });
 db.Comment.belongsTo(db.Post, { foreignKey: 'commentedPostId', as: 'commentedPost' });
 
+db.Comment.hasMany(db.Comment, { foreignKey: 'commentId', as: 'replies' });
+db.Comment.belongsTo(db.Comment, { foreignKey: 'commentId', as: 'comment' });
+
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
