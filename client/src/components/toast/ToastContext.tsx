@@ -15,7 +15,7 @@ export const ToastsProvider = ({ children }: PropsWithChildren) => {
     setToasts((prevToasts) => [...prevToasts, toast]);
     setTimeout(() => {
       setToasts((prevToasts) => prevToasts.filter((t) => t !== toast));
-    }, 5000);
+    }, 3000);
   }, []);
 
   // Mise à jour de la référence avec la fonction pushToast
