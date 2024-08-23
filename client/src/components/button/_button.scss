@@ -1,4 +1,23 @@
-.btn {
+// .btn {
+//     background-color: $color-primary;
+//     color: #fff;
+//     padding: 10px 20px;
+//     border: none;
+//     border-radius: 50px;
+//     cursor: pointer;
+//     font-size: 15px;
+//     font-weight: 600;
+//     transition: background-color 0.3s;
+//     &:hover {
+//         background-color: darken($color: $color-primary, $amount: 10%);
+//     }
+//     &:disabled {
+//         background-color: lighten($color: $color-primary, $amount: 30%);
+//         cursor: not-allowed;
+//     }
+// }
+
+.btn__post {
     background-color: $color-primary;
     color: #fff;
     padding: 10px 20px;
@@ -8,24 +27,25 @@
     font-size: 15px;
     font-weight: 600;
     transition: background-color 0.3s;
+
     &:hover {
         background-color: darken($color: $color-primary, $amount: 10%);
     }
+
     &:disabled {
         background-color: lighten($color: $color-primary, $amount: 30%);
         cursor: not-allowed;
     }
-}
 
-.btn__post {
-    &-submit {
-    }
+    &-submit {}
+
     &-modal {
         position: relative;
         z-index: 1000;
         width: 100%;
         margin: 20px 0;
     }
+
     @media (max-width: 1280px) {
         &-modal {
             @include flex(column, center, center);
@@ -33,13 +53,30 @@
             height: 40px;
             border-radius: 50%;
 
-            > img {
+            >img {
                 width: 20px;
                 height: 20px;
             }
 
 
         }
+    }
+}
+
+.btn__modal-comment {
+    background-color: transparent;
+    border: none;
+    @extend .row-10;
+    cursor: pointer;
+
+    & > img {
+        height: 15px;
+        aspect-ratio: 1/1;
+    }
+    & > p {
+        font-size: 13px;
+        line-height: 100%;
+        color: #fff;
     }
 }
 
