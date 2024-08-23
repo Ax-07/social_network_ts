@@ -12,7 +12,7 @@ const Button: FunctionComponent<ButtonProps> = (props) => {
     <button
       onClick={props.onClick}
       type={props.type}
-      className={`btn ${props.className}`}
+      className={`${props.className}`}
       disabled={props.disabled}
     >
       {props.children}
