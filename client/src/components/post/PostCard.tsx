@@ -4,7 +4,8 @@ import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { getTimeSinceCreation } from "../../utils/functions/formatedDate";
 import { Link, NavLink } from "react-router-dom";
 import { PostTypes } from "../../utils/types/post.types";
-import ButtonModal from "../modal/ButtonModal";
+import BtnRepost from "../btn-repost/BtnRepost";
+import BtnComment from "../btn-comment/BtnComment";
 
 export type PostProps = {
   post: PostTypes;
@@ -63,10 +64,8 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
           ></iframe>
         )}
         <div className="post__card-footer">
-          <ButtonModal modalName="modal-comment-post" postId={post.id}>
-            <img src="/src/assets/icons/faMessage.svg" alt="icon comment" />
-          </ButtonModal>
-          <div>{post.commentsCount}</div>
+          <BtnComment postId={post.id} commentsCount={post.commentsCount} />
+          <BtnRepost postId={post.id}/>
           <BtnLike post={post} />
         </div>
       </div>
