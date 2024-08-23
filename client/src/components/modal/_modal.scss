@@ -8,12 +8,13 @@
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 2;
   }
   
   .modal-content {
     @extend .background-blur;
     position: relative;
+    z-index: 3;
     border: none;
     padding: 0;
     background: rgba($color-primary, 0.1);
