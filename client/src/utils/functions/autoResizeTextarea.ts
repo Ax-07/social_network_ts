@@ -1,3 +1,8 @@
+/**
+ * 
+ * @param textarea 
+ * @description Fonction pour redimensionner automatiquement un textarea en fonction de son contenu
+ */
 const autoResizeTextarea = (textarea: HTMLTextAreaElement): void => {
     const lineHeight = 30; // Hauteur approximative d'une ligne (ajuster selon le CSS réel)
     
