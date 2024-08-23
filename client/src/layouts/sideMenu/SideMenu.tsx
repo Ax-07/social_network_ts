@@ -31,7 +31,9 @@ const SideMenu = () => {
             <MenuLink to="/lists" name="Lists" icon="/src/assets/icons/faListDots.svg" />
             <MenuLink to={`/profile/${userId}`} name="Profile" icon="/src/assets/icons/faUser.svg" />
             <MenuLink to="/more" name="More" icon="/src/assets/icons/faEllipsis.svg" />
-            <ButtonModal modalName={"Post"}>{isTablet ? <img src="/src/assets/icons/faPenToSquare.svg" alt="icon pen to square"/> : "Poster"}</ButtonModal>
+            <ButtonModal modalName={"modal-addPost"} className="btn__post btn__post-modal">
+              {isTablet ? <img src="/src/assets/icons/faPenToSquare.svg" alt="icon pen to square"/> : "Poster"}
+            </ButtonModal>
           </ul>
         </div>
         {isUserConnected ? (
