@@ -12,31 +12,11 @@ const createComment = async (req: Request, res: Response) => {
   const { userId, content, commentedPostId } = req.body;
   const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
 
-  if (
-    (!postId && !commentId) ||
-    !userId ||
-    (!content && !media && !commentedPostId)
-  ) {
-    return apiError(
-      res,
-      "Validation error",
-      "postId, userId, content, media, or commentedPostId is required",
-      400
-    );
-  }
-
-  const errors = validateCommentEntry({
-    postId,
-    commentId,
-    userId,
-    content,
-    media,
-    commentedPostId,
-  });
+  const errors = validateCommentEntry({postId, commentId, userId, content, media, commentedPostId});
   if (errors.length > 0) {
     return apiError(res, "Validation error", errors, 400);
   }
-  console.log(errors);
+
   // Commencer une transaction
   const transaction = await db.sequelize.transaction();
   try {
