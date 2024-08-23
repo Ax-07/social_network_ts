@@ -3,8 +3,9 @@ import { CommentTypes } from '../../utils/types/comment.types';
 import { useGetUserByIdQuery } from '../../services/api/userApi';
 import { getTimeSinceCreation } from '../../utils/functions/formatedDate';
 import { Link, NavLink } from 'react-router-dom';
-import ButtonModal from '../modal/ButtonModal';
 import BtnLike from '../btn-like/BtnLike';
+import BtnRepost from '../btn-repost/BtnRepost';
+import BtnComment from '../btn-comment/BtnComment';
 
 interface CommentCardProps {
     comment: CommentTypes;
@@ -13,6 +14,7 @@ interface CommentCardProps {
 
 const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => {
     const commenterId = comment.userId;
+    const postId = comment.postId; console.log('postId', postId);
     const commenter = useGetUserByIdQuery(commenterId);
     const isWebp = comment.media?.endsWith(".webp");
     const isMp4 = comment.media?.endsWith(".mp4");
@@ -61,10 +63,8 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => 
           ></iframe>
         )}
         <div className="post__card-footer">
-          <ButtonModal modalName="modal-comment-comment" commentId={comment.id}>
-            <img src="/src/assets/icons/faMessage.svg" alt="icon comment" />
-          </ButtonModal>
-          <div>{comment.commentsCount}</div>
+          <BtnComment commentId={comment.id} commentsCount={comment.commentsCount} />
+          <BtnRepost commentId={comment.id}/>
           <BtnLike comment={comment} />
         </div>
       </div>
