@@ -1,35 +1,80 @@
-import { FunctionComponent } from 'react';
-import { useLikePostMutation } from '../../services/api/postApi';
-import { PostTypes } from '../../utils/types/post.types';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../services/stores';
-import { usePushToast } from '../toast/Toasts';
-import { ApiError } from '../../utils/types/api.types';
+import { FunctionComponent, useState } from "react";
+import { useLikePostMutation } from "../../services/api/postApi";
+import { PostTypes } from "../../utils/types/post.types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../services/stores";
+import { usePushToast } from "../toast/Toasts";
+import { ApiError } from "../../utils/types/api.types";
+import { CommentTypes } from "../../utils/types/comment.types";
+import { useLikeCommentMutation } from "../../services/api/commentApi";
 
 interface BtnLikeProps {
-  post: PostTypes;
+  post?: PostTypes;
+  comment?: CommentTypes;
 }
 
-const BtnLike: FunctionComponent<BtnLikeProps> = ({ post }) => {
+const BtnLike: FunctionComponent<BtnLikeProps> = ({ post, comment }) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [likePost] = useLikePostMutation();
-  const postId = post.id;
+  const [likeComment] = useLikeCommentMutation();
+  const postId = post?.id;
+  const commentId = comment?.id;
+  const commentedPostId = comment?.postId;
+  const commentedCommentId = comment?.commentId;
+  const postLikers = Array.isArray(post?.likers) ? post?.likers : [];  // S'assurer que c'est un tableau
+  const commentLikers = Array.isArray(comment?.likers) ? comment?.likers : [];  // S'assurer que c'est un tableau
   const pushToast = usePushToast();
+
+  const [isPostLiked, setIsPostLiked] = useState(postLikers.includes(userId ?? ""));
+  const [isCommentLiked, setIsCommentLiked] = useState(commentLikers.includes(userId ?? ""));
 
   const handleLike = async () => {
     try {
-      const response = await likePost({ id: postId, likerId: userId ?? '' }).unwrap();
-      pushToast({ type: 'success', message: response.message });
+      if (!userId) {
+        pushToast({ type: "error", message: "Vous devez être connecté pour aimer un post" });
+        return;
+      }
+      let response;
+      if(postId) {
+      response = await likePost({
+        id: postId ?? "",
+        likerId: userId ?? "",
+      }).unwrap();
+      setIsPostLiked((prev) => !prev);
+    } else if (commentId) {
+      response = await likeComment({
+        id: comment?.id ?? "",
+        likerId: userId ?? "",
+        commentedPostId: commentedPostId ?? "",
+        commentedCommentId: commentedCommentId ?? "",
+      }).unwrap();
+      setIsCommentLiked((prev) => !prev);
+    }
+      pushToast({ type: "success", message: response?.message || "" });
     } catch (error) {
-      pushToast({ type: 'error', message: (error as ApiError).data.message });
+      pushToast({ type: "error", message: (error as ApiError).data.message });
       console.error(error);
     }
   };
 
+  const uniqueId = postId ? `post-like-${postId}` : `comment-like-${commentId}`;
+
+
   return (
-    <div>
-      <button onClick={handleLike}>Like</button>
-      <p>{post.likers?.length || 0}</p>
+    <div className="row-10">
+      <div className="btn__like">
+        <input
+          type="checkbox"
+          id={uniqueId}
+          className="btn__like-checkbox"
+          checked={post ? isPostLiked : isCommentLiked}
+          onChange={handleLike}
+        />
+        <label htmlFor={uniqueId} className="btn__like-label">
+          <span className="btn__like-icon"></span>
+        </label>
+      </div>
+      <p>{post ? post?.likers?.length || 0 : comment?.likers?.length || 0}</p>
     </div>
   );
 };
