@@ -2,6 +2,7 @@ import React, { createContext, useState, useCallback, useEffect, useRef, ReactNo
 import { useSelector } from "react-redux";
 import { RootState } from "../../../services/stores";
 import { FormState } from "../../../utils/types/form.types";
+import { PostFormOrigin } from "../PostForm";
 
 export interface PostFormContextType {
   origin: string;
@@ -20,7 +21,7 @@ export interface PostFormContextType {
 }
 
 interface PostFormProviderProps {
-  origin: string;
+  origin: PostFormOrigin;
   children: ReactNode;
 }
 
@@ -76,18 +77,21 @@ export const PostFormProvider = ({ origin, children }: PostFormProviderProps) =>
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const content = e.target.value;
       setForm((prevForm) => ({ ...prevForm, content }));
+      const file = form.file; console.log("file", file);
 
       if (content.includes("youtube.com") || content.includes("youtu.be")) {
         const youtubeUrl = embedYoutube(content);
         setPreview(youtubeUrl);
         setForm((prevForm) => ({ ...prevForm, file: youtubeUrl }));
         setMimetype("video/youtube");
-      } else {
+      } 
+      else if ((!content.includes("youtube.com") || !content.includes("youtu.be")) && file.toString().includes("youtube.com") || file.toString().includes("youtu.be")) {
+        setForm((prevForm) => ({ ...prevForm, file: "" }));
         setPreview("");
         setMimetype("");
       }
     },
-    []
+    [form]
   );
 
     return (
