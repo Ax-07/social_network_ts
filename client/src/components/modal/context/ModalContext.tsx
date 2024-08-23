@@ -20,10 +20,10 @@ export const ModalContext = createContext<ModalContextType | undefined>(undefine
 
 export const ModalProvider = ({ children }: { children: ReactNode }
 ) => {
-  const [ modalName, setModalName ] = useState<string>(''); console.log('modalName', modalName);
-  const [modals, setModals] = useState<ModalState>({}); console.log('modals', modals);
-  const [postId, setPostId] = useState<string>(''); console.log('postId', postId);
-  const [commentId, setCommentId] = useState<string>(''); console.log('commentId', commentId);
+  const [ modalName, setModalName ] = useState<string>('');
+  const [modals, setModals] = useState<ModalState>({});
+  const [postId, setPostId] = useState<string>('');
+  const [commentId, setCommentId] = useState<string>('');
   const openModal = (modalName: string) => setModals(prev => ({ ...prev, [modalName]: true }));
   const closeModal = (modalName: string) => setModals(prev => ({ ...prev, [modalName]: false }));
 
