@@ -1,6 +1,7 @@
 export interface CommentTypes {
   id: string;
   postId: string;
+  commentId: string;
   userId: string;
   content: string;
   media?: string | null;
