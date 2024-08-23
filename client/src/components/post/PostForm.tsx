@@ -6,9 +6,10 @@ import Button from '../button/Button';
 import InputPicture from '../addPicture/InputPicure';
 import { usePostFormContext } from './hooks/usePostFormContext';
 
+
 interface PostFormProps extends PropsWithChildren <{
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-    origin: "modal-addPost" | "modal-comment" | "page-home" | "post-page-comment" | "comment-page-comment" | "post-list" | "modal-comment-post" | "modal-comment-comment";
+    origin: PostFormOrigin;
 }> {}
 
 const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) => {
@@ -21,51 +22,7 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
         handleFileChange, 
      } = usePostFormContext();
 
-     console.log("origin", origin);
-
-     let buttonText = "";
-     switch (origin) {
-       case "modal-addPost":
-         buttonText = "Poster";
-         break;
-       case "modal-comment":
-         buttonText = "Commenter";
-         break;
-       case "page-home":
-         buttonText = "Publier";
-         break;
-       case "post-page-comment":
-         buttonText = "Répondre";
-         break;
-        case "comment-page-comment":
-          buttonText = "Répondre";
-          break;
-       default:
-         buttonText = "Publier";
-         break;
-     }
-     
-     let placeholder = "";
-      switch (origin) {
-        case "modal-addPost":
-          placeholder = "Quoi de neuf ?";
-          break;
-        case "modal-comment":
-          placeholder = "Ajouter un commentaire...";
-          break;
-        case "page-home":
-          placeholder = "Quoi de neuf ?";
-          break;
-        case "post-page-comment":
-          placeholder = "Ajouter un commentaire...";
-          break;
-        case "comment-page-comment":
-          placeholder = "Ajouter un commentaire...";
-          break
-        default:
-          placeholder = "Quoi de neuf ?";
-          break;
-      }
+    const { buttonText, placeholder } = switchOrigin(origin);
 
      return (
         <div className={`addpost addpost--${origin}`}>
@@ -107,7 +64,7 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
               <InputPicture setMedia={handleFileChange} inputRef={inputFileRef} />
               <Button
                 type="submit"
-                className="btn__post-submit"
+                className="btn__post btn__post-submit"
                 disabled={!isValidForm}  // Utilisation de isValidForm pour désactiver le bouton
               >
                 {buttonText}
@@ -119,3 +76,67 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
 };
 
 export default PostForm;
+
+/**
+ * @description Type pour définir l'origine du formulaire de publication
+ */
+export type PostFormOrigin = 
+  | "modal-addPost" // Ajout de publication via le modal
+  | "modal-comment" // Ajout de commentaire via le modal
+  | "modal-comment-post" // Ajout de commentaire a un post via le boutton addComment de postCard
+  | "modal-comment-comment" // Ajout de commentaire a un commentaire via le boutton addComment de commentCard
+  | "page-home" // Ajout de publication via la page d'accueil
+  | "post-page-comment" // Ajout de commentaire via la page d'un post
+  | "comment-page-comment" // Ajout de commentaire via la page d'un commentaire
+  | "post-list" // Ajout de publication via la liste des publications ( a verifier l'utilité )
+  | "btn-repost" // Repost d'une publication
+  | "btn-repost-with-comment"; // Repost d'une publication avec commentaire
+
+/**
+ * @description Fonction pour changer le texte du bouton et le placeholder du textarea, en fonction de l'origine du formulaire
+ * @param origin 
+ * @returns buttonText et placeholder
+ * 
+ */
+const switchOrigin = (origin: PostFormOrigin) => {
+  let buttonText = "";
+  let placeholder = "";
+
+  switch (origin) {
+    case "modal-addPost":
+      buttonText = "Poster";
+      placeholder = "Quoi de neuf ?";
+      break;
+    case "modal-comment":
+      buttonText = "Commenter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "modal-comment-post":
+      buttonText = "Commenter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "modal-comment-comment":
+      buttonText = "Commenter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "page-home":
+      buttonText = "Publier";
+      placeholder = "Quoi de neuf ?";
+      break;
+    case "post-page-comment":
+      buttonText = "Répondre";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "comment-page-comment":
+      buttonText = "Répondre";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    default:
+      buttonText = "Publier";
+      placeholder = "Quoi de neuf ?";
+      break;
+  }
+
+  return { buttonText, placeholder };
+};
+  
