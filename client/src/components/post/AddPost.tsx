@@ -1,11 +1,11 @@
 import { useAddPostMutation } from "../../services/api/postApi";
 import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
-import PostForm from "./PostForm";
+import PostForm, { PostFormOrigin } from "./PostForm";
 import { usePostFormContext } from "./hooks/usePostFormContext";
 
 interface AddPostProps {
-  origin: "modal-addPost" | "modal-comment" | "page-home" | "post-page-comment" | "comment-page-comment";
+  origin: PostFormOrigin;
   onClose?: () => void;
 }
 
@@ -40,7 +40,6 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
       onClose && onClose();
     }
   };
-console.log("AddPost", {isValidForm});  // Affiche bien isValidForm
   if (isLoading) return <p>Publication en cours...</p>;
   
   return <PostForm handleSubmit={handleSubmit} origin={origin} />
