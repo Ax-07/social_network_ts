@@ -74,7 +74,8 @@ const BtnLike: FunctionComponent<BtnLikeProps> = ({ post, comment }) => {
           <span className="btn__like-icon"></span>
         </label>
       </div>
-      <p>{post ? post?.likers?.length || 0 : comment?.likers?.length || 0}</p>
+      { post && <span className="btn__like-count">{postLikers.length}</span> }
+      { comment && <span className="btn__like-count">{commentLikers.length}</span> }
     </div>
   );
 };
