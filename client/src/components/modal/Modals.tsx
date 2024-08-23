@@ -29,6 +29,10 @@ const Modals: FunctionComponent<ModalsProps> = () => {
                     <AddComment origin="modal-comment-comment" onClose={() => closeModal("modal-comment-comment")}/>
                   </Modal>
                 </PostFormProvider>
+                <Modal modalName='btn-repost'>
+                  {/* Ici on rend simplement une div pour que le portail du repost puisse s'y attacher */}
+                  <div id="btn-repost-modal"></div>
+                </Modal>
               </>
             )}
         </>
