@@ -30,6 +30,10 @@ const validateCommentEntry = (entry: CommentEntry) => {
         errors.push('CommentedPostId must be a non-empty string');
     }
 
+    if (entry.commentedCommentId && (typeof entry.commentedCommentId !== 'string' || entry.commentedCommentId.length === 0)) {
+        errors.push('CommentedCommentId must be a non-empty string');
+    }
+
     return errors;
 }
 
