@@ -4,6 +4,7 @@ import { postApi } from "../api/postApi"; // Ajustez le chemin d'importation sel
 export const updatePostCacheAfterAdd = async ( dispatch: any, queryFulfilled: any ) => {
   try {
     const { data } = await queryFulfilled;
+    // Mettre à jour le cache pour afficher le post ajouté dans la liste des posts
     dispatch(
       postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
         draftPosts.data.unshift(data.data); // Ajouter le nouveau post en tête de la liste
@@ -55,17 +56,23 @@ export const updatePostCacheAfterLike = async ( dispatch: any, id: string, query
     const { data } = await queryFulfilled;
     dispatch(
       postApi.util.updateQueryData("getPostById", id, (draft) => {
-        draft.data.likers = data.data.likers;
+        const postUpdated = draft.data;
+        if (postUpdated) {
+          postUpdated.likers = data.data.likers;
+        }
       })
     );
     dispatch(
       postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
         const postToUpdate = draftPosts.data.find((post) => post.id === id);
         if (postToUpdate) {
-          postToUpdate.likers = data.data.likers;
+          postToUpdate.likers = data.data.likers; // Update likers directly here
+        } else {
+          console.log("Post not found in draftPosts");
         }
       })
     );
+    
   } catch (error) {
     console.error("Failed to update cache after liking post:", error);
   }
