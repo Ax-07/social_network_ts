@@ -3,7 +3,7 @@ export interface PostTypes {
   userId: string;
   content: string;
   media?: string | null;
-  likers?: string[];
+  likers?: string[] | [];
   commentsCount?: number;
   createdAt?: string;
   updatedAt?: string;
