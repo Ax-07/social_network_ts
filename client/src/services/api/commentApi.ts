@@ -1,11 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../stores";
 import { CommentTypes, CommentResponseArray, CommentResponse } from "../../utils/types/comment.types";
-import { updateCommentsCacheAfterAdd, updateCommentsCacheAfterDelete, updateCommentsCacheAfterUpdate } from "../utils/commentApiHelper";
+import { updateCommentsCacheAfterAdd, updateCommentsCacheAfterDelete, updateCommentsCacheAfterLike, updateCommentsCacheAfterUpdate } from "../utils/commentApiHelper";
 
-interface AddCommentArgs {
+export interface AddCommentArgs {
     formData: FormData;
     origin: string;
+    commentedPostId?: string; // Ajoutez cette ligne
+    commentedCommentId?: string; // Ajoutez cette ligne
 }
 
 const localUrl = "http://localhost:8080/api";
@@ -48,8 +50,8 @@ export const commentApi = createApi({
                 method: "POST",
                 body: formData,
             }),
-            onQueryStarted: async ({origin}, { dispatch, queryFulfilled }) => {
-                updateCommentsCacheAfterAdd(dispatch, queryFulfilled, origin);
+            onQueryStarted: async ({ origin, commentedPostId, commentedCommentId }, { dispatch, queryFulfilled }) => {
+                updateCommentsCacheAfterAdd(dispatch, queryFulfilled, origin, commentedPostId ?? "", commentedCommentId ?? "");
             }
         }),
         updateComment: builder.mutation<CommentTypes, { id: string; patch: Partial<CommentTypes> }>({
@@ -71,14 +73,14 @@ export const commentApi = createApi({
                 updateCommentsCacheAfterDelete(dispatch, id);
             },
         }),
-        likeComment: builder.mutation<CommentResponse, { id: string; likerId: string }>({
+        likeComment: builder.mutation<CommentResponse, { id: string; likerId: string; commentedPostId: string, commentedCommentId: string }>({
             query: ({ id, likerId }) => ({
                 url: `/like-comment`,
                 method: "PATCH",
                 body: { commentId: id, likerId },
             }),
-            onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
-                updateCommentsCacheAfterUpdate(dispatch, id, queryFulfilled);
+            onQueryStarted: async ({ id, commentedPostId, commentedCommentId  }, { dispatch, queryFulfilled}) => {
+                updateCommentsCacheAfterLike(dispatch, id, queryFulfilled, commentedPostId, commentedCommentId);
             },
         }),
     }),
