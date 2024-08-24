@@ -9,10 +9,10 @@ const createComment = async (req: Request, res: Response) => {
   const commentId = req.body.commentId;
   console.log("postId", postId, "commentId", commentId);
 
-  const { userId, content, commentedPostId } = req.body;
+  const { userId, content, commentedPostId, commentedCommentId } = req.body;
   const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
 
-  const errors = validateCommentEntry({postId, commentId, userId, content, media, commentedPostId});
+  const errors = validateCommentEntry({postId, commentId, userId, content, media, commentedPostId, commentedCommentId});
   if (errors.length > 0) {
     return apiError(res, "Validation error", errors, 400);
   }
@@ -25,7 +25,7 @@ const createComment = async (req: Request, res: Response) => {
     if (postId && !commentId) {
       console.log("postId is defined");
       comment = await db.Comment.create(
-        { postId, userId, content, media, commentedPostId },
+        { postId, userId, content, media, commentedPostId, commentedCommentId },
         { transaction }
       );
       // Incrémenter le nombre de commentaires du post
