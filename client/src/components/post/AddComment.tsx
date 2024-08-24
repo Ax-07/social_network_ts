@@ -16,12 +16,11 @@ interface AddCommentProps{
 const AddComment = ({ origin, onClose }: AddCommentProps) => {
   const postIdFromParams = useParams<{ id: string }>().id;
   const commentIdFromParams = useParams<{ id: string }>().id;
-  const { postId, commentId } = useModal();
+  const { postId, commentId, commentedPostId, commentedCommentId } = useModal();
   const userId = useSelector((state: RootState) => state.auth.user?.id);
   const postForm = usePostFormContext();
   const [addComment, { isLoading }] = useAddCommentMutation();
   const pushToast = usePushToast();
-console.log('origin', origin);
 
   let formKey;
   let id;
@@ -67,7 +66,7 @@ console.log('origin', origin);
         formData.append("media", postForm.form.file as Blob);
       }
 
-      const response = await addComment({formData: formData , origin}).unwrap();
+      const response = await addComment({formData: formData , origin, commentedPostId: commentedPostId, commentedCommentId: commentedCommentId}).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
       pushToast({ message: (error as ApiError).data.message, type: "error" });
