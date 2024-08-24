@@ -14,7 +14,7 @@ export type PostProps = {
 
 const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const posterId = post.userId;
-  const poster = useGetUserByIdQuery(posterId);
+  const { data: { data: poster } = {} } = useGetUserByIdQuery(posterId);
   const isWebp = post.media?.endsWith(".webp");
   const isMp4 = post.media?.endsWith(".mp4");
   const isYoutubeVideo = post.media?.includes("youtube.com");
@@ -29,7 +29,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
         <Link to={`/profile/${posterId}`}>
         <img
           className="userprofile__picture"
-          src={poster.data?.profilPicture ? poster.data?.profilPicture : "/images/Default-user-picture.png"}
+          src={poster?.profilPicture ? poster?.profilPicture : "/images/Default-user-picture.png"}
           alt="User Profile Thumbnail"
           loading="lazy"
         />
@@ -37,8 +37,8 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
       </div>
       <div className="post__card-wrapper">
         <div className="post__card-header">
-          <h3 className="post__card-username fs-16-700">{poster.data?.username}</h3>
-          <p className="post__card-handle fs-15-400">{poster.data?.handle}</p>
+            <h3 className="post__card-username fs-16-700">{poster?.username}</h3>
+            <p className="post__card-handle fs-15-400">{poster?.handle}</p>
           <p className="post__card-date fs-15-400">{timeSinceCreation}</p>
         </div>
         <p className="post__card-content">{post.content}</p>
