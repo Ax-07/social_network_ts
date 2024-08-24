@@ -6,8 +6,8 @@ import CommentList from "../../components/post/CommentList";
 import { PostFormProvider } from "../../components/post/context/postFormContext";
 
 const CommentPage = () => {
-    const { id } = useParams<{ id: string }>(); console.log(id);
-    const { data: comment, error, isLoading } = useGetCommentByIdQuery(id as string); console.log(comment);
+    const { id } = useParams<{ id: string }>();
+    const { data: comment, error, isLoading } = useGetCommentByIdQuery(id as string);
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {(error as Error).message}</div>;
