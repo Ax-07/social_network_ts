@@ -11,6 +11,7 @@ interface CommentAttributes {
   commentsCount?: number;
   likers?: string[] | [];
   commentedPostId?: string;
+  commentedCommentId?: string;
 }
 
 interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> {}
@@ -29,6 +30,7 @@ class Comment
   public likers!: string[];
   public dislikers!: string[];
   public commentedPostId!: string;
+  public commentedCommentId!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -89,6 +91,14 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         allowNull: true,
         references: {
           model: "posts",
+          key: "id",
+        },
+      },
+      commentedCommentId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "comments",
           key: "id",
         },
       },
