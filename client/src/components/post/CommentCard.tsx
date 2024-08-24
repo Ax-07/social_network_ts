@@ -14,12 +14,13 @@ interface CommentCardProps {
 
 const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => {
     const commenterId = comment.userId;
-    const postId = comment.postId; console.log('postId', postId);
-    const commenter = useGetUserByIdQuery(commenterId);
+    const commentsCount = comment.commentsCount;
+    const { data: { data: commenter } = {} } = useGetUserByIdQuery(commenterId);
     const isWebp = comment.media?.endsWith(".webp");
     const isMp4 = comment.media?.endsWith(".mp4");
     const isYoutubeVideo = comment.media?.includes("youtube.com");
     const timeSinceCreation = getTimeSinceCreation(comment.createdAt as string);
+    
   return (
     <>
       {origin != "comment-page" && <NavLink to={`/home/comment/${comment.id}`} className="post__card-link"></NavLink>}
@@ -28,7 +29,7 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => 
         <Link to={`/profile/${commenterId}`}>
         <img
           className="userprofile__picture"
-          src={commenter.data?.profilPicture ? commenter.data?.profilPicture : "/images/Default-user-picture.png"}
+          src={commenter?.profilPicture ? commenter?.profilPicture : "/images/Default-user-picture.png"}
           alt="User Profile Thumbnail"
           loading="lazy"
         />
@@ -36,8 +37,8 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => 
       </div>
       <div className="post__card-wrapper">
         <div className="post__card-header">
-          <h3 className="post__card-username fs-16-700">{commenter.data?.username}</h3>
-          <p className="post__card-handle fs-15-400">{commenter.data?.handle}</p>
+          <h3 className="post__card-username fs-16-700">{commenter?.username}</h3>
+          <p className="post__card-handle fs-15-400">{commenter?.handle}</p>
           <p className="post__card-date fs-15-400">{timeSinceCreation}</p>
         </div>
         <p className="post__card-content">{comment.content}</p>
@@ -63,7 +64,10 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({comment, origin}) => 
           ></iframe>
         )}
         <div className="post__card-footer">
-          <BtnComment commentId={comment.id} commentsCount={comment.commentsCount} />
+          <BtnComment 
+            commentId={comment.id} 
+            commentsCount={commentsCount}
+          />
           <BtnRepost commentId={comment.id}/>
           <BtnLike comment={comment} />
         </div>
