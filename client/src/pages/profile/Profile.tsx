@@ -2,10 +2,11 @@ import TabList from "../../components/tabList/TabList";
 import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
+import { getFormattedDate } from "../../utils/functions/formatedDate";
 
 const Profile = () => {
   const params = useParams<{ id: string }>();
-  const { data: user } = useGetUserByIdQuery(params.id || "");
+  const { data: { data: user } = {} } = useGetUserByIdQuery(params.id || "");
   return (
     <div className="profile">
       <header className="profile__header">
@@ -35,7 +36,7 @@ const Profile = () => {
         </div>
         <div className="profile__info-body-row">
           <h3 className="fs-20-700">{user?.birthdate?.toString()}</h3>
-          <p className="fs-15-600">Membre depuis {user?.createdAt?.toString()}</p>
+          <p className="fs-15-600">Membre depuis {getFormattedDate(user?.createdAt?.toString() ?? '')}</p>
         </div>
         <div className="profile__info-follow">
             <div className="profile__info-follow-row">
