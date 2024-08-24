@@ -2,10 +2,12 @@ export interface CommentTypes {
   id: string;
   postId: string;
   commentId: string;
+  commentedPostId?: string | null;
+  CommentedCommentId?: string | null;
   userId: string;
   content: string;
   media?: string | null;
-  likers?: string[];
+  likers?: string[] | [];
   commentsCount?: number;
   createdAt?: string;
   updatedAt?: string;
