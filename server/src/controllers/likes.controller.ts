@@ -62,12 +62,12 @@ const likeComment = async (req: Request, res: Response) => {
             // Retirer le like
             likers = comment.likers.filter(id => id !== likerId);
             await comment.update({ likers: likers });
-            return apiSuccess(res, 'Comment unliked successfully', likers);
+            return apiSuccess(res, 'Comment unliked successfully', {likers: likers}, 200);
         } else {
             // Ajouter le like
             likers = [...(comment.likers || []), likerId];
             await comment.update({ likers: likers });
-            return apiSuccess(res, 'Comment liked successfully', likers);
+            return apiSuccess(res, 'Comment liked successfully', {likers: likers}, 200);
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while liking the comment.');
