@@ -5,9 +5,9 @@ import bcrypt from "bcrypt";
 interface UserAttributes {
   id: string; // Identifiant unique de l'utilisateur
   googleId?: string; // Identifiant Google pour l'authentification OAuth
-  username: string; // Nom d'utilisateur
+  username?: string; // Nom d'utilisateur
   handle?: string; // Nom d'utilisateur unique
-  email?: string; // Adresse e-mail
+  email: string; // Adresse e-mail
   password: string; // Mot de passe haché
   profilPicture?: string; // Image de profil
   coverPicture?: string; // Image de couverture
@@ -69,7 +69,7 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
       },
       username: {
         type: DataTypes.STRING, // Type de donnée pour le nom d'utilisateur
-        allowNull: false, // Champ obligatoire
+        allowNull: true, // Champ obligatoire
         unique: true, // Valeur unique
       },
       handle: {
