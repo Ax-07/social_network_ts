@@ -1,65 +1,36 @@
-import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../../services/auth/authApi";
+import { useState } from "react";
 import GoogleAuthBtn from "../../components/google-auth-btn/GoogleAuthBtn";
-import { loginSuccess } from "../../services/auth/authSlice";
-
-interface Error {
-  data: {
-    error: string;
-  };
-}
+import Login from "./Login";
+import Register from "./Register";
 
 const AuthPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const loginFormData = useRef<HTMLFormElement>(null);
-  const [login] = useLoginMutation();
-  const [error, setError] = useState<string | null>(null);
-
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null); // Réinitialise l'erreur à chaque tentative de connexion
-
-    try {
-      const response = await login({
-        email: loginFormData.current?.email.value,
-        password: loginFormData.current?.password.value,
-      }).unwrap(); // Utilisation de unwrap pour obtenir la réponse directement ou lancer une erreur
-      const data = response.data;
-      dispatch(loginSuccess({ user: data.user, token: data.token }));
-    } catch (err) {
-      setError((err as Error).data.error);
-    } finally {
-      navigate("/");
-    }
+  const [isLogin, setIsLogin] = useState(true);
+  const handleTabChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLogin(event.target.value === 'login');
   };
-
   return (
-    <div>
-      <h1>Auth Page</h1>
+    <div className="auth-page">
+      <div className="auth-page__container">
+      <div className="controls">
+        <div className="tabs">
+          <input className="sr-only" type="radio" name="tabs" id="login" value={'login'} checked={isLogin} onChange={handleTabChange}/>
+          <label htmlFor="login">Login</label>
+          <input  className="sr-only" type="radio" name="tabs" id="register" value={'register'} checked={!isLogin} onChange={handleTabChange}/>
+          <label htmlFor="register">Register</label>
+          <div className="tabs__indicator">
+            <div className="tabs__track">
+              <label htmlFor="login" className="tabs__label">Login</label>
+              <label htmlFor="register" className="tabs__label">Register</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isLogin ? <Login /> : <Register />}
+      <div className="auth-page__line">
+        <hr /><p>ou</p><hr />
+      </div>
       <GoogleAuthBtn />
-      <form ref={loginFormData} onSubmit={handleLogin}>
-        <span className="error" color="red">
-          {error}
-        </span>
-        <div className="input-wrapper">
-          <label htmlFor="email">Username</label>
-          <input type="email" id="email" name="email" />
-        </div>
-        <div className="input-wrapper">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" name="password" />
-        </div>
-        <div className="input-remember">
-          <input type="checkbox" id="remember-me" name="remember-me" />
-          <label htmlFor="remember-me">Remember me</label>
-        </div>
-        <button type="submit" className="sign-in-button">
-          Sign In
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
