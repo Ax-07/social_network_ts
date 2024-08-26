@@ -4,14 +4,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../../services/auth/authApi";
 import { loginSuccess } from "../../services/auth/authSlice";
+import { ApiError } from "../../utils/types/api.types";
 
 interface RegisterProps {}
 
-interface Error {
-  data: {
-    error: string;
-  };
-}
 const Register: FunctionComponent<RegisterProps> = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,10 +32,9 @@ const Register: FunctionComponent<RegisterProps> = () => {
           refreshToken: "",
         })
       );
-    } catch (err) {
-      setError((err as Error).data.error);
-    } finally {
       navigate("/");
+    } catch (err) {
+      setError((err as ApiError).data.message);
     }
   };
   return (
