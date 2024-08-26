@@ -10,6 +10,7 @@ import commentRoutes from "./routes/comment.routes";
 import likeRoutes from "./routes/likes.routes";
 import msgRoutes from "./routes/messenging.routes";
 import authRoutes from "./routes/auth.routes";
+import followRoutes from "./routes/follow.routes";
 import db from "./models";
 import { configureSocket } from "./services/webSocket";
 import serverError from "./utils/errors/server.error";
@@ -40,6 +41,7 @@ app.use("/api", postRoutes);
 app.use("/api", commentRoutes);
 app.use('/api', likeRoutes);
 app.use('/api', msgRoutes);
+app.use('/api', followRoutes);
 
 app.use(serverError);
 
