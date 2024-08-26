@@ -1,6 +1,7 @@
 export interface ApiError {
-    status: number;
     data: {
+        status: number;
         message: string;
+        error: number;
     }
 }
