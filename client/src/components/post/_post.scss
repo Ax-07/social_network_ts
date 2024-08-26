@@ -11,70 +11,105 @@
         width: 100%;
     }
 
-    &__card {
-        position: relative;
-        @include flex(row, flex-start, flex-start);
-        padding: 12px 10px;
-        border-bottom: $color-light 1px solid;
-        width: 100%;
 
-        &-link {
-            position: absolute;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        &-user {
-            width: 48px;
-            height: 48px;
-            margin-right: 8px;
-            // background-color: $color-light;
-
-            &>img {
-                width: 100%;
-                border-radius: 50%;
-            }
-        }
-
-        &-header {
-            @include flex(row, flex-start, center, 10px);
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        &-wrapper {
-            @include flex(column, flex-start, flex-start);
-            border-radius: 14px;
-            flex: 1;
-
-            &>img,
-            video {
-                max-width: 516px;
-                width: 100%;
-                object-fit: cover;
-                border-radius: 14px;
-                border: 1px solid $color-light;
-            }
-        }
-
-        &-content {
-            @extend .fs-15-600;
-            word-break: break-word;
-        }
-
-        &-footer {
-            position: relative;
-            z-index: 5;
-            @include flex(row, flex-start, center, 10px);
-            width: 100%;
-            margin-top: 10px;
-        }
-    }
 
     &::-webkit-scrollbar {
         display: none;
     }
+}
+
+.post-card {
+    position: relative;
+    @include flex(row, flex-start, flex-start);
+    padding: 12px 10px;
+    border-bottom: $color-light 1px solid;
+    width: 100%;
+
+    &__link {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__user {
+        position: relative;
+        z-index: 3;
+        width: 48px;
+        height: 48px;
+        margin-right: 8px;
+        // background-color: $color-light;
+
+        &>img {
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+
+    &__header {
+        position: relative;
+        z-index: 2;
+        @include flex(row, flex-start, center, 10px);
+        width: 100%;
+        margin-bottom: 10px;
+        cursor: pointer;
+
+        &-wrapper {
+            @include flex(row, flex-start, center, 8px);
+        }
+
+        &-username {
+            @extend .fs-15-700;
+            color: $color-light;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        &-handle {
+            @extend .fs-15-400;
+            color: $color-light;
+        }
+
+        &-point {
+            width: 4px;
+            aspect-ratio: 1/1;
+            background-color: $color-light;
+            border-radius: 50%;
+        }
+    }
+
+    &__wrapper {
+        @include flex(column, flex-start, flex-start);
+        border-radius: 14px;
+        flex: 1;
+
+        &>img,
+        video {
+            max-width: 516px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid $color-light;
+        }
+    }
+
+    &__content {
+        @extend .fs-15-600;
+        flex: 1;
+        word-break: break-word;
+        min-height: 50px;
+    }
+
+    &__footer {
+        position: relative;
+        z-index: 2;
+        @include flex(row, flex-start, center, 10px);
+        width: 100%;
+        margin-top: 10px;
+    }
+
 }
