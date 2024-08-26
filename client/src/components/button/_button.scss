@@ -1,21 +1,21 @@
-// .btn {
-//     background-color: $color-primary;
-//     color: #fff;
-//     padding: 10px 20px;
-//     border: none;
-//     border-radius: 50px;
-//     cursor: pointer;
-//     font-size: 15px;
-//     font-weight: 600;
-//     transition: background-color 0.3s;
-//     &:hover {
-//         background-color: darken($color: $color-primary, $amount: 10%);
-//     }
-//     &:disabled {
-//         background-color: lighten($color: $color-primary, $amount: 30%);
-//         cursor: not-allowed;
-//     }
-// }
+.btn {
+    background-color: $color-primary;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: darken($color: $color-primary, $amount: 10%);
+    }
+    &:disabled {
+        background-color: lighten($color: $color-primary, $amount: 30%);
+        cursor: not-allowed;
+    }
+}
 
 .btn__post {
     background-color: $color-primary;
