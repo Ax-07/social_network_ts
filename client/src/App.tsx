@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "./services/stores";
 import Pages from "./pages";
 import Modals from "./components/modal/Modals";
+import PostPage from "./pages/post/PostPage";
+import CommentPage from "./pages/post/CommentPage";
 
 function App() {
   const { windowWidth } = useWindowSize();
@@ -41,6 +43,8 @@ function App() {
           <Route path="/" element={<Navigate to="/home/posts" />} />
           <Route path="/auth" element={<Pages.AuthPage />} />
           <Route path="/home/*" element={<Pages.Home />} />
+          <Route path="/posts/:id" element={<PostPage />} />
+          <Route path="/comment/:id" element={<CommentPage />} />
           <Route path="/explore" element={<Pages.Explore />} />
           <Route path="/notifications" element={<Pages.Notifications />} />
           <Route path="/messages" element={<Pages.Messages />} />
