@@ -1,11 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { User, UserResponse, UserResponseArray } from "../../utils/types/user.types";
+import { FollowersNamesRequest, User, UserResponse, UserResponseArray } from "../../utils/types/user.types";
+import { updateUserCacheAfterFollow } from "../utils/userApiQueryStarted";
+import { RootState } from "../stores";
 
 const localUrl = "http://localhost:8080/api";
 
 export const UserApi = createApi({
     reducerPath: "userApi",
-    baseQuery: fetchBaseQuery({ baseUrl: localUrl }),
+    baseQuery: fetchBaseQuery({ baseUrl: localUrl,
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as RootState).auth.accessToken;
+            if (token) {
+              headers.set("authorization", `Bearer ${token}`);
+            }
+            return headers;
+          },
+     }),
+    
     tagTypes: ["User"],
     endpoints: (builder) => ({
         getUsers: builder.query<UserResponseArray, void>({
@@ -35,7 +46,20 @@ export const UserApi = createApi({
                 method: "DELETE",
             }),
         }),
+        follow: builder.mutation<UserResponse, { userId: string; followerId: string }>({
+            query: ({ userId, followerId }) => ({
+                url: "/follow",
+                method: "PATCH",
+                body: { userId, followerId },
+            }),
+            onQueryStarted: async ({ userId, followerId }, { dispatch, queryFulfilled }) => {
+                updateUserCacheAfterFollow(userId, followerId, dispatch, queryFulfilled);
+            },
+        }),
+        getFollowersNames: builder.query<FollowersNamesRequest, string>({
+            query: (id) => `/users/${id}/followers`,
+        }),     
     }),
 });
 
-export const { useGetUsersQuery, useGetUserByIdQuery, useCreateUserMutation, useUpdateUserMutation, useDeleteUserMutation } = UserApi;
+export const { useGetUsersQuery, useGetUserByIdQuery, useCreateUserMutation, useUpdateUserMutation, useDeleteUserMutation, useFollowMutation, useGetFollowersNamesQuery } = UserApi;
