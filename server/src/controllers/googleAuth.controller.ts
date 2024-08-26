@@ -42,7 +42,6 @@ const googleLoginCallback = async (req: CustomRequest, res: Response) => {
         username: given_name,
         handle: userHandle,
         email: email,
-        profilPicture: "",
         password: "", // Si vous n'utilisez pas de mot de passe pour les utilisateurs Google
       });
       const { accessToken, refreshToken } = generateToken(user);
