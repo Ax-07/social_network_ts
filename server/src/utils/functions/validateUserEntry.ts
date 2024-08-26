@@ -6,7 +6,7 @@ interface UserEntry extends Optional<UserAttributes, "id"> {};
 const validateUserEntry = (entry: UserEntry) => {
     const errors: string[] = [];
 
-    if (entry.username && (typeof entry.username !== 'string' || entry.username.length < 3 || entry.username.length > 20)) {
+    if (entry.username !== undefined && (typeof entry.username !== 'string' || entry.username.length < 3 || entry.username.length > 20)) {
         errors.push('Username must be a string between 3 and 20 characters');
     }
 
