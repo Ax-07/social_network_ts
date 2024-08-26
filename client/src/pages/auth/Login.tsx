@@ -4,14 +4,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../services/auth/authApi";
 import { loginSuccess } from "../../services/auth/authSlice";
+import { ApiError } from "../../utils/types/api.types";
 
 interface LoginProps {}
 
-interface Error {
-    data: {
-      error: string;
-    };
-  }
 const Login: FunctionComponent<LoginProps> = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,12 +32,12 @@ const Login: FunctionComponent<LoginProps> = () => {
           refreshToken: "",
         })
       );
-    } catch (err) {
-      setError((err as Error).data.error);
-    } finally {
       navigate("/");
-    }
+    } catch (err) {
+      setError((err as ApiError).data.message); console.log(err);
+    } 
   };
+
   return (
       <form className="auth-form" ref={loginFormData} onSubmit={handleLogin}>
         <span className="error" color="red">
