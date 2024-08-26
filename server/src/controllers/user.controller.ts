@@ -6,17 +6,17 @@ import { deleteCoverPicture,  deleteProfilPicture } from "../utils/functions/del
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 const createUser = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   const errors = validateUserEntry(req.body);
   if (errors.length > 0) {
     return apiError(res, "Validation error", errors, 400);
   }
   try {
-    const isExistingUser = await db.User.findOne({ where: { username } });
+    const isExistingUser = await db.User.findOne({ where: { email } });
     if (isExistingUser) {
       return apiError(res, "Username already exist", 400);
     }
-    const user = await db.User.create({ username, password });
+    const user = await db.User.create({ email, password });
     return apiSuccess(res, "User created successfully", user, 201);
   } catch (error) {
     return handleControllerError(res, error, "An error occurred while creating the user.");
