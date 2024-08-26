@@ -26,3 +26,9 @@ export interface UserResponse {
     data: User;
     message: string;
 }
+
+export interface FollowersNamesRequest {
+    status: string;
+    data: {followersNames: string[];} 
+    message: string;
+}
