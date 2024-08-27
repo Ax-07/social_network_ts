@@ -5,7 +5,7 @@ import validatePostEntry from '../utils/functions/validatePostEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 const createPost = async (req: Request, res: Response) => {
-  const { userId, content } = req.body;
+  const { userId, content, originalPostId } = req.body;
   let media = req.body.media; // URL passée dans le body
 
   // Si l'URL n'est pas passée dans le body, utiliser le fichier uploadé
@@ -15,7 +15,7 @@ const createPost = async (req: Request, res: Response) => {
   if (!userId  || !content) {
     return apiError(res, 'Validation error', 'userId and content are required', 400);
   }
-  const errors = validatePostEntry({ userId, content, media });
+  const errors = validatePostEntry({ userId, content, media, originalPostId });
   if (errors.length > 0) {
     return apiError(res, 'Validation error', errors, 400);
   }
@@ -26,7 +26,7 @@ const createPost = async (req: Request, res: Response) => {
           return apiError(res, `The specified ${userId} user does not exist.`, 404);
         }
 
-    const post = await db.Post.create({ userId, content, media });
+    const post = await db.Post.create({ userId, content, media, originalPostId });
     return apiSuccess(res, 'Post created successfully', post, 201);
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while creating the post.');
@@ -70,10 +70,7 @@ const rePost = async (req: Request, res: Response) => {
 
       const rePost = await db.Post.create({
         userId,
-        content: post.content,
-        media: post.media,
         originalPostId: post.id, // Référence au post original
-        likers: [],
       }, { transaction });
 
       await transaction.commit();
