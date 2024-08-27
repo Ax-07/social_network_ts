@@ -7,12 +7,12 @@ import { usePostFormContext } from "./hooks/usePostFormContext";
 interface AddPostProps {
   origin: PostFormOrigin;
   onClose?: () => void;
+  originalPostId?: string;
 }
 
-const AddPost = ({ origin, onClose }: AddPostProps) => {
+const AddPost = ({ origin, onClose, originalPostId }: AddPostProps) => {
   const {
     form,
-    isValidForm,
     resetForm,
   } = usePostFormContext();
 
@@ -24,13 +24,14 @@ const AddPost = ({ origin, onClose }: AddPostProps) => {
     try {
       const formData = new FormData();
       formData.append("userId", form.userId as string);
-      formData.append("content", form.content);
+      formData.append("content", form.content as string);
       if (typeof form.file === "string") {
-        formData.append("media", form.file);
+        formData.append("media", form.file); // Ici on ajoute le lien vers une video youtube
       } else {
-        formData.append("media", form.file as Blob);
+        formData.append("media", form.file as Blob); // Ici on ajoute le fichier media (video ou image)
       }
-
+      
+        formData.append("originalPostId", originalPostId ?? '');
       const response = await addPost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
