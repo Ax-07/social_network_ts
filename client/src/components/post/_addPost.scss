@@ -46,6 +46,10 @@
         padding: 0 10px;
     }
 
+    &__repost-card {
+        position: relative;
+    }
+
     &__bottom {
         display: flex;
         justify-content: space-between;
