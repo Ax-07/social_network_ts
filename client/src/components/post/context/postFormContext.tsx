@@ -23,17 +23,18 @@ export interface PostFormContextType {
 interface PostFormProviderProps {
   origin: PostFormOrigin;
   children: ReactNode;
+  originalPostId?: string;
 }
 
 export const PostFormContext = createContext<PostFormContextType | undefined>(undefined);
 
-export const PostFormProvider = ({ origin, children }: PostFormProviderProps) => {
+export const PostFormProvider = ({ origin, children, originalPostId }: PostFormProviderProps) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
-  
   const [form, setForm] = useState<FormState>({
     userId: userId,
     content: "",
     file: "",
+    originalPostId: originalPostId ?? "",
   });
   const [preview, setPreview] = useState<string>("");
   const [mimetype, setMimetype] = useState<string>("");
@@ -45,18 +46,31 @@ export const PostFormProvider = ({ origin, children }: PostFormProviderProps) =>
 
   useEffect(() => {
     setIsPreview(form.file !== "");
-    setIsValidForm(form.content.trim().length > 0 || form.file !== "");
+    setIsValidForm((form.content?.trim()?.length ?? 0) > 0 || form.file !== "");
   }, [form]);
+
+  const setOriginalPostId = useCallback(
+    (originalPostId: string) => {
+      setForm((prevForm) => ({ ...prevForm, originalPostId }));
+    },
+    [setForm]
+  );
+
+  useEffect(() => {
+    if (originalPostId)
+      setOriginalPostId(originalPostId);
+  }, [originalPostId, setOriginalPostId]);
 
   const resetForm = useCallback(() => {
     setForm({
       userId: userId,
       content: "",
       file: "",
+      originalPostId: originalPostId ?? "",
     });
     setPreview("");
     setMimetype("");
-  }, [userId]);
+  }, [originalPostId, userId]);
 
   const handleFileChange = useCallback((image: File) => {
     setForm((prevForm) => ({ ...prevForm, file: image }));
@@ -85,7 +99,7 @@ export const PostFormProvider = ({ origin, children }: PostFormProviderProps) =>
         setForm((prevForm) => ({ ...prevForm, file: youtubeUrl }));
         setMimetype("video/youtube");
       } 
-      else if ((!content.includes("youtube.com") || !content.includes("youtu.be")) && file.toString().includes("youtube.com") || file.toString().includes("youtu.be")) {
+      else if ((!content.includes("youtube.com") || !content.includes("youtu.be")) && file?.toString().includes("youtube.com") || file?.toString().includes("youtu.be")) {
         setForm((prevForm) => ({ ...prevForm, file: "" }));
         setPreview("");
         setMimetype("");
