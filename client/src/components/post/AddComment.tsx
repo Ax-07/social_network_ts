@@ -59,7 +59,7 @@ const AddComment = ({ origin, onClose }: AddCommentProps) => {
       const formData = new FormData();
       formData.append(formKey, id as string);
       formData.append("userId", userId as string);
-      formData.append("content", postForm.form.content);
+      formData.append("content", postForm.form.content as string);
       if (typeof postForm.form.file === "string") {
         formData.append("media", postForm.form.file);
       } else {
