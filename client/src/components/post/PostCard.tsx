@@ -7,6 +7,8 @@ import { PostTypes } from "../../utils/types/post.types";
 import BtnRepost from "../btn-repost/BtnRepost";
 import BtnComment from "../btn-comment/BtnComment";
 import UserProfilCard from "../userProfile/UserProfilCard";
+import { PostFormProvider } from "./context/postFormContext";
+import RepostCard from "./RepostCard";
 
 export type PostProps = {
   post: PostTypes;
@@ -16,10 +18,10 @@ export type PostProps = {
 const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const posterId = post.userId;
   const { data: { data: poster } = {} } = useGetUserByIdQuery(posterId);
-  const timeSinceCreation = getTimeSinceCreation(post.createdAt as string);
-  const isWebp = post.media?.endsWith(".webp");
-  const isMp4 = post.media?.endsWith(".mp4");
-  const isYoutubeVideo = post.media?.includes("youtube.com");
+  const timeSinceCreation = getTimeSinceCreation(post?.createdAt as string);
+  const isWebp = post?.media?.endsWith(".webp");
+  const isMp4 = post?.media?.endsWith(".mp4");
+  const isYoutubeVideo = post?.media?.includes("youtube.com");
   const [isHoveringThumbnail, setIsHoveringThumbnail] = useState(false);
   const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [showUserCard, setShowUserCard] = useState(false);
@@ -129,7 +131,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
               <p className="post-card__date fs-15-400">{timeSinceCreation}</p>
             </div>
           </Link>
-          <p className="post-card__content">{post.content}</p>
+          {post.content && <p className="post-card__content">{post.content}</p>}
           {post.media && isWebp && (
             <img className="post-card__img" src={post.media} alt="" loading="lazy"/>
           )}
@@ -146,9 +148,17 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
               allowFullScreen
             ></iframe>
           )}
+          {post.originalPostId && 
+          (<div className="post-card__repost-card">
+            <RepostCard originalPostId={post.originalPostId as string} origin=""/>
+          </div>
+        )}
+
           <div className="post-card__footer">
             <BtnComment postId={post.id} commentsCount={post.commentsCount} />
-            <BtnRepost postId={post.id} />
+            <PostFormProvider origin="modal-repost">
+              <BtnRepost postId={post.id}/>
+            </PostFormProvider>
             <BtnLike post={post} />
           </div>
         </div>
