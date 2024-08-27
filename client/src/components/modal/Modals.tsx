@@ -1,14 +1,15 @@
-import type { FunctionComponent } from 'react';
+import { type FunctionComponent } from 'react';
 import { useModal } from './hook/useModal';
 import Modal from './Modal';
 import AddComment from '../post/AddComment';
 import AddPost from '../post/AddPost';
 import { PostFormProvider } from '../post/context/postFormContext';
+import AddRepost from '../post/AddRepost';
 
 interface ModalsProps {}
 
 const Modals: FunctionComponent<ModalsProps> = () => {
-    const { modals, closeModal } = useModal();
+    const { modals, closeModal, postId, commentId } = useModal();
 
     return (
         <>
@@ -29,10 +30,15 @@ const Modals: FunctionComponent<ModalsProps> = () => {
                     <AddComment origin="modal-comment-comment" onClose={() => closeModal("modal-comment-comment")}/>
                   </Modal>
                 </PostFormProvider>
-                <Modal modalName='btn-repost'>
-                  {/* Ici on rend simplement une div pour que le portail du repost puisse s'y attacher */}
-                  <div id="btn-repost-modal"></div>
-                </Modal>
+                <PostFormProvider origin="modal-repost" originalPostId={postId}>
+                  <Modal modalName='btn-repost'>
+                    {/* Ici on rend simplement une div pour que le portail du repost puisse s'y attacher */}
+                    <div id="btn-repost-modal"></div>
+                  </Modal>
+                  <Modal modalName='modal-repost'>
+                    <AddRepost origin="modal-repost" onClose={() => closeModal("modal-repost")} originalPostId={postId}/>
+                  </Modal>
+                </PostFormProvider>
               </>
             )}
         </>
