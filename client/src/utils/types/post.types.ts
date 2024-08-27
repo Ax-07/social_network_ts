@@ -5,6 +5,8 @@ export interface PostTypes {
   media?: string | null;
   likers?: string[] | [];
   commentsCount?: number;
+  reposters?: string[] | [];
+  originalPostId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
