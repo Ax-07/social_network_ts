@@ -420,6 +420,9 @@ main {
   flex: 1;
   padding: 0 10px;
 }
+.addpost__repost-card {
+  position: relative;
+}
 .addpost__bottom {
   display: flex;
   justify-content: space-between;
@@ -444,6 +447,7 @@ main {
 .post__item {
   position: relative;
   width: 100%;
+  border-bottom: 1px solid #f4f4f4;
 }
 .post::-webkit-scrollbar {
   display: none;
@@ -457,7 +461,6 @@ main {
   align-items: flex-start;
   gap: 0;
   padding: 12px 10px;
-  border-bottom: #f4f4f4 1px solid;
   width: 100%;
 }
 .post-card__link {
@@ -545,7 +548,15 @@ main {
   align-items: center;
   gap: 10px;
   width: 100%;
-  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f4f4f4;
+}
+.post-card__repost-card {
+  position: relative;
+  width: 100%;
+  border: 1px solid #f4f4f4;
+  border-radius: 14px;
+  margin-bottom: 10px;
 }
 
 .preview-media {
