@@ -43,8 +43,8 @@ function App() {
           <Route path="/" element={<Navigate to="/home/posts" />} />
           <Route path="/auth" element={<Pages.AuthPage />} />
           <Route path="/home/*" element={<Pages.Home />} />
-          <Route path="/posts/:id" element={<PostPage />} />
-          <Route path="/comment/:id" element={<CommentPage />} />
+          <Route path="/home/posts/:id" element={<PostPage />} />
+          <Route path="/home/comment/:id" element={<CommentPage />} />
           <Route path="/explore" element={<Pages.Explore />} />
           <Route path="/notifications" element={<Pages.Notifications />} />
           <Route path="/messages" element={<Pages.Messages />} />
