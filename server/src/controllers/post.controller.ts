@@ -5,7 +5,7 @@ import validatePostEntry from '../utils/functions/validatePostEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 const createPost = async (req: Request, res: Response) => {
-  const { userId, content, originalPostId } = req.body;
+  const { userId, content } = req.body; console.log(req.body);
   let media = req.body.media; // URL passée dans le body
 
   // Si l'URL n'est pas passée dans le body, utiliser le fichier uploadé
@@ -15,18 +15,17 @@ const createPost = async (req: Request, res: Response) => {
   if (!userId  || !content) {
     return apiError(res, 'Validation error', 'userId and content are required', 400);
   }
-  const errors = validatePostEntry({ userId, content, media, originalPostId });
-  if (errors.length > 0) {
-    return apiError(res, 'Validation error', errors, 400);
-  }
-  try {
-        // Vérifier que l'utilisateur existe
-        const user = await db.User.findByPk(userId);
-        if (!user) {
-          return apiError(res, `The specified ${userId} user does not exist.`, 404);
-        }
-
-    const post = await db.Post.create({ userId, content, media, originalPostId });
+  const errors = validatePostEntry({ userId, content, media });
+    if (errors.length > 0) {
+      return apiError(res, 'Validation error', errors, 400);
+    }
+    try {
+      // Vérifier que l'utilisateur existe
+      const user = await db.User.findByPk(userId);
+      if (!user) {
+        return apiError(res, `The specified ${userId} user does not exist.`, 404);
+      }
+    const post = await db.Post.create({ userId: userId, content: content, media: media });
     return apiSuccess(res, 'Post created successfully', post, 201);
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while creating the post.');
@@ -34,13 +33,13 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const rePost = async (req: Request, res: Response) => {
-  const { userId, originalPostId } = req.body; console.log(req.body);
+  const { userId, originalPostId, content } = req.body; console.log(req.body);
 
   if (!userId || !originalPostId) {
     return apiError(res, 'Validation error', 'userId and originalPostId are required', 400);
   }
 
-  const errors = validatePostEntry({ userId, originalPostId });
+  const errors = validatePostEntry({ userId, originalPostId, content });
   if (errors.length > 0) {
     return apiError(res, 'Validation error', errors, 400);
   }
@@ -62,15 +61,16 @@ const rePost = async (req: Request, res: Response) => {
       }
 
       // Ajoutez l'utilisateur à la liste des reposters
-      const reposters = post.reposters || [];
+      const reposters = post.reposters ? [...post.reposters] : [];
       if (!reposters.includes(userId)) {
-        reposters.push(userId);
-        await post.update({ reposters }, { transaction });
+        reposters.push(userId); console.log('reposters', reposters);
+        await post.update({ reposters: reposters }, { transaction });
       }
 
       const rePost = await db.Post.create({
         userId,
         originalPostId: post.id, // Référence au post original
+        content: content
       }, { transaction });
 
       await transaction.commit();
@@ -151,4 +151,31 @@ const deletePost = async (req: Request, res: Response) => {
   }
 };
 
-export { createPost, rePost, getAllPosts, getPostById, updatePost , deletePost };
+const viewPost = async (req: Request, res: Response) => {
+  const postId = req.params.id;
+  if (!postId) {
+    return apiError(res, 'Post ID is required', 400);
+  }
+  try {
+    const post = await db.Post.findByPk(postId);
+    if (post === null) {
+      return apiError(res, 'Post not found', 404);
+    } else {
+      post.views += 1;
+      await post.save();
+      return apiSuccess(res, `Post ${postId} viewed successfully`, post, 200);
+    }
+  } catch (error) {
+    return handleControllerError(res, error, 'An error occurred while viewing the post.');
+  }
+}
+
+export { 
+  createPost,
+  rePost,
+  getAllPosts,
+  getPostById,
+  updatePost,
+  deletePost,
+  viewPost
+};
