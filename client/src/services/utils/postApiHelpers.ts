@@ -79,7 +79,7 @@ export const updatePostCacheAfterLike = async ( dispatch: any, id: string, query
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updatePostCacheAfterRepost = async ( dispatch: any, id: string, queryFulfilled: any ) => {
+export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string, originalPostId: string, queryFulfilled: any ) => {
   try {
     const { data } = await queryFulfilled;
     dispatch(
@@ -87,7 +87,52 @@ export const updatePostCacheAfterRepost = async ( dispatch: any, id: string, que
         draftPosts.data.unshift(data.data); // Ajouter le nouveau post en tête de la liste
       })
     );
+    dispatch(
+      postApi.util.updateQueryData("getPostById", originalPostId, (draft) => {
+        const postUpdated = draft.data;
+        if (postUpdated) {
+          const reposters = postUpdated.reposters ? [...postUpdated.reposters] : [];
+          if (!reposters.includes(userId)) {
+            reposters.push(userId);
+            postUpdated.reposters = reposters;
+          }
+        }
+      })
+    )
   } catch (error) {
     console.error("Failed to update cache after reposting:", error);
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updatePostCacheAfterViews = async ( dispatch: any, id: string, queryFulfilled: any ) => {
+  try {
+    const { data } = await queryFulfilled;
+
+    console.log("Query fulfilled data:", data);
+
+    dispatch(
+      postApi.util.updateQueryData("getPostById", id, (draft) => {
+        console.log("Before update - post draft:", draft?.data.views);
+        const postUpdated = draft?.data;
+        if (postUpdated) {
+          postUpdated.views = (postUpdated.views ?? 0) + 1;
+          console.log("After update - post draft:", postUpdated.views);
+        }
+      })
+    );
+
+    dispatch(
+      postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
+        console.log("Before update - posts draft:", draftPosts.data);
+        const postToUpdate = draftPosts.data?.find((post) => post.id === id);
+        if (postToUpdate) {
+          postToUpdate.views = data.data.views;
+          console.log("After update - posts draft:", postToUpdate);
+        }
+      })
+    );
+  } catch (error) {
+    console.error("Failed to update cache after incrementing post views:", error);
   }
 };
