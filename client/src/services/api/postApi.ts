@@ -1,7 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../stores";
 import { PostResponse, PostResponseArray, PostTypes } from "../../utils/types/post.types";
-import { updatePostCacheAfterAdd, updatePostCacheAfterDelete, updatePostCacheAfterLike, updatePostCacheAfterRepost, updatePostCacheAfterUpdate } from "../utils/postApiHelpers";
+import { 
+  updatePostCacheAfterAdd,
+  updatePostCacheAfterDelete,
+  updatePostCacheAfterLike,
+  updatePostCacheAfterRepost,
+  updatePostCacheAfterUpdate,
+  updatePostCacheAfterViews
+} from "../utils/postApiHelpers";
 
 const localUrl = "http://localhost:8080/api";
 
@@ -72,15 +79,26 @@ export const postApi = createApi({
         updatePostCacheAfterLike(dispatch, id, queryFulfilled);
       },
     }),
-    repost: builder.mutation<PostTypes, { id: string; reposterId: string }>({
-      query: ({ id, reposterId }) => ({
+    repost: builder.mutation<PostResponse, FormData>({
+      query: (formdata) => ({
         url: `/reposts`,
         method: "POST",
-        body: { originalPostId: id, userId: reposterId },
+        body: formdata,
       }),
-      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
-        updatePostCacheAfterRepost(dispatch, id, queryFulfilled);
+      onQueryStarted: async (formdata, { dispatch, queryFulfilled }) => {
+        const userId = formdata.get("userId") as string;
+        const originalPostId = formdata.get("originalPostId") as string;
+        updatePostCacheAfterRepost(dispatch, userId, originalPostId, queryFulfilled);
       },
+    }),
+    incrementPostViews: builder.mutation<PostResponse, string>({
+      query: (id) => ({
+        url: `/posts/views/${id}`,
+        method: "PATCH",
+      }),
+      onQueryStarted: async (_id, { dispatch, queryFulfilled }) => {
+        updatePostCacheAfterViews(dispatch, _id, queryFulfilled);
+      }
     }),
   }),
 });
@@ -93,4 +111,5 @@ export const {
   useDeletePostMutation,
   useLikePostMutation,
   useRepostMutation,
+  useIncrementPostViewsMutation,
 } = postApi;
