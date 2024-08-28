@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPost, rePost, deletePost, getAllPosts, getPostById, updatePost } from "../controllers/post.controller";
+import { createPost, rePost, deletePost, getAllPosts, getPostById, updatePost, viewPost } from "../controllers/post.controller";
 import uploadFileMiddleware from "../middleware/multer.middleware";
 import { checkAuth } from "../middleware/checkAuth.middelware";
 
@@ -11,5 +11,6 @@ router.get('/posts', getAllPosts);
 router.get('/posts/:id', getPostById);
 router.patch('/posts/:id', checkAuth, uploadFileMiddleware, updatePost);
 router.delete('/posts/:id', checkAuth, deletePost);
+router.patch('/posts/views/:id', checkAuth, viewPost);
 
 export default router;
