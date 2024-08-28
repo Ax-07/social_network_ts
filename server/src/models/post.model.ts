@@ -9,6 +9,7 @@ interface PostAttributes {
   likers?: string[] | null; // Ajout du likerId pour les likes
   reposters?: string[] | null; // Ajout du rePosterId pour les reposts
   originalPostId?: string | null;
+  views?: number; // Ajout du nombre de vues
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
@@ -22,6 +23,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public likers!: string[] | null;
   public reposters!: string[] | null;
   public originalPostId!: string | null;
+  public views!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -74,6 +76,11 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
           key: 'id',
         },
       },
+      views: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
+      }
     },
     {
       tableName: 'posts',
