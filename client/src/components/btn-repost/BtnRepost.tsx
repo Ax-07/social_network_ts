@@ -5,9 +5,10 @@ import { useModal } from "../modal/hook/useModal";
 interface BtnRepostProps {
   postId?: string;
   commentId?: string;
+  reposterCount?: number;
 }
 
-const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId }) => {
+const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, reposterCount }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -49,7 +50,7 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId }) => {
     <>
       <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen}>
         <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
-        <p>0</p>
+        <p>{reposterCount}</p>
       </div>
 
       {isOpen &&
