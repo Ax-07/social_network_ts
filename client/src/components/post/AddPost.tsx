@@ -7,10 +7,9 @@ import { usePostFormContext } from "./hooks/usePostFormContext";
 interface AddPostProps {
   origin: PostFormOrigin;
   onClose?: () => void;
-  originalPostId?: string;
 }
 
-const AddPost = ({ origin, onClose, originalPostId }: AddPostProps) => {
+const AddPost = ({ origin, onClose }: AddPostProps) => {
   const {
     form,
     resetForm,
@@ -31,7 +30,6 @@ const AddPost = ({ origin, onClose, originalPostId }: AddPostProps) => {
         formData.append("media", form.file as Blob); // Ici on ajoute le fichier media (video ou image)
       }
       
-        formData.append("originalPostId", originalPostId ?? '');
       const response = await addPost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
