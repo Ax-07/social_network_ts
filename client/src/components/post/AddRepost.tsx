@@ -1,4 +1,4 @@
-import { useAddPostMutation } from "../../services/api/postApi";
+import { useRepostMutation } from "../../services/api/postApi";
 import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
 import PostForm, { PostFormOrigin } from "./PostForm";
@@ -16,7 +16,7 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
     resetForm,
   } = usePostFormContext();
 
-  const [addPost, { isLoading }] = useAddPostMutation();
+  const [repost, { isLoading }] = useRepostMutation();
   const pushToast = usePushToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,7 +27,7 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
       formData.append("content", form.content as string);
       formData.append("originalPostId", form.originalPostId as string);
 
-      const response = await addPost(formData).unwrap();
+      const response = await repost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
       pushToast({ message: (error as ApiError).data.message, type: "error" });
