@@ -159,7 +159,7 @@ const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, origin }) =>
           <div className="post-card__footer">
             <BtnComment postId={postByOriginalId.id} commentsCount={postByOriginalId.commentsCount} />
             <PostFormProvider origin="modal-repost" originalPostId={originalPostId}>
-              <BtnRepost postId={postByOriginalId.id}/>
+              <BtnRepost postId={postByOriginalId.id} reposterCount={postByOriginalId.reposters?.length}/>
             </PostFormProvider>
             <BtnLike post={postByOriginalId} />
           </div>
