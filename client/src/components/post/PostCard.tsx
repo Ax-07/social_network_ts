@@ -9,6 +9,11 @@ import BtnComment from "../btn-comment/BtnComment";
 import UserProfilCard from "../userProfile/UserProfilCard";
 import { PostFormProvider } from "./context/postFormContext";
 import RepostCard from "./RepostCard";
+import { useIncrementPostViewsMutation } from "../../services/api/postApi";
+import interceptor from "./functions/interceptor";
+import BtnViews from "../btn-views/BtnViews";
+import { useSelector } from "react-redux";
+import { RootState } from "../../services/stores";
 
 export type PostProps = {
   post: PostTypes;
@@ -17,6 +22,7 @@ export type PostProps = {
 
 const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const posterId = post.userId;
+  const userId = useSelector((state: RootState) => state.auth.user?.id);
   const { data: { data: poster } = {} } = useGetUserByIdQuery(posterId);
   const timeSinceCreation = getTimeSinceCreation(post?.createdAt as string);
   const isWebp = post?.media?.endsWith(".webp");
@@ -25,30 +31,32 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const [isHoveringThumbnail, setIsHoveringThumbnail] = useState(false);
   const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [showUserCard, setShowUserCard] = useState(false);
+  const userProfilCardRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const [incrementPostViews] = useIncrementPostViewsMutation();
 
   const keepUserProfileCardInBounds  = useCallback(() => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
+    if (userProfilCardRef.current) {
+      const rect = userProfilCardRef.current.getBoundingClientRect();
 
       // Vérifier et ajuster le dépassement à droite
       if (rect.right > window.innerWidth) {
-        cardRef.current.style.position = "fixed";
-        cardRef.current.style.left = "auto";
-        cardRef.current.style.right = "20px";
+        userProfilCardRef.current.style.position = "fixed";
+        userProfilCardRef.current.style.left = "auto";
+        userProfilCardRef.current.style.right = "20px";
       } else if (rect.left < 0) {
         // Ajuster si ça dépasse à gauche
-        cardRef.current.style.position = "fixed";
-        cardRef.current.style.left = "20px";
-        cardRef.current.style.right = "auto";
+        userProfilCardRef.current.style.position = "fixed";
+        userProfilCardRef.current.style.left = "20px";
+        userProfilCardRef.current.style.right = "auto";
       }
 
       // Vérifier et ajuster le dépassement en bas
       if (rect.bottom > window.innerHeight) {
-        cardRef.current.style.position = "fixed";
-        cardRef.current.style.top = "auto";
-        cardRef.current.style.bottom = "20px";
-        cardRef.current.style.left = "70px";
+        userProfilCardRef.current.style.position = "fixed";
+        userProfilCardRef.current.style.top = "auto";
+        userProfilCardRef.current.style.bottom = "20px";
+        userProfilCardRef.current.style.left = "70px";
       }
     }
   }, []);
@@ -86,12 +94,16 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
     };
   }, [isHoveringThumbnail, isHoveringCard]);
 
+  useEffect(() => {
+    interceptor({ action: () => posterId !== userId && incrementPostViews(post.id), ref: cardRef });
+  }, [cardRef, post.id]);
+
   return (
     <>
       {origin !== "post-page" && (
         <NavLink to={`/home/posts/${post.id}`} className="post-card__link" />
       )}
-      <article className="post-card">
+      <article className="post-card" ref={cardRef}>
         <div className="post-card__user"
           onMouseEnter={handleMouseEnterThumbnail}
           onMouseLeave={handleMouseLeaveThumbnail}
@@ -107,7 +119,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
         </div>
         {showUserCard && (
           <UserProfilCard user={poster ?? null}
-            cardRef={cardRef}
+            cardRef={userProfilCardRef}
             onMouseEnter={handleMouseEnterCard}
             onMouseLeave={handleMouseLeaveCard}
           />
@@ -157,9 +169,10 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
           <div className="post-card__footer">
             <BtnComment postId={post.id} commentsCount={post.commentsCount} />
             <PostFormProvider origin="modal-repost">
-              <BtnRepost postId={post.id}/>
+              <BtnRepost postId={post.id} reposterCount={post.reposters?.length}/>
             </PostFormProvider>
             <BtnLike post={post} />
+            <BtnViews viewsCount={post.views} />
           </div>
         </div>
       </article>
