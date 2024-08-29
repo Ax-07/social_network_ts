@@ -14,6 +14,7 @@ import interceptor from "./functions/interceptor";
 import BtnViews from "../btn-views/BtnViews";
 import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
+import BtnBookmarks from "../btn-bookmarks/BtnBookmarks";
 
 export type PostProps = {
   post: PostTypes;
@@ -173,6 +174,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
             </PostFormProvider>
             <BtnLike post={post} />
             <BtnViews viewsCount={post.views} />
+            <BtnBookmarks postId={post.id} userId={userId ?? ""}/>
           </div>
         </div>
       </article>
