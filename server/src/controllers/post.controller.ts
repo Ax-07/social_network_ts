@@ -4,6 +4,7 @@ import { handleControllerError } from '../utils/errors/controllers.error';
 import validatePostEntry from '../utils/functions/validatePostEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
+
 const createPost = async (req: Request, res: Response) => {
   const { userId, content } = req.body; console.log(req.body);
   let media = req.body.media; // URL passée dans le body
@@ -102,7 +103,7 @@ const getPostById = async (req: Request, res: Response) => {
   try {
     const post = await db.Post.findByPk(postId);
     if (post === null) {
-      return apiError(res, 'Post not found', 404);
+      return apiError(res, 'Post not found from getPostById', 404);
     } else {
       return apiSuccess(res, `Post ${postId} found`, post, 200);
     }
@@ -133,6 +134,11 @@ const updatePost = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * 
+ * @description Supprime un post
+ * @returns l'id du post supprimé 
+ */
 const deletePost = async (req: Request, res: Response) => {
   const postId = req.params.id;
   if (!postId) {
@@ -151,6 +157,11 @@ const deletePost = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * 
+ * @description Incremente le nombre de vues d'un post
+ * @returns le post avec le nombre de vues incrémenté
+ */
 const viewPost = async (req: Request, res: Response) => {
   const postId = req.params.id;
   if (!postId) {
@@ -170,6 +181,35 @@ const viewPost = async (req: Request, res: Response) => {
   }
 }
 
+const getBookmarkedPosts = async (req: Request, res: Response) => {
+  const userId = req.query.id as string;
+  if (!userId) {
+    return apiError(res, 'User ID is required', 400);
+  }
+
+  try {
+    const user = await db.User.findByPk(userId);
+    if (user === null) {
+      return apiError(res, 'User not found', 404);
+    }
+
+    const bookmarkedPostsIds = user.bookmarks;
+
+    // If the user has no bookmarks, return an empty array
+    if (!Array.isArray(bookmarkedPostsIds) || bookmarkedPostsIds.length === 0) {
+      return apiSuccess(res, `No bookmarked posts found for user ${userId}`, [], 200);
+    }
+
+    const bookmarkedPosts = await db.Post.findAll({ where: { id: bookmarkedPostsIds } });
+
+    return apiSuccess(res, `Bookmarked posts for user ${userId}`, bookmarkedPosts, 200);
+
+  } catch (error) {
+    return handleControllerError(res, error, 'An error occurred while getting bookmarked posts.');
+  }
+};
+
+
 export { 
   createPost,
   rePost,
@@ -177,5 +217,6 @@ export {
   getPostById,
   updatePost,
   deletePost,
-  viewPost
+  viewPost,
+  getBookmarkedPosts
 };
