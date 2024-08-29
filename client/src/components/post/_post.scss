@@ -107,10 +107,10 @@
     &__footer {
         position: relative;
         z-index: 2;
-        @include flex(row, flex-start, center, 10px);
+        @include flex(row, space-around, center, 10px);
         width: 100%;
         padding-top: 10px;
-        border-top: 1px solid $color-light;
+        margin-top: 20px;
     }
 
     &__repost-card {
