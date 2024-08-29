@@ -1,0 +1,152 @@
+.btn-bookmarks {
+    --color-primary: #9356dc;
+    --color-secondary: #ff79da;
+    --color-tertiary: #99e2d0;
+    --icon-size: 15px;
+    position: relative;
+    width: var(--icon-size);
+    height: var(--icon-size);
+
+    & + p {
+      font-size: 13px;
+      line-height: 13px;
+    }
+    
+    &__checkbox {
+      display: none;
+    }
+    &__label {
+      z-index: 20;
+      border: none;
+      background: none;
+  
+      cursor: pointer;
+    }
+    &__icon::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: "Font Awesome 6 Free";
+      content: "\f02e"; /* Code Unicode pour l'icône du cœur */
+      font-size: var(--icon-size);
+      font-weight: 500;
+      line-height: var(--icon-size);
+      display: block;
+      width: var(--icon-size);
+      height: var(--icon-size);
+    }
+    &__icon::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: "Font Awesome 6 Free";
+      content: "\f02e"; /* Code Unicode pour l'icône du cœur */
+      font-size: var(--icon-size);
+      font-weight: 500;
+      line-height: var(--icon-size);
+      display: block;
+      width: var(--icon-size);
+      height: var(--icon-size);
+    }
+    &__checkbox:checked + &__label .btn-bookmarks__icon::after {
+      animation: fadeIn 0.3s forwards;
+      font-weight: 900;
+      background: linear-gradient(
+        180deg,
+        var(--color-primary) 0%,
+        var(--color-secondary) 100%
+      );
+      color: transparent; /* Rendre le contenu de l'icône transparent */
+      -webkit-background-clip: text; /* Pour le remplissage de dégradé */
+      background-clip: text; /* Pour le remplissage de dégradé */
+    }
+    &__checkbox:checked + &__label .btn-bookmarks__icon::before {
+      animation: fadeIn 0.3s forwards;
+    }
+  }
+  .btn-bookmarks__checkbox:not(:checked):hover
+    + .btn-bookmarks__label
+    .btn-bookmarks__icon::after {
+    animation: fadeInHover 0.9s infinite;
+    font-weight: 900;
+    background: linear-gradient(
+      var(--color-primary) 0%,
+      var(--color-secondary) 50%,
+      white 100%
+    );
+    color: transparent; /* Rendre le contenu de l'icône transparent */
+    -webkit-background-clip: text; /* Pour le remplissage de dégradé */
+    background-clip: text; /* Pour le remplissage de dégradé */
+  }
+  .btn-bookmarks__checkbox:not(:checked) + .btn-bookmarks__label .btn-bookmarks__icon::before {
+    animation: fadeOut 0.3s forwards;
+    font-weight: 400;
+    color: #ffffff; /* Rétablir la couleur de l'icône à l'état initial */
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      z-index: 0;
+      scale: 1;
+      background-size: 0% 100%;
+    }
+    75% {
+      opacity: 0.5;
+      z-index: 0.5;
+      scale: 1.15;
+    }
+    100% {
+      opacity: 1;
+      z-index: 1;
+      scale: 1;
+      background-size: 50% 100%;
+    }
+  }
+  @keyframes fadeInHover {
+    0% {
+      opacity: 0;
+      z-index: 0;
+      scale: 0;
+    }
+    16.5% {
+      opacity: 1;
+      z-index: 1;
+      scale: 0.5;
+    }
+    33% {
+      opacity: 0.5;
+      z-index: 0.5;
+      scale: 0.15;
+    }
+    49.5% {
+      opacity: 1;
+      z-index: 1;
+      scale: 0.35;
+    }
+    66% {
+      opacity: 0.5;
+      z-index: 0.5;
+      scale: 0.15;
+    }
+    100% {
+      opacity: 0;
+      z-index: 0;
+      scale: 0;
+    }
+  }
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      z-index: 1;
+    }
+    75% {
+      opacity: 0.5;
+      z-index: 0.5;
+      scale: 1.15;
+    }
+    100% {
+      opacity: 1;
+      z-index: 1;
+      scale: 1;
+    }
+  }
