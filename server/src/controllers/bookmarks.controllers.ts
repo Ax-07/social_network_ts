@@ -22,13 +22,18 @@ const addToBookmarks = async (req: Request, res: Response) => {
       return apiError(res, 'Post not found', 404);
     }
 
-    const bookmarks = user.bookmarks || [];
+    let bookmarks = user.bookmarks || [];
     if (!bookmarks.includes(postId)) {
-      bookmarks.push(postId);
-      await user.update({ bookmarks });
+      bookmarks = [...bookmarks, postId];
+      await user.update({ bookmarks: bookmarks });
+      return apiSuccess(res, 'Post added to bookmarks successfully', {bookmarks: bookmarks});
+    } else {
+      // retire le post des bookmarks
+      bookmarks = bookmarks.filter(id => id !== postId);
+      await user.update({ bookmarks: bookmarks });
+      return apiSuccess(res, 'Post removed from bookmarks successfully', {bookmarks: bookmarks});
     }
 
-    return apiSuccess(res, 'Post added to bookmarks successfully', bookmarks);
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while adding post to bookmarks');
   }
