@@ -93,12 +93,22 @@ export const postApi = createApi({
     }),
     incrementPostViews: builder.mutation<PostResponse, string>({
       query: (id) => ({
-        url: `/posts/views/${id}`,
+        url: `/posts/${id}/views`,
         method: "PATCH",
       }),
       onQueryStarted: async (_id, { dispatch, queryFulfilled }) => {
         updatePostCacheAfterViews(dispatch, _id, queryFulfilled);
       }
+    }),
+    getBookmarkedPosts: builder.query<PostResponseArray, string>({
+      query: (userId) => `/posts/bookmarks?id=${userId}`,
+      providesTags: (result) =>
+        result && Array.isArray(result.data)
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Posts" as const, id })),
+              { type: "Posts", id: "BOOKMARKS" },
+            ]
+          : [{ type: "Posts", id: "BOOKMARKS" }],
     }),
   }),
 });
@@ -112,4 +122,5 @@ export const {
   useLikePostMutation,
   useRepostMutation,
   useIncrementPostViewsMutation,
+  useGetBookmarkedPostsQuery,
 } = postApi;
