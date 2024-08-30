@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
-import validatePostEntry from '../utils/functions/validatePostEntry';
+import validatePostEntry from '../utils/functions/validations/validatePostEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
 
