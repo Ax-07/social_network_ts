@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import db from "../models";
 import { handleControllerError } from '../utils/errors/controllers.error';
-import validateLikeEntry from "../utils/functions/validateLikeEntry";
+import validateLikeEntry from "../utils/functions/validations/validateLikeEntry";
 import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const likePost = async (req: Request, res: Response) => {
