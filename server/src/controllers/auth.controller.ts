@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
-import validateUserEntry from '../utils/functions/validateUserEntry';
+import validateUserEntry from '../utils/functions/validations/validateUserEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 import generateUsernameFromEmail from '../utils/functions/generateUsernameFromEmail';
 import generateUniqueHandle from '../utils/functions/generateUniqueHandle';
