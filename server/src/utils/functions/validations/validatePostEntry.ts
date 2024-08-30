@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { PostAttributes } from "../../models/post.model";
+import { PostAttributes } from "../../../models/post.model";
 
 interface PostEntry extends Optional<PostAttributes, "id"> {};
 

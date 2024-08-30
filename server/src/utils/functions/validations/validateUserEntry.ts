@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { UserAttributes } from "../../models/user.model";
+import { UserAttributes } from "../../../models/user.model";
 
 interface UserEntry extends Optional<UserAttributes, "id"> {};
 

@@ -1,6 +1,6 @@
 import { Optional } from "sequelize";
-import { PostAttributes } from "../../models/post.model";
-import { UserAttributes } from "../../models/user.model";
+import { PostAttributes } from "../../../models/post.model";
+import { UserAttributes } from "../../../models/user.model";
 
 interface LikeEntry extends Optional<PostAttributes & UserAttributes, "id"> {
   postId: string;
