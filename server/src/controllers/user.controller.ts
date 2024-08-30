@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import db from "../models";
 import { handleControllerError } from "../utils/errors/controllers.error";
-import validateUserEntry from "../utils/functions/validateUserEntry";
+import validateUserEntry from "../utils/functions/validations/validateUserEntry";
 import { deleteCoverPicture,  deleteProfilPicture } from "../utils/functions/deletePicture";
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 
