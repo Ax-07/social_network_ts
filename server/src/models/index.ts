@@ -2,11 +2,12 @@ import { Sequelize } from "sequelize";
 import { initializeUserModel, User } from "./user.model";
 import { initializePostModel, Post } from "./post.model";
 import { initializeCommentModel, Comment } from "./comment.model";
+import { initializeNotificationModel, Notification } from "./notification.model";
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: './db.sqlite',
-});;
+});
 
 interface Database {
   Sequelize: typeof Sequelize;
@@ -14,7 +15,8 @@ interface Database {
   User: typeof User;
   Post: typeof Post;
   Comment: typeof Comment;
-}
+  Notification: typeof Notification;
+};
 
 const db: Database = {
   Sequelize,
@@ -22,6 +24,7 @@ const db: Database = {
   User: initializeUserModel(sequelize),
   Post: initializePostModel(sequelize),
   Comment: initializeCommentModel(sequelize),
+  Notification: initializeNotificationModel(sequelize),
 };
 
 // Définir les associations après l'initialisation des modèles
@@ -44,6 +47,10 @@ db.Comment.belongsTo(db.Post, { foreignKey: 'commentedPostId', as: 'commentedPos
 
 db.Comment.hasMany(db.Comment, { foreignKey: 'commentId', as: 'replies' });
 db.Comment.belongsTo(db.Comment, { foreignKey: 'commentId', as: 'comment' });
+
+db.User.hasMany(db.Notification, { foreignKey: 'userId', as: 'userNotifications' });
+db.Notification.belongsTo(db.User, { foreignKey: 'userId', as: 'user' });
+
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
