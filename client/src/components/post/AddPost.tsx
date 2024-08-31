@@ -9,7 +9,31 @@ interface AddPostProps {
   onClose?: () => void;
 }
 
-const AddPost = ({ origin, onClose }: AddPostProps) => {
+/**
+ * Composant AddPost
+ * 
+ * Ce composant gère la création d'un nouveau post, qu'il s'agisse d'un post texte, d'une vidéo, ou d'une image. 
+ * Il utilise un formulaire pour capturer les données, les soumet à l'API, et affiche des notifications toast 
+ * en fonction du succès ou de l'échec de l'opération.
+ * 
+ * @component
+ * @param {AddPostProps} props - Les propriétés du composant.
+ * @param {PostFormOrigin} props.origin - L'origine du formulaire, déterminant le contexte dans lequel le post est créé.
+ * @param {() => void} [props.onClose] - Fonction optionnelle pour fermer la modale après la soumission réussie du post.
+ * 
+ * @returns {JSX.Element} Le formulaire de création de post, ou un message de chargement si la publication est en cours.
+ * 
+ * @example
+ * <AddPost origin="modal-addPost" onClose={() => setModalOpen(false)} />
+ * 
+ * @description
+ * - Le composant récupère les données du formulaire via le contexte `usePostFormContext`.
+ * - Lors de la soumission du formulaire, il construit un objet `FormData` contenant les informations nécessaires,
+ *   telles que l'ID de l'utilisateur, le contenu du post, et le fichier média (ou lien YouTube).
+ * - Il appelle l'API pour ajouter le post, affiche une notification de succès ou d'erreur, et réinitialise le formulaire.
+ * - Enfin, il ferme la modale si une fonction `onClose` est fournie (en fonction de l'origine).
+ */
+const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
   const {
     form,
     resetForm,
