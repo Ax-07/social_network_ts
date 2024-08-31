@@ -1,80 +1,104 @@
 import { Request, Response } from "express";
 import db from "../models";
 import { handleControllerError } from "../utils/errors/controllers.error";
-import validateCommentEntry from "../utils/functions/validateCommentEntry";
+import validateCommentEntry from "../utils/functions/validations/validateCommentEntry";
 import { apiError, apiSuccess } from "../utils/functions/apiResponses";
+import { DatabaseError } from "sequelize";
+import { createCommentOnPost } from "../utils/functions/commentsUtils/createCommentOnPost";
+import { createReplyOnComment } from "../utils/functions/commentsUtils/createReplyOnComment ";
+import { handleRepost } from "../utils/functions/commentsUtils/handleRepost ";
 
+/**
+ * Contrôleur pour créer un commentaire ou une réponse à un commentaire existant.
+ * Cette fonction gère la création de commentaires sur un post ainsi que les réponses à des commentaires.
+ * Elle inclut la validation des données, la gestion des transactions de base de données, et des tentatives de réexécution en cas de blocage de la base de données.
+ *
+ * @async
+ * @function createComment
+ * @param {Request} req - Objet requête d'Express contenant les données du nouveau commentaire.
+ * @param {Response} res - Objet réponse d'Express utilisé pour renvoyer la réponse au client.
+ * 
+ * @property {string} req.body.postId - ID du post à commenter (si le commentaire est sur un post).
+ * @property {string} req.body.commentId - ID du commentaire à répondre (si c'est une réponse à un commentaire).
+ * @property {string} req.body.userId - ID de l'utilisateur créant le commentaire.
+ * @property {string} req.body.content - Contenu du commentaire.
+ * @property {string} req.body.commentedPostId - (Optionnel) ID d'un post reposté sur lequel on commente.
+ * @property {string} req.body.commentedCommentId - (Optionnel) ID d'un commentaire reposté sur lequel on commente.
+ * 
+ * @property {string} res.locals.filePath - Chemin d'accès à un fichier média associé au commentaire.
+ * 
+ * @returns {Promise<void>} Renvoie une réponse HTTP. En cas de succès, la réponse contient l'objet du commentaire créé. 
+ * En cas d'échec, un message d'erreur est renvoyé avec le code HTTP approprié.
+ *
+ * @description
+ * 1. Valide les données d'entrée en utilisant `validateCommentEntry`.
+ * 2. Vérifie si l'utilisateur existe dans la base de données.
+ * 3. Tente de créer le commentaire dans une transaction, avec jusqu'à 5 tentatives en cas de blocage de la base de données (SQLITE_BUSY).
+ * 4. Gère différents scénarios : commenter un post, répondre à un commentaire, ou commenter un repost.
+ * 5. Valide la transaction si tout se passe bien ou annule en cas d'erreur.
+ * 6. Renvoie une réponse appropriée au client en fonction du résultat.
+ *
+ * @throws {Error} En cas d'erreur de base de données ou si la validation des données échoue.
+ */
 const createComment = async (req: Request, res: Response) => {
-  const postId = req.body.postId;
-  const commentId = req.body.commentId;
-  console.log("postId", postId, "commentId", commentId);
+  const { postId, commentId, userId, content, commentedPostId, commentedCommentId } = req.body;
+  const media = res.locals.filePath;
 
-  const { userId, content, commentedPostId, commentedCommentId } = req.body;
-  const media = res.locals.filePath; // Utilisez le chemin enregistré dans res.locals
-
-  const errors = validateCommentEntry({postId, commentId, userId, content, media, commentedPostId, commentedCommentId});
+  const errors = validateCommentEntry({ postId, commentId, userId, content, media, commentedPostId, commentedCommentId });
   if (errors.length > 0) {
     return apiError(res, "Validation error", errors, 400);
   }
 
-  // Commencer une transaction
-  const transaction = await db.sequelize.transaction();
-  try {
-    let comment;
+  const user = await db.User.findByPk(userId);
+  if (!user) {
+    return apiError(res, `The specified user with ID ${userId} does not exist.`, 404);
+  }
+  const userName = user.username;
 
-    if (postId && !commentId) {
-      console.log("postId is defined");
-      comment = await db.Comment.create(
-        { postId, userId, content, media, commentedPostId, commentedCommentId },
-        { transaction }
-      );
-      // Incrémenter le nombre de commentaires du post
-      const post = await db.Post.findByPk(postId, { transaction });
-      if (post) {
-        await post.increment("commentsCount", { by: 1, transaction });
-      }
-    } else if (commentId && !postId) {
-      // Vérifiez d'abord que le commentaire parent existe
-      const parentComment = await db.Comment.findByPk(commentId);
-      if (!parentComment) {
+  const maxRetries = 5;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    attempt++;
+    const transaction = await db.sequelize.transaction();
+    try {
+      let comment;
+
+      if (postId && !commentId) {
+        comment = await createCommentOnPost(
+          postId, userId, content, media, userName, commentedPostId, commentedCommentId, transaction
+        );
+      } else if (commentId && !postId) {
+        comment = await createReplyOnComment(
+          commentId, userId, content, media, userName, commentedPostId, transaction
+        );
+      } else {
+        console.log("Neither postId nor commentId is properly defined.");
         await transaction.rollback();
-        return apiError( res, "Validation error", "The specified parent comment does not exist", 400 );
+        return apiError(res, "Validation error", "Invalid request parameters.", 400);
       }
 
-      comment = await db.Comment.create(
-        { commentId, userId, content, media, commentedPostId },
-        { transaction }
-      );
-      // Incrémenter le nombre de commentaires du commentaire parent
-      await parentComment.increment("commentsCount", { by: 1, transaction });
-      console.log("Comment created with commentId:", comment);
-    } else {
-      console.log("Neither postId nor commentId is properly defined.");
+      if (commentedPostId && postId) {
+        await handleRepost(commentedPostId, userId, transaction);
+      }
+
+      await transaction.commit();
+      return apiSuccess(res, "Comment created successfully", comment, 201);
+    } catch (error) {
+      await transaction.rollback();
+
+      if (error instanceof DatabaseError && error.parent.message === 'SQLITE_BUSY') {
+        if (attempt < maxRetries) {
+          console.warn(`SQLITE_BUSY: Attempt ${attempt}/${maxRetries}`);
+          await new Promise(resolve => setTimeout(resolve, 100 * attempt)); 
+          continue;
+        }
+      } else if ((error as Error).message.includes("does not exist")) {
+        return apiError(res, "Validation error", (error as Error).message, 400);
+      }
+
+      return handleControllerError(res, error, "An error occurred while creating the comment.");
     }
-
-    // Mettre à jour le post partagé en ajoutant l'utilisateur aux reposters, s'il y a un commentedPostId
-    if (commentedPostId && postId) {
-      const commentedPost = await db.Post.findByPk(commentedPostId, {
-        transaction,
-      });
-      if (!commentedPost) {
-        await transaction.rollback();
-        return apiError( res, `The specified ${commentedPostId} post does not exist.`, 404 );
-      }
-      const reposters = commentedPost.reposters || [];
-      if (!reposters.includes(userId)) {
-        reposters.push(userId);
-        await commentedPost.update({ reposters }, { transaction });
-      }
-    }
-    // Valider la transaction
-    await transaction.commit();
-
-    return apiSuccess(res, "Comment created successfully", comment, 201);
-  } catch (error) {
-    // Annuler la transaction en cas d'erreur
-    await transaction.rollback();
-    return handleControllerError( res, error, "An error occurred while creating the comment." );
   }
 };
 
