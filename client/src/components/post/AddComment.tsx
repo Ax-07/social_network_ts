@@ -13,7 +13,29 @@ interface AddCommentProps{
   onClose?: () => void;
 }
 
-const AddComment = ({ origin, onClose }: AddCommentProps) => {
+/**
+ * Composant AddComment
+ * 
+ * Ce composant gère l'ajout de commentaires sur un post ou une réponse à un commentaire existant.
+ * Il utilise différents hooks pour récupérer l'état du formulaire, soumettre les données à l'API,
+ * et gérer les notifications de succès ou d'erreur.
+ * 
+ * @component
+ * @param {AddCommentProps} props - Les propriétés du composant.
+ * @param {PostFormOrigin} props.origin - L'origine du formulaire, qui détermine quel ID (postId ou commentId) doit être utilisé.
+ * @param {() => void} [props.onClose] - Fonction optionnelle à appeler pour fermer le modal ou le composant après l'ajout du commentaire.
+ * 
+ * @returns {JSX.Element} Le formulaire de commentaire, ou un message de chargement si la requête est en cours.
+ * 
+ * @example
+ * <AddComment origin="post-page-comment" onClose={() => setModalOpen(false)} />
+ * 
+ * @description
+ * - Le composant récupère l'ID du post ou du commentaire en fonction de l'origine (`origin`).
+ * - Lors de la soumission du formulaire, il crée un objet `FormData` avec les informations pertinentes et appelle l'API pour ajouter un commentaire.
+ * - Affiche une notification toast en cas de succès ou d'erreur, et réinitialise le formulaire après soumission.
+ */
+const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
   const postIdFromParams = useParams<{ id: string }>().id;
   const commentIdFromParams = useParams<{ id: string }>().id;
   const { postId, commentId, commentedPostId, commentedCommentId } = useModal();
