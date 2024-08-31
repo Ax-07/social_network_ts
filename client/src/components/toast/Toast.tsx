@@ -5,7 +5,7 @@ import infoIcon from "../../assets/icons/faInfoCircle.svg";
 import errorIcon from "../../assets/icons/faCircleXmark.svg";
 
 export interface ToastType {
-  type: "success" | "error" | "info" | "warning" | "default";
+  type: "success" | "error" | "info" | "warning" | "default" | "notification";
   message: string;
 }
 
