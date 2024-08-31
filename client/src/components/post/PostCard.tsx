@@ -1,4 +1,4 @@
-import { useRef, type FunctionComponent } from "react";
+import { useEffect, useRef, type FunctionComponent } from "react";
 import BtnLike from "../btn-like/BtnLike";
 import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { NavLink } from "react-router-dom";
@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import BtnBookmarks from "../btn-bookmarks/BtnBookmarks";
 import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../userProfile/UserHoverDisplayCard ";
+import interceptor from "./functions/interceptor";
+import { useIncrementPostViewsMutation } from "../../services/api/postApi";
 
 export type PostProps = {
   post: PostTypes;
@@ -26,7 +28,12 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const isMp4 = post?.media?.endsWith(".mp4");
   const isYoutubeVideo = post?.media?.includes("youtube.com");
   const cardRef = useRef<HTMLDivElement>(null);
+  const [incrementPostViews] = useIncrementPostViewsMutation();
 
+
+  useEffect(() => {
+    interceptor({ action: () => posterId !== userId && incrementPostViews(post.id), ref: cardRef });
+  }, [cardRef, post.id]);
   return (
     <>
       {origin !== "post-page" && (
