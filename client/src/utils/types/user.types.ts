@@ -12,6 +12,7 @@ export interface User {
     followers?: string[]; // Liste des abonnés
     followings?: string[]; // Liste des abonnements
     bookmarks?: string[]; // Liste des signets
+    notifications?: { type: string; message: string; postId: string }[]; // Liste des notifications
     createdAt?: Date; // Date de création
 }
 
