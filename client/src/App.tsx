@@ -46,7 +46,7 @@ function App() {
           <Route path="/home/posts/:id" element={<PostPage />} />
           <Route path="/home/comment/:id" element={<CommentPage />} />
           <Route path="/explore" element={<Pages.Explore />} />
-          <Route path="/notifications" element={<Pages.Notifications />} />
+          <Route path="/notifications/*" element={<Pages.Notifications />} />
           <Route path="/messages" element={<Pages.Messages />} />
           <Route path="/bookmarks" element={<Pages.BooKmarks />} />
           <Route path="/lists" element={<Pages.Lists />} />
