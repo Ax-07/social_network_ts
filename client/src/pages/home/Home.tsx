@@ -9,17 +9,16 @@ const Home = () => {
     <section className="home">
       <TabList
         links={[
-          { name: "Pour vous", to: "/home/posts" },
-          { name: "Abonnements", to: "/home/abonnements" },
+          { name: "Pour vous", to: "/home", end: true },
+          { name: "Abonnements", to: "/home/abonnements", end: false },
         ]}
       />
       <PostFormProvider origin="page-home">
         <AddPost origin="page-home" />
       </PostFormProvider>
       <Routes>
-        <Route path="/posts" element={<PostList />} />
+        <Route path="/" element={<PostList />} />
         <Route path="/abonnements" element={<h2>Abonnements</h2>} />
-        <Route path="/coding-lab" element={<h2>CodingLab</h2>} />
       </Routes>
     </section>
   );
