@@ -36,7 +36,7 @@ h1, h2, h3, h4, h5, h6, p {
   font-weight: 400;
 }
 
-.fs-15-700, .post-card__header-username {
+.fs-15-700, .post-card__header-username, .sidemenu__link-notifications > p {
   font-size: 0.9375rem;
   font-weight: 700;
 }
@@ -137,7 +137,7 @@ main {
   width: 100%;
 }
 
-.background-blur, .auth-page__container, .home, .post-page, .btn-repost__modal, .modal-content, .addpost, .userProfile-card, .userprofile__thumbnail-menu, .sidemenu__container {
+.background-blur, .notification-page__item, .auth-page__container, .home, .post-page, .btn-repost__modal, .modal-content, .addpost, .userProfile-card, .userprofile__thumbnail-menu, .sidemenu__container {
   background-color: rgba(28, 39, 51, 0.3);
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
@@ -222,6 +222,7 @@ main {
   }
 }
 .sidemenu__link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -240,6 +241,25 @@ main {
 .sidemenu__link > img {
   height: 26px;
   aspect-ratio: 1/1;
+}
+.sidemenu__link-notifications {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #1d9bf0;
+}
+.sidemenu__link-notifications > p {
+  position: absolute;
+  top: 47%;
+  left: 53%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  line-height: 100%;
+  color: #fff;
+  text-align: center;
 }
 
 .userprofile__picture {
@@ -1423,4 +1443,45 @@ input:focus-visible ~ .tabs__indicator {
   transform: translate(0, -70px);
   border: 10px solid black;
   border-radius: 50%;
+}
+
+.notification-page {
+  flex: 1;
+}
+.notification-page__title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+.notification-page__list {
+  margin-top: 1rem;
+}
+.notification-page__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.notification-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.notification-card__icon {
+  margin-right: 1rem;
+}
+.notification-card__wrapper {
+  width: 100%;
+}
+.notification-card__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 0;
+  margin-bottom: 0.5rem;
 }/*# sourceMappingURL=index.css.map */
