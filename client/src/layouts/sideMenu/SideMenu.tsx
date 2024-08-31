@@ -1,10 +1,11 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import UserProfileThumbnail from "../../components/userProfile/UserProfileThumbnail";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
 import ButtonModal from "../../components/modal/ButtonModal";
 import { useSelector } from "react-redux";
 import { AuthState } from "../../services/auth/authSlice";
+import useNotifications from "../../pages/notifications/hooks/useNotifications";
 
 const SideMenu = () => {
   const { windowWidth } = useWindowSize();
@@ -18,14 +19,14 @@ const SideMenu = () => {
     <header className="sidemenu">
       <div className="sidemenu__container">
         <div className="sidemenu__wrapper">
-          <NavLink className="sidemenu__logo" to="/home/posts">
+          <NavLink className="sidemenu__logo" to="/home">
             <img src="/src/assets/images/logo/node_11748341.png" alt="" />
             {!isTablet && <h2 className="sidemenu__title">Social Network</h2>}
           </NavLink>
           <ul className="sidemenu__list">
-            <MenuLink to="/home/posts" name="Home" icon="/src/assets/icons/faHome.svg" />
+            <MenuLink to="/home" name="Home" icon="/src/assets/icons/faHome.svg" />
             <MenuLink to="/explore" name="Explore" icon="/src/assets/icons/faSearch.svg" />
-            <MenuLink to="/notifications" name="Notifications" icon="/src/assets/icons/faBell.svg" />
+            <MenuLink to="/notifications" name="Notifications" icon="/src/assets/icons/faBell.svg" userId={userId}/>
             <MenuLink to="/messages" name="Messages" icon="/src/assets/icons/faEnvelope.svg" />
             <MenuLink to="/bookmarks" name="Bookmarks" icon="/src/assets/icons/faBookmark.svg" />
             <MenuLink to="/lists" name="Lists" icon="/src/assets/icons/faListDots.svg" />
@@ -52,16 +53,36 @@ type MenuLinkProps = {
   to: string;
   name: string;
   icon: string;
+  userId?: string;
 };
 
-const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon }) => {
+const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon, userId }) => {
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1280;
+  const { notifications } = useNotifications(userId as string);
+
+  const [isNotification, setIsNotification ] = useState(false);
+
+  useEffect(() => {
+    if(notifications.length > 0) {
+      setIsNotification(true);
+    } else {
+      setIsNotification(false);
+    }
+  }, [notifications]);
+
+  const resetNotifications = () => {
+    setIsNotification(false);
+  };
+
   return (
-    <li className="sidemenu__item">
+    <li className="sidemenu__item" onClick={resetNotifications}>
       <NavLink to={to} className="sidemenu__link">
         <img src={icon} alt={`icon ${name}`} />
-        {/* {icon} */}
+        {isNotification && userId &&
+        <span className="sidemenu__link-notifications">
+          <p>{notifications.length}</p>
+        </span>}
         {!isTablet && name}
       </NavLink>
     </li>
