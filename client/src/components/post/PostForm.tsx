@@ -1,11 +1,13 @@
 import { type FunctionComponent, type PropsWithChildren } from 'react';
-import { UserPicture } from '../userProfile/UserProfileThumbnail';
+import { ProfilPicture } from '../userProfile/UserProfileThumbnail';
 import PreviewPicture from '../addPicture/PreviewPicture';
 import { autoResizeTextarea } from '../../utils/functions/autoResizeTextarea';
 import Button from '../button/Button';
 import InputPicture from '../addPicture/InputPicure';
 import { usePostFormContext } from './hooks/usePostFormContext';
 import RepostCard from './RepostCard';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../services/stores';
 
 
 interface PostFormProps extends PropsWithChildren <{
@@ -14,6 +16,7 @@ interface PostFormProps extends PropsWithChildren <{
 }> {}
 
 const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) => {
+  const user = useSelector((state: RootState) => state.auth.user);
     const { 
         form, setForm, isValidForm,
         preview, setPreview, isPreview,
@@ -28,7 +31,7 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
      return (
         <div className={`addpost addpost--${origin}`}>
           <div className="addpost__avatar">
-            <UserPicture />
+            <ProfilPicture user={user}/>
           </div>
           <form onSubmit={handleSubmit} className="addpost__form">
             <div className="addpost__header">
