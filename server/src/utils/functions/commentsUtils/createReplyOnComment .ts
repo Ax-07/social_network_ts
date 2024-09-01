@@ -13,7 +13,7 @@ import { io } from "../../../services/notifications";
  * @param {string} [userName] - Le nom d'utilisateur de l'auteur du commentaire (optionnel).
  * @param {string} [commentedPostId] - L'ID du post qui est commenté (dans le cas d'un repost) (optionnel).
  * @param {Transaction} [transaction] - La transaction Sequelize en cours pour garantir l'intégrité de la base de données (optionnel).
- * @returns {Promise<Object>} Le commentaire créé.
+ * @returns {Promise<object>} Le commentaire créé.
  * 
  * @throws {Error} Lance une erreur si la création du commentaire échoue ou si le commentaire parent n'existe pas.
  */
@@ -23,45 +23,46 @@ export const createReplyOnComment = async (
     content: string,
     media?: string,
     userName?: string,
-    commentedPostId?: string,
+    commentedPostId?: string,  // Optionnel pour les cas de repost
     transaction?: Transaction
-  ): Promise<object> => {
+): Promise<object> => {
+
     const parentComment = await db.Comment.findByPk(commentId, { transaction });
     if (!parentComment) {
-      throw new Error("The specified parent comment does not exist");
+        throw new Error("The specified parent comment does not exist");
     }
-  
+
     const comment = await db.Comment.create(
-      { commentId, userId, content, media, commentedPostId },
-      { transaction }
+        { commentId, userId, content, media, commentedPostId },
+        { transaction }
     );
-  
+
     await parentComment.increment("commentsCount", { by: 1, transaction });
-  
+
     const parentCommentOwner = await db.User.findByPk(parentComment.userId, { transaction });
     if (parentCommentOwner) {
-     const response = await db.Notification.create(
+        const response = await db.Notification.create(
             {
                 userId: parentCommentOwner.id,
                 senderId: userId,
                 type: "comment",
                 message: `${userName} a commenté votre commentaire`,
-                commentId: parentComment.postId,
+                commentId,
             },
             { transaction }
         );
-      if (response) {
-      io.to(parentComment.userId).emit("notification", {
-        id: response.id,
-        userId: parentCommentOwner.id,
-        senderId: userId,
-        type: "comment",
-        message: `${userName} a commenté votre commentaire`,
-        commentId: parentComment.postId,
-        createdAt: response.createdAt,
-      });
+        if (response) {
+            io.to(parentComment.userId).emit("notification", {
+                id: response.id,
+                userId: parentCommentOwner.id,
+                senderId: userId,
+                type: "comment",
+                message: `${userName} a commenté votre commentaire`,
+                commentId: parentComment.id,
+                createdAt: response.createdAt,
+            });
+        }
     }
-  }
-  
+
     return comment;
-  };
+};
