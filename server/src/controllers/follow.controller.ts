@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
+import { io } from '../services/notifications';
 
 const followUser = async (req: Request, res: Response) => {
     const { userId, followerId } = req.body;
@@ -35,7 +36,7 @@ const followUser = async (req: Request, res: Response) => {
         if ( userId === followerId ) {
             return apiError(res, "You can't follow yourself", 400);
         }
-
+        
         // Si l'utilisateur ne suit pas le follower
         if (!isFollowing && !isFollower) {
             // Ajout du follower à la liste des abonnements de l'utilisateur
@@ -43,8 +44,26 @@ const followUser = async (req: Request, res: Response) => {
             // Ajout de l'utilisateur à la liste des abonnés du follower
             followers = [...followers, userId];
 
+
             await user.update({ followings });
             await follower.update({ followers });
+
+            const response = await db.Notification.create({
+                userId: followerId,
+                senderId: userId,
+                type: 'follow',
+                message: `${user.username} started following you`,
+            })
+            if (response) {
+                io.to(followerId).emit('notification', {
+                    id: response.id,
+                    userId: followerId,
+                    senderId: userId,
+                    type: 'follow',
+                    message: `${user.username} started following you`,
+                    createdAt: response.createdAt,
+                });
+            }
         } else if (isFollowing && isFollower) {
             // Si l'utilisateur suit déjà le follower
             // Retrait du follower de la liste des abonnements de l'utilisateur
@@ -54,6 +73,23 @@ const followUser = async (req: Request, res: Response) => {
 
             await user.update({ followings });
             await follower.update({ followers });
+
+            const response = await db.Notification.create({
+                userId: followerId,
+                senderId: userId,
+                type: 'follow',
+                message: `${user.username} unfollowed you`,
+            });
+            if (response) {
+                io.to(followerId).emit('notification', {
+                    id: response.id,
+                    userId: followerId,
+                    senderId: userId,
+                    type: 'follow',
+                    message: `${user.username} unfollowed you`,
+                    createdAt: response.createdAt,
+                });
+            };
         }
 
         return apiSuccess(res, 'User followed successfully', { followings: user.followings, followers: follower.followers });
