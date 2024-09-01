@@ -3,15 +3,17 @@ import { Sequelize, DataTypes, Model, Optional } from "sequelize";
 
 interface CommentAttributes {
   id: number;
-  postId?: string;
-  commentId?: string;
   userId: string;
   content: string;
   media?: string;
   commentsCount?: number;
   likers?: string[] | [];
+  reposters?: string[] | null;
+  postId?: string;
+  commentId?: string;
   commentedPostId?: string;
   commentedCommentId?: string;
+  views?: number; // Ajout du nombre de vues
 }
 
 interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> {}
@@ -21,16 +23,17 @@ class Comment
   implements CommentAttributes
 {
   public id!: number;
-  public postId!: string;
-  public commentId!: string;
   public userId!: string;
   public content!: string;
   public media!: string;
   public commentsCount?: number;
   public likers!: string[];
-  public dislikers!: string[];
+  public reposters!: string[];
+  public postId!: string;
+  public commentId!: string;
   public commentedPostId!: string;
   public commentedCommentId!: string;
+  public views!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -43,22 +46,6 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-      },
-      postId: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        references: {
-          model: "posts",
-          key: "id",
-        },
-      },
-      commentId: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        references: {
-          model: "comments",
-          key: "id",
-        },
       },
       userId: {
         type: DataTypes.STRING,
@@ -86,6 +73,27 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         allowNull: false,
         defaultValue: [],
       },
+      reposters: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: [],
+      },
+      postId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        references: {
+          model: "posts",
+          key: "id",
+        },
+      },
+      commentId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        references: {
+          model: "comments",
+          key: "id",
+        },
+      },
       commentedPostId: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -101,6 +109,11 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
           model: "comments",
           key: "id",
         },
+      },
+      views: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
       },
     },
     {
