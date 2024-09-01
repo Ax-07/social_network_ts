@@ -40,7 +40,7 @@ function App() {
       <SideMenu />
       <main>
         <Routes>
-          <Route path="/" element={<Navigate to="/home/posts" />} />
+          <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/auth" element={<Pages.AuthPage />} />
           <Route path="/home/*" element={<Pages.Home />} />
           <Route path="/home/posts/:id" element={<PostPage />} />
