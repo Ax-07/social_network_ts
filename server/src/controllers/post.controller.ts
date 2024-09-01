@@ -3,10 +3,11 @@ import db from '../models';
 import { handleControllerError } from '../utils/errors/controllers.error';
 import validatePostEntry from '../utils/functions/validations/validatePostEntry';
 import { apiError, apiSuccess } from '../utils/functions/apiResponses';
+import { io } from '../services/notifications';
 
 
 const createPost = async (req: Request, res: Response) => {
-  const { userId, content } = req.body; console.log(req.body);
+  const { userId, content } = req.body;
   let media = req.body.media; // URL passée dans le body
 
   // Si l'URL n'est pas passée dans le body, utiliser le fichier uploadé
@@ -74,8 +75,19 @@ const rePost = async (req: Request, res: Response) => {
         content: content
       }, { transaction });
 
-      await transaction.commit();
+      if(rePost){
+        io.to(post.userId).emit('notification', {
+          id: rePost.id,
+          type: 'repost',
+          postId: post.id,
+          userId: post.userId,
+          senderId: userId,
+          message: 'Votre publication a été partagée',
+          createdAt: rePost.createdAt
+        });
+      }
 
+      await transaction.commit();
       return apiSuccess(res, 'Post reposted successfully', rePost, 201);
     } catch (error) {
       await transaction.rollback();
