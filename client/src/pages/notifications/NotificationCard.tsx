@@ -5,7 +5,7 @@ import { useGetUserByIdQuery } from '../../services/api/userApi';
 import { NotificationTypes } from '../../utils/types/notification.types';
 
 const NotificationCard: FunctionComponent<NotificationTypes> = (notification) => {
-    const {data: {data: sender} = {}} = useGetUserByIdQuery(notification.commenterId); console.log('sender', sender?.username);
+    const {data: {data: sender} = {}} = useGetUserByIdQuery(notification.senderId); console.log('sender', sender?.username);
     const formatedMessage = (message: string, postId?: string, commentId?: string) => {
         let formatted: React.ReactNode = message;
       
@@ -29,10 +29,22 @@ const NotificationCard: FunctionComponent<NotificationTypes> = (notification) =>
       
         return formatted;
       };
+let icon;
+      switch (notification.type) {
+        case 'comment':
+          icon = '/src/assets/icons/faBell.svg';
+          break;
+        case 'follow':
+          icon = '/src/assets/icons/faUser.svg';
+          break;
+        default:
+          icon = '/src/assets/icons/faBell.svg';
+          break;
+      }
   return (
     <div className='notification-card'>
       <div className="notification-card__icon">
-        <img src="/src/assets/icons/faBell.svg" alt="icon notification"/>
+        <img src={icon} alt="icon notification"/>
       </div>
       <div className="notification-card__wrapper">
         <div className='notification-card__header'>
