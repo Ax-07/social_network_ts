@@ -11,13 +11,10 @@ import { io } from "../../../services/notifications";
  * @param {string} content - Le contenu du commentaire.
  * @param {string} [media] - Le chemin du fichier média associé au commentaire (optionnel).
  * @param {string} [userName] - Le nom d'utilisateur de l'auteur du commentaire (optionnel).
- * @param {string} [commentedPostId] - L'ID du post qui est commenté (dans le cas d'un repost) (optionnel).
- * @param {string} [commentedCommentId] - L'ID du commentaire parent (si le commentaire est une réponse) (optionnel).
  * @param {Transaction} [transaction] - La transaction Sequelize en cours pour garantir l'intégrité de la base de données (optionnel).
- * @returns {Promise<Object>} Le commentaire créé.
+ * @returns {Promise<object>} Le commentaire créé.
  * 
  * @throws {Error} Lance une erreur si la création du commentaire échoue ou si le post associé n'existe pas.
- * 
  */
 export const createCommentOnPost = async (
     postId: string,
@@ -25,21 +22,22 @@ export const createCommentOnPost = async (
     content: string,
     media?: string,
     userName?: string,
-    commentedPostId?: string,
-    commentedCommentId?: string,
     transaction?: Transaction
-  ): Promise<object> => {
+): Promise<object> => {
     const comment = await db.Comment.create(
-      { postId, userId, content, media, commentedPostId, commentedCommentId },
-      { transaction }
+        { postId, userId, content, media },
+        { transaction }
     );
-  
+
     const post = await db.Post.findByPk(postId, { transaction });
-    if (post) {
-      await post.increment("commentsCount", { by: 1, transaction });
-  
-      const postOwner = await db.User.findByPk(post.userId, { transaction });
-      if (postOwner) {
+    if (!post) {
+        throw new Error("The specified post does not exist");
+    }
+
+    await post.increment("commentsCount", { by: 1, transaction });
+
+    const postOwner = await db.User.findByPk(post.userId, { transaction });
+    if (postOwner) {
         const response = await db.Notification.create(
             {
                 userId: postOwner.id,
@@ -51,18 +49,17 @@ export const createCommentOnPost = async (
             { transaction }
         );
         if (response) {
-          io.to(post.userId).emit("notification", {
-            id: response.id,
-            userId: postOwner.id,
-            senderId: userId,
-            type: "comment",
-            message: `${userName} a commenté votre post`,
-            postId,
-            createdAt: response.createdAt,
-          });
+            io.to(post.userId).emit("notification", {
+                id: response.id,
+                userId: postOwner.id,
+                senderId: userId,
+                type: "comment",
+                message: `${userName} a commenté votre post`,
+                postId,
+                createdAt: response.createdAt,
+            });
         }
-      }
     }
-  
+
     return comment;
-  };
+};
