@@ -43,7 +43,7 @@ export const createCommentOnPost = async (
         const response = await db.Notification.create(
             {
                 userId: postOwner.id,
-                commenterId: userId,
+                senderId: userId,
                 type: "comment",
                 message: `${userName} a commenté votre post`,
                 postId,
@@ -54,7 +54,7 @@ export const createCommentOnPost = async (
           io.to(post.userId).emit("notification", {
             id: response.id,
             userId: postOwner.id,
-            commenterId: userId,
+            senderId: userId,
             type: "comment",
             message: `${userName} a commenté votre post`,
             postId,
