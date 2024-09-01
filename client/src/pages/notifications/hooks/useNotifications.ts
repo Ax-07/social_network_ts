@@ -57,7 +57,7 @@ const useNotifications = (userId: string): { notifications: NotificationTypes[],
       dispatch(addNotification({
         id: notification.id,
         userId: userId,
-        commenterId: notification.commenterId,
+        senderId: notification.senderId,
         type: notification.type,
         message: notification.message,
         isRead: false,
