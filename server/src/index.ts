@@ -15,7 +15,6 @@ import notificationRoutes from "./routes/notification.routes";
 import db from "./models";
 import { configureSocket } from "./services/webSocket";
 import serverError from "./utils/errors/server.error";
-import { initializeMessagingWebSocket } from './services/messages';
 import { initializeNotificationWebSocket } from './services/notifications';
 
 dotenv.config();
@@ -50,7 +49,6 @@ app.use('/api', notificationRoutes);
 app.use(serverError);
 
 // Initialisation des WebSockets
-initializeMessagingWebSocket(server);
 initializeNotificationWebSocket(server);
 
 // Synchronisation de la base de données et lancement du serveur
