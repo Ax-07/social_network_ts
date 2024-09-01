@@ -1,7 +1,7 @@
 export interface NotificationTypes {
     id: string;
     userId: string;
-    commenterId: string;
+    senderId: string;
     type: string;
     message: string;
     isRead: boolean;
