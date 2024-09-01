@@ -39,7 +39,6 @@ const Notifications: React.FC = () => {
       <TabList 
         links={[
           {name: 'Tous', to: '/notifications', end: true},
-          // {name: 'Certifié', to: '/notifications/verified'},
           {name: 'Mentions', to: '/notifications/mentions', end: false}
         ]}
         />
@@ -47,13 +46,6 @@ const Notifications: React.FC = () => {
           <Route path='/' element={<NotificationsList notifications={uniqueNotifications}/>} />
           <Route path='/mentions' element={<h2>Mentions</h2>} />
         </Routes>
-      {/* <ul className='notification-page__list'>
-        {uniqueNotifications.map((notif, index) => (
-          <li key={index} className='notification-page__item'>
-            <NotificationCard {...notif} />
-          </li>
-        ))}
-      </ul> */}
     </div>
   );
 };
