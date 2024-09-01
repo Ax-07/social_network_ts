@@ -9,6 +9,7 @@ export interface CommentTypes {
   media?: string | null;
   likers?: string[] | [];
   commentsCount?: number;
+  reposters?: string[] | [];
   createdAt?: string;
   updatedAt?: string;
 }
