@@ -8,7 +8,7 @@ interface NotificationAttributes {
   message: string; // Message de la notification
   isRead: boolean; // Si la notification a été lue
   postId?: string; // ID du post concerné (optionnel)
-  commenterId?: string; // ID de l'utilisateur qui a commenté (optionnel)
+  senderId?: string; // ID de l'utilisateur originaire de la notification
   commentId?: string; // ID du commentaire concerné (optionnel)
   createdAt?: Date; // Date de création
   updatedAt?: Date; // Date de mise à jour
@@ -25,7 +25,7 @@ class Notification
 {
   public id!: string;
   public userId!: string;
-  public commenterId?: string;
+  public senderId?: string;
   public type!: string;
   public message!: string;
   public isRead!: boolean;
@@ -55,8 +55,8 @@ const initializeNotificationModel = (
           key: "id",
         },
       },
-      commenterId: {
-        type: DataTypes.UUID, // ID de l'utilisateur qui a commenté (optionnel)
+      senderId: {
+        type: DataTypes.UUID, // ID de l'utilisateur originaire de la notification
         allowNull: true,
         references: {
           model: "Users", // Référence à la table des utilisateurs
