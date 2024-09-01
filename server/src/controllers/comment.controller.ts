@@ -40,18 +40,20 @@ import { handleRepost } from "../utils/functions/commentsUtils/handleRepost ";
  *
  * @throws {Error} En cas d'erreur de base de données ou si la validation des données échoue.
  */
-const createComment = async (req: Request, res: Response) => {
+const createComment = async (req: Request, res: Response): Promise<void> => {
   const { postId, commentId, userId, content, commentedPostId, commentedCommentId } = req.body;
   const media = res.locals.filePath;
 
   const errors = validateCommentEntry({ postId, commentId, userId, content, media, commentedPostId, commentedCommentId });
   if (errors.length > 0) {
-    return apiError(res, "Validation error", errors, 400);
+    apiError(res, "Validation error", errors, 400);
+    return;
   }
 
   const user = await db.User.findByPk(userId);
   if (!user) {
-    return apiError(res, `The specified user with ID ${userId} does not exist.`, 404);
+    apiError(res, `The specified user with ID ${userId} does not exist.`, 404);
+    return;
   }
   const userName = user.username;
 
@@ -65,17 +67,16 @@ const createComment = async (req: Request, res: Response) => {
       let comment;
 
       if (postId && !commentId) {
-        comment = await createCommentOnPost(
-          postId, userId, content, media, userName, commentedPostId, commentedCommentId, transaction
-        );
+        comment = await createCommentOnPost(postId, userId, content, media, userName, transaction);
+
       } else if (commentId && !postId) {
-        comment = await createReplyOnComment(
-          commentId, userId, content, media, userName, commentedPostId, transaction
-        );
+        comment = await createReplyOnComment(commentId, userId, content, media, userName, commentedPostId, transaction);
+
       } else {
         console.log("Neither postId nor commentId is properly defined.");
         await transaction.rollback();
-        return apiError(res, "Validation error", "Invalid request parameters.", 400);
+        apiError(res, "Validation error", "Invalid request parameters.", 400);
+        return;
       }
 
       if (commentedPostId && postId) {
@@ -83,7 +84,8 @@ const createComment = async (req: Request, res: Response) => {
       }
 
       await transaction.commit();
-      return apiSuccess(res, "Comment created successfully", comment, 201);
+      apiSuccess(res, "Comment created successfully", comment, 201);
+      return;
     } catch (error) {
       await transaction.rollback();
 
@@ -94,7 +96,8 @@ const createComment = async (req: Request, res: Response) => {
           continue;
         }
       } else if ((error as Error).message.includes("does not exist")) {
-        return apiError(res, "Validation error", (error as Error).message, 400);
+        apiError(res, "Validation error", (error as Error).message, 400);
+        return;
       }
 
       return handleControllerError(res, error, "An error occurred while creating the comment.");
