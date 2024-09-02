@@ -20,7 +20,7 @@ const Modal: FunctionComponent<ModalProps> = ({ children, modalName }) => {
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      {modalName !== 'btn-repost' &&
+      {modalName !== 'btn-repost' && modalName !== 'btn-repost-with-comment' &&
       <div className="modal-content" onClick={handleContentClick}>
         <button onClick={()=> closeModal(modalName)} className="modal-close">❌</button>
         {children}
