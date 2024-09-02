@@ -41,12 +41,12 @@ h1, h2, h3, h4, h5, h6, p {
   font-weight: 700;
 }
 
-.fs-15-600, .post-card__content {
+.fs-15-600 {
   font-size: 0.9375rem;
   font-weight: 600;
 }
 
-.fs-15-500, .tablist__item {
+.fs-15-500, .post-card__content, .tablist__item {
   font-size: 0.9375rem;
   font-weight: 500;
 }
@@ -321,7 +321,7 @@ main {
   cursor: pointer;
 }
 .userprofile__thumbnail-menu > a:hover {
-  background-color: #f8f9fa;
+  background-color: #bbb;
   color: #6c757d;
 }
 .userprofile__thumbnail-menu-square {
@@ -442,6 +442,7 @@ main {
 }
 .addpost__repost-card {
   position: relative;
+  width: 70%;
 }
 .addpost__bottom {
   display: flex;
@@ -555,6 +556,7 @@ main {
   border: 1px solid #f4f4f4;
 }
 .post-card__content {
+  color: #bbb;
   flex: 1;
   word-break: break-word;
   min-height: 50px;
