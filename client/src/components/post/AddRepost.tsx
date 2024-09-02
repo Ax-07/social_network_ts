@@ -3,7 +3,6 @@ import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
 import PostForm, { PostFormOrigin } from "./PostForm";
 import { usePostFormContext } from "./hooks/usePostFormContext";
-import { useEffect } from "react";
 
 interface AddPostProps {
   origin: PostFormOrigin;
@@ -26,6 +25,7 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
       formData.append("userId", form.userId as string);
       formData.append("content", form.content as string);
       formData.append("originalPostId", form.originalPostId as string);
+      formData.append("originalCommentId", form.originalCommentId as string);
 
       const response = await repost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
@@ -37,11 +37,6 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
     }
   };
   
-  useEffect(() => {
-    console.log("AddRepost", origin);
-      console.log("AddRepost", form);
-    }, [form, origin]);
-    
     if (isLoading) return <p>Publication en cours...</p>;
   return <PostForm handleSubmit={handleSubmit} origin={origin}/>
 };
