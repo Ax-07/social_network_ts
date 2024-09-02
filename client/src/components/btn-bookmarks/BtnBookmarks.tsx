@@ -17,8 +17,11 @@ const BtnBookmarks: FunctionComponent<BtnBookmarksProps> = ({ postId, userId }) 
     }, [postId, user?.bookmarks]);
 
     const handleAddToBookmarks = useCallback(async () => {
+        if (!userId) return;
         try {
+            if(postId) {
             await addToBookmarks({ userId, postId });
+            }
             // Inversion de l'état uniquement après la réussite de la requête
             setIsBookmarked((prev) => !prev);
         } catch (error) {
