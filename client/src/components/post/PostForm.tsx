@@ -8,6 +8,7 @@ import { usePostFormContext } from './hooks/usePostFormContext';
 import RepostCard from './RepostCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
+import { getTextareaCharacterCount } from '../../utils/functions/textareaCharacterCount';
 
 
 interface PostFormProps extends PropsWithChildren <{
@@ -28,6 +29,12 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
 
     const { buttonText, placeholder } = switchOrigin(origin);
 
+    const handleInputTextarea = (e: React.FormEvent<HTMLTextAreaElement>) => {
+        const target = e.currentTarget;
+        autoResizeTextarea(target);
+        getTextareaCharacterCount(target);
+    }
+
      return (
         <div className={`addpost addpost--${origin}`}>
           <div className="addpost__avatar">
@@ -47,7 +54,7 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
               rows={1}
               onChange={handleContentChange}
               value={form.content}
-              onInput={(e) => autoResizeTextarea(e.currentTarget)}
+              onInput={handleInputTextarea}
             />
             {isPreview && (
               <PreviewPicture
@@ -63,11 +70,12 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
                 }}
               />
             )}
-            {form.originalPostId && 
+            {form.originalPostId &&
             (<div className='addpost__repost-card'>
-              <RepostCard originalPostId={form.originalPostId} />
+              <RepostCard originalPostId={form.originalPostId} orignalCommentId={form.originalCommentId}/>
             </div>
           )}
+          
             <div className="addpost__bottom">
               <InputPicture setMedia={handleFileChange} inputRef={inputFileRef} />
               <Button type="submit"
@@ -99,7 +107,7 @@ export type PostFormOrigin =
   | "btn-repost" // Repost d'une publication
   | "modal-repost" // Repost d'une publication via le modal
   | "btn-repost-with-comment" // Repost d'une publication avec commentaire
-  | "modal-repost-comment";
+  | "modal-repost-comment"; // Repost d'une publication avec commentaire via le modal
 
 /**
  * @description Fonction pour changer le texte du bouton et le placeholder du textarea, en fonction de l'origine du formulaire
@@ -141,6 +149,18 @@ const switchOrigin = (origin: PostFormOrigin) => {
       placeholder = "Ajouter un commentaire...";
       break;
     case "modal-repost":
+      buttonText = "Reposter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "btn-repost":
+      buttonText = "Reposter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "modal-repost-comment":
+      buttonText = "Reposter";
+      placeholder = "Ajouter un commentaire...";
+      break;
+    case "btn-repost-with-comment":
       buttonText = "Reposter";
       placeholder = "Ajouter un commentaire...";
       break;
