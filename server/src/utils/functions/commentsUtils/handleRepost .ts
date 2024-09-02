@@ -1,14 +1,7 @@
 import { Transaction } from "sequelize";
 import db from "../../../models";
+import { io } from "../../../services/notifications";
 
-/**
- * 
- * @param {string} commentedPostId - L'ID du post commenté.
- * @param {string} userId - L'ID de l'utilisateur qui crée le repost.
- * @param {Transaction} transaction - La transaction Sequelize en cours pour garantir l'intégrité de la base de données.
- * 
- * @throws {Error} Lance une erreur si le post commenté n'existe pas.
- */
 export const handleRepost = async (
     commentedPostId: string,
     userId: string,
@@ -23,5 +16,25 @@ export const handleRepost = async (
     if (!reposters.includes(userId)) {
       reposters.push(userId);
       await commentedPost.update({ reposters }, { transaction });
+
+      const response = await db.Notification.create({
+        userId: commentedPost.userId,
+        senderId: userId,
+        type: "repost",
+        postId: commentedPost.id,
+        message: "Votre publication a été partagée",
+      }, { transaction});
+
+      if (response) {
+        io.to(commentedPost.userId).emit("notification", {
+          id: response.id,
+          type: "repost",
+          postId: commentedPost.id,
+          userId: commentedPost.userId,
+          senderId: userId,
+          message: "Votre publication a été partagée",
+          createdAt: response.createdAt,
+        });
+      }
     }
   };
