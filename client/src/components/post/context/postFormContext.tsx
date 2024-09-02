@@ -24,17 +24,19 @@ interface PostFormProviderProps {
   origin: PostFormOrigin;
   children: ReactNode;
   originalPostId?: string;
+  originalCommentId?: string;
 }
 
 export const PostFormContext = createContext<PostFormContextType | undefined>(undefined);
 
-export const PostFormProvider = ({ origin, children, originalPostId }: PostFormProviderProps) => {
+export const PostFormProvider = ({ origin, children, originalPostId, originalCommentId }: PostFormProviderProps) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [form, setForm] = useState<FormState>({
     userId: userId,
     content: "",
     file: "",
-    originalPostId: originalPostId ?? "",
+    originalPostId: "",
+    originalCommentId: "",
   });
   const [preview, setPreview] = useState<string>("");
   const [mimetype, setMimetype] = useState<string>("");
@@ -57,20 +59,34 @@ export const PostFormProvider = ({ origin, children, originalPostId }: PostFormP
   );
 
   useEffect(() => {
-    if (originalPostId)
+    if (originalPostId) {
       setOriginalPostId(originalPostId);
+    }
   }, [originalPostId, setOriginalPostId]);
+
+  const setOriginalCommentId = useCallback(
+    (originalCommentId: string) => {
+      setForm((prevForm) => ({ ...prevForm, originalCommentId }));
+    }, [setForm]
+  );
+
+useEffect(() => {
+  if (originalCommentId) {
+    setOriginalCommentId(originalCommentId);
+  }
+}, [originalCommentId, setOriginalCommentId]);
 
   const resetForm = useCallback(() => {
     setForm({
       userId: userId,
       content: "",
       file: "",
-      originalPostId: originalPostId ?? "",
+      originalPostId: "",
+      originalCommentId: "",
     });
     setPreview("");
     setMimetype("");
-  }, [originalPostId, userId]);
+  }, [userId]);
 
   const handleFileChange = useCallback((image: File) => {
     setForm((prevForm) => ({ ...prevForm, file: image }));
