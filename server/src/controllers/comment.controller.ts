@@ -18,12 +18,12 @@ import { handleRepost } from "../utils/functions/commentsUtils/handleRepost ";
  * @param {Request} req - Objet requête d'Express contenant les données du nouveau commentaire.
  * @param {Response} res - Objet réponse d'Express utilisé pour renvoyer la réponse au client.
  * 
- * @property {string} req.body.postId - ID du post à commenter (si le commentaire est sur un post).
- * @property {string} req.body.commentId - ID du commentaire à répondre (si c'est une réponse à un commentaire).
- * @property {string} req.body.userId - ID de l'utilisateur créant le commentaire.
- * @property {string} req.body.content - Contenu du commentaire.
- * @property {string} req.body.commentedPostId - (Optionnel) ID d'un post reposté sur lequel on commente.
- * @property {string} req.body.commentedCommentId - (Optionnel) ID d'un commentaire reposté sur lequel on commente.
+ * @property {string} postId - ID du post à commenter (si le commentaire est sur un post).
+ * @property {string} commentId - ID du commentaire à répondre (si c'est une réponse à un commentaire).
+ * @property {string} userId - ID de l'utilisateur créant le commentaire.
+ * @property {string} content - Contenu du commentaire.
+ * @property {string} commentedPostId - (Optionnel) ID d'un post reposté sur lequel on commente.
+ * @property {string} commentedCommentId - (Optionnel) ID d'un commentaire reposté sur lequel on commente.
  * 
  * @property {string} res.locals.filePath - Chemin d'accès à un fichier média associé au commentaire.
  * 
