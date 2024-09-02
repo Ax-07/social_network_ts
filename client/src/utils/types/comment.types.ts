@@ -10,6 +10,7 @@ export interface CommentTypes {
   likers?: string[] | [];
   commentsCount?: number;
   reposters?: string[] | [];
+  views?: number;
   createdAt?: string;
   updatedAt?: string;
 }
