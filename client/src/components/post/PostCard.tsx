@@ -11,9 +11,9 @@ import BtnViews from "../btn-views/BtnViews";
 import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import BtnBookmarks from "../btn-bookmarks/BtnBookmarks";
-import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../userProfile/UserHoverDisplayCard ";
 import interceptor from "./functions/interceptor";
 import { useIncrementPostViewsMutation } from "../../services/api/postApi";
+import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../userProfile/UserHoverDisplayCard ";
 
 export type PostProps = {
   post: PostTypes;
@@ -30,10 +30,10 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [incrementPostViews] = useIncrementPostViewsMutation();
 
-
   useEffect(() => {
     interceptor({ action: () => posterId !== userId && incrementPostViews(post.id), ref: cardRef });
   }, [cardRef, post.id]);
+  
   return (
     <>
       {origin !== "post-page" && (
@@ -82,4 +82,3 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
 };
 
 export default PostCard;
-
