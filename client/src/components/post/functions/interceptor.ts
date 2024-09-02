@@ -19,7 +19,6 @@ const interceptor = ({ action, ref }: InterceptorTypes) => {
           if (entry.isIntersecting) {
             action(); // Déclencher l'action
             observer.disconnect(); // Déconnecter l'observateur après avoir détecté une vue
-            console.log("Observer disconnected");
           }
         },
         {
@@ -29,13 +28,11 @@ const interceptor = ({ action, ref }: InterceptorTypes) => {
   
       if (ref.current) {
         observer.observe(ref.current); // Observer le post
-        console.log("Observer started");
       }
   
       return () => {
         if (ref.current) {
           observer.unobserve(ref.current);
-            console.log("Observer stopped");
         }
       };
 };
