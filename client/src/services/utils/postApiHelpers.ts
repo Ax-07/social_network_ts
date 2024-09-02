@@ -109,26 +109,20 @@ export const updatePostCacheAfterViews = async ( dispatch: any, id: string, quer
   try {
     const { data } = await queryFulfilled;
 
-    console.log("Query fulfilled data:", data);
-
     dispatch(
       postApi.util.updateQueryData("getPostById", id, (draft) => {
-        console.log("Before update - post draft:", draft?.data.views);
         const postUpdated = draft?.data;
         if (postUpdated) {
           postUpdated.views = (postUpdated.views ?? 0) + 1;
-          console.log("After update - post draft:", postUpdated.views);
         }
       })
     );
 
     dispatch(
       postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
-        console.log("Before update - posts draft:", draftPosts.data);
         const postToUpdate = draftPosts.data?.find((post) => post.id === id);
         if (postToUpdate) {
           postToUpdate.views = data.data.views;
-          console.log("After update - posts draft:", postToUpdate);
         }
       })
     );
