@@ -41,7 +41,7 @@ export const commentApi = createApi({
                     : [],
         }),
         getCommentById: builder.query<CommentResponse, string>({
-            query: (id) => `/comments/${id}`,
+            query: (id) => `/comment/${id}`,
             providesTags: (_result, _error, id) => [{ type: "Comments", id }],
         }),
         addComment: builder.mutation<CommentResponse, AddCommentArgs>({
