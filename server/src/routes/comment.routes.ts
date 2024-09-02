@@ -9,7 +9,7 @@ router.post('/comments', checkAuth, uploadFileMiddleware, createComment);
 router.get('/comments', getAllComments);
 router.get('/posts/comments/:postId', getCommentsByPostId);
 router.get('/comments/comments/:commentId', getCommentsByCommentId);
-router.get('/comments/:id', getCommentById);
+router.get('/comment/:id', getCommentById);
 router.patch('/comments/:id', checkAuth, updateComment);
 router.delete('/comments/:id', checkAuth, deleteComment);
 
