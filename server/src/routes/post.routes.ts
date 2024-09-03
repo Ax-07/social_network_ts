@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { createPost, rePost, deletePost, getAllPosts, getPostById, updatePost, viewPost, getBookmarkedPosts } from "../controllers/post.controller";
+import { createPost, rePost, deletePost, getAllPosts, getPostById, updatePost, viewPost } from "../controllers/post.controller";
 import uploadFileMiddleware from "../middleware/multer.middleware";
 import { checkAuth } from "../middleware/checkAuth.middelware";
+import { getBookmarkedPosts } from "../controllers/bookmarks.controllers";
 
 const router = Router();
 
