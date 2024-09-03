@@ -5,7 +5,7 @@ import validateLikeEntry from "../utils/functions/validations/validateLikeEntry"
 import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const likePost = async (req: Request, res: Response) => {
-    const { postId, likerId } = req.body; console.log(req.body);
+    const { postId, likerId } = req.body;
     const errors = validateLikeEntry(req.body);
     if (errors.length > 0) {
         return apiError(res, 'Validation error', errors, 400);
@@ -15,26 +15,30 @@ const likePost = async (req: Request, res: Response) => {
         if (!postId || !likerId) {
             return apiError(res, 'Missing fields', 400);
         }
+
         const post = await db.Post.findByPk(postId);
         if (!post) {
             return apiError(res, 'Post not found', 404);
         }
+
         const liker = await db.User.findByPk(likerId);
         if (!liker) {
             return apiError(res, 'User not found', 404);
         }
 
-        let likers;
-        if (post.likers?.includes(likerId)) {
+        // Vérifiez si l'utilisateur a déjà aimé ce post
+        const existingLike = await db.PostLike.findOne({
+            where: { postId: postId, userId: likerId },
+        });
+
+        if (existingLike) {
             // Retirer le like
-            likers = post.likers.filter(id => id !== likerId);
-            await post.update({ likers: likers });
-            return apiSuccess(res, 'Post unliked successfully', {likers: likers}, 200);
+            await existingLike.destroy();
+            return apiSuccess(res, 'Post unliked successfully', null, 200);
         } else {
             // Ajouter le like
-            likers = [...(post.likers || []), likerId];
-            await post.update({ likers: likers });
-            return apiSuccess(res, 'Post liked successfully', {likers: likers}, 200);
+            await db.PostLike.create({ postId: postId, userId: likerId });
+            return apiSuccess(res, 'Post liked successfully', null, 200);
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while liking the post.');
@@ -43,31 +47,39 @@ const likePost = async (req: Request, res: Response) => {
 
 const likeComment = async (req: Request, res: Response) => {
     const { commentId, likerId } = req.body;
+    const errors = validateLikeEntry(req.body);
+    if (errors.length > 0) {
+        return apiError(res, 'Validation error', errors, 400);
+    }
 
     try {
         if (!commentId || !likerId) {
             return apiError(res, 'Missing fields', 400);
         }
+
         const comment = await db.Comment.findByPk(commentId);
         if (!comment) {
             return apiError(res, 'Comment not found', 404);
         }
+
         const liker = await db.User.findByPk(likerId);
         if (!liker) {
             return apiError(res, 'User not found', 404);
         }
 
-        let likers;
-        if (comment.likers?.includes(likerId)) {
+        // Vérifiez si l'utilisateur a déjà aimé ce commentaire
+        const existingLike = await db.CommentLike.findOne({
+            where: { commentId: commentId, userId: likerId },
+        });
+
+        if (existingLike) {
             // Retirer le like
-            likers = comment.likers.filter(id => id !== likerId);
-            await comment.update({ likers: likers });
-            return apiSuccess(res, 'Comment unliked successfully', {likers: likers}, 200);
+            await existingLike.destroy();
+            return apiSuccess(res, 'Comment unliked successfully', null, 200);
         } else {
             // Ajouter le like
-            likers = [...(comment.likers || []), likerId];
-            await comment.update({ likers: likers });
-            return apiSuccess(res, 'Comment liked successfully', {likers: likers}, 200);
+            await db.CommentLike.create({ commentId: commentId, userId: likerId });
+            return apiSuccess(res, 'Comment liked successfully', null, 200);
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while liking the comment.');
