@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { CommentAttributes } from "../../../models/comment.model";
+import { CommentAttributes } from "../../../models/comments/comment.model";
 
 interface CommentEntry extends Optional<CommentAttributes, "id"> {};
 
