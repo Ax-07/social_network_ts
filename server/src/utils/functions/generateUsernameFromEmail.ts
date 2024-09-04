@@ -1,4 +1,4 @@
-import { User } from "../../models/user.model";
+import { User } from "../../models/users/user.model";
 
 const generateUsernameFromEmail = async (email: string): Promise<string> => {
   const username = email.split("@")[0];
