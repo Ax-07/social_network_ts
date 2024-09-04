@@ -25,8 +25,8 @@ const BtnLike: FunctionComponent<BtnLikeProps> = ({ post, comment }) => {
   const commentLikers = Array.isArray(comment?.likers) ? comment?.likers : [];  // S'assurer que c'est un tableau
   const pushToast = usePushToast();
 
-  const [isPostLiked, setIsPostLiked] = useState(postLikers.includes(userId ?? ""));
-  const [isCommentLiked, setIsCommentLiked] = useState(commentLikers.includes(userId ?? ""));
+  const [isPostLiked, setIsPostLiked] = useState(postLikers.map((liker) => liker.id).includes(userId ?? ""));
+  const [isCommentLiked, setIsCommentLiked] = useState(commentLikers.map((liker) => liker.id).includes(userId ?? ""));
 
   const handleLike = async () => {
     try {
