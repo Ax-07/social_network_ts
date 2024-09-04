@@ -46,14 +46,14 @@ export const UserApi = createApi({
                 method: "DELETE",
             }),
         }),
-        follow: builder.mutation<UserResponse, { userId: string; followerId: string }>({
-            query: ({ userId, followerId }) => ({
+        follow: builder.mutation<UserResponse, { userId: string; userToFollowId: string }>({
+            query: ({ userId, userToFollowId }) => ({
                 url: "/follow",
                 method: "PATCH",
-                body: { userId, followerId },
+                body: { followerId: userId,followedId: userToFollowId },
             }),
-            onQueryStarted: async ({ userId, followerId }, { dispatch, queryFulfilled }) => {
-                updateUserCacheAfterFollow(userId, followerId, dispatch, queryFulfilled);
+            onQueryStarted: async ({ userId, userToFollowId }, { dispatch, queryFulfilled }) => {
+                updateUserCacheAfterFollow(userId, userToFollowId, dispatch, queryFulfilled);
             },
         }),
         getFollowersNames: builder.query<FollowersNamesRequest, string>({
@@ -63,10 +63,10 @@ export const UserApi = createApi({
             query: ({ userId, postId }) => ({
                 url: `/users/${userId}/bookmarks`,
                 method: "PATCH",
-                body: { postId },
+                body: {userId, postId },
             }),
             onQueryStarted: async ({ userId, postId }, { dispatch, queryFulfilled }) => {
-                updatePostCacheAfterAddToBookmarks({ userId, postId }, { dispatch, queryFulfilled });
+                updatePostCacheAfterAddToBookmarks( userId, postId , { dispatch, queryFulfilled });
             }
         }),
     }),
