@@ -1,20 +1,19 @@
 import { FunctionComponent, memo, useCallback } from 'react';
-import { useFollowMutation } from '../../services/api/userApi';
+import { useFollowMutation, useGetUserByIdQuery } from '../../services/api/userApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 
 interface BtnFollowProps {
-    followerId: string;
+    userToFollowId: string;
 }
 
-const BtnFollow: FunctionComponent<BtnFollowProps> = ({ followerId }) => {
-    console.log('follower', followerId);
+const BtnFollow: FunctionComponent<BtnFollowProps> = ({ userToFollowId }) => {
+    console.log('userToFollowId', userToFollowId);
     
     // Utilisation de useSelector pour récupérer les informations nécessaires depuis le store
     const userId = useSelector((state: RootState) => state.auth.user?.id);
-    const isFollowing = useSelector((state: RootState) => 
-        state.auth.user?.followings?.includes(followerId)
-    );
+    const userFollowers = useGetUserByIdQuery(userToFollowId).data?.data?.followers; console.log('userFollowers:', userFollowers);
+    const isFollowing = userFollowers?.some((follower) => follower.id === userId); console.log('isFollowing:', isFollowing);
     
     const [follow] = useFollowMutation();
 
@@ -22,12 +21,12 @@ const BtnFollow: FunctionComponent<BtnFollowProps> = ({ followerId }) => {
     const handleFollow = useCallback(async () => {
         try {
             if (userId) {
-                await follow({ followerId, userId });
+                await follow({ userId, userToFollowId });
             }
         } catch (err) {
             console.error(err);
         }
-    }, [follow, followerId, userId]);
+    }, [follow, userToFollowId, userId]);
 
     return (
         <div>
