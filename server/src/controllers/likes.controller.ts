@@ -34,11 +34,17 @@ const likePost = async (req: Request, res: Response) => {
         if (existingLike) {
             // Retirer le like
             await existingLike.destroy();
-            return apiSuccess(res, 'Post unliked successfully', null, 200);
+            const likers = await db.PostLike.findAll({ where: { postId: postId } });
+            return apiSuccess(res, 'Post unliked successfully', {
+                likers: likers.map((like) => like.userId),
+            }, 200);
         } else {
             // Ajouter le like
             await db.PostLike.create({ postId: postId, userId: likerId });
-            return apiSuccess(res, 'Post liked successfully', null, 200);
+            const likers = await db.PostLike.findAll({ where: { postId: postId } });
+            return apiSuccess(res, 'Post liked successfully', {
+                likers: likers.map((like) => like.userId),
+            }, 200);
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while liking the post.');
