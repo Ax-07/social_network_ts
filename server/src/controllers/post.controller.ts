@@ -114,7 +114,22 @@ const rePost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await db.Post.findAll();
+    const posts = await db.Post.findAll({
+      include: [
+        {
+          model: db.User,
+          as: 'likers',
+          through: { attributes: [] }, // Ignorer les attributs de la table de jonction
+          attributes: ['id', 'username'],
+        },
+        {
+          model: db.User,
+          as: 'reposters',
+          through: { attributes: [] },
+          attributes: ['id', 'username'],
+        }
+      ]
+    });
     return apiSuccess(res, 'All posts', posts, 200);
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while getting all posts.');
@@ -127,7 +142,22 @@ const getPostById = async (req: Request, res: Response) => {
     return apiError(res, 'Post ID is required', 400);
   }
   try {
-    const post = await db.Post.findByPk(postId);
+    const post = await db.Post.findByPk(postId, {
+      include: [
+        {
+          model: db.User,
+          as: 'likers',
+          through: { attributes: [] },
+          attributes: ['id', 'username'],
+        },
+       {
+        model: db.User,
+        as: 'reposters',
+        through: { attributes: [] },
+        attributes: ['id', 'username'],
+       }
+      ],
+    });
     if (post === null) {
       return apiError(res, 'Post not found from getPostById', 404);
     } else {
