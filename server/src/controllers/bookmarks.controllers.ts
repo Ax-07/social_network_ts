@@ -4,8 +4,7 @@ import { handleControllerError } from "../utils/errors/controllers.error";
 import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const addToBookmarks = async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const { postId } = req.body;
+  const { userId, postId } = req.body;
 
   if (!userId || !postId) {
     return apiError(res, "Missing fields", 400);
@@ -33,14 +32,16 @@ const addToBookmarks = async (req: Request, res: Response) => {
     if (bookmark) {
       // Si le post est déjà dans les bookmarks, le retirer
       await bookmark.destroy();
-      return apiSuccess(res, "Post removed from bookmarks successfully");
+      const updatedBookmarks  = await db.UserBookmarks.findAll({ where: { userId: userId }, attributes: ['postId'] });
+      return apiSuccess(res, "Post removed from bookmarks successfully", {bookmarks: updatedBookmarks}, 200);
     } else {
       // Sinon, ajouter le post aux bookmarks
       await db.UserBookmarks.create({
         userId: userId,
         postId: postId,
       });
-      return apiSuccess(res, "Post added to bookmarks successfully");
+      const updatedBookmarks  = await db.UserBookmarks.findAll({ where: { userId: userId }, attributes: ['postId'] });
+      return apiSuccess(res, "Post added to bookmarks successfully", {bookmarks: updatedBookmarks}, 201);
     }
   } catch (error) {
     return handleControllerError(
@@ -64,17 +65,8 @@ const getBookmarkedPosts = async (req: Request, res: Response) => {
       return apiError(res, 'User not found', 404);
     }
 
-    // Récupérez les posts signés par l'utilisateur via la table de jonction
-    const bookmarkedPosts = await db.Post.findAll({
-      include: [
-        {
-          model: db.UserBookmarks,
-          as: 'bookmarks',
-          where: { userId: userId },
-          attributes: [], // Ne pas inclure les attributs de la table de jonction dans la réponse
-        }
-      ]
-    });
+    // Récupérer les posts bookmarkés par l'utilisateur via la table de jonction UserBookmarks
+    const bookmarkedPosts = await db.Post.findAll();
 
     // Si aucun post n'est trouvé, retourner un tableau vide
     if (bookmarkedPosts.length === 0) {
