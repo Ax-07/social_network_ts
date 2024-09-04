@@ -1,6 +1,6 @@
 import { useEffect, useState, type FunctionComponent } from 'react';
 import { User } from '../../utils/types/user.types';
-import { useGetFollowersNamesQuery } from '../../services/api/userApi';
+import { useGetUserByIdQuery } from '../../services/api/userApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import MemoizedBtnFollow from '../btn-follow/BtnFollow';
@@ -13,18 +13,18 @@ interface UserProfilCardProps {
 }
 
 const UserProfilCard: FunctionComponent<UserProfilCardProps> = ({user, cardRef, onMouseLeave, onMouseEnter}) => {
-    const { data: followersData } = useGetFollowersNamesQuery(user?.id ?? '');
+    const {data: {data: userData} = {}} = useGetUserByIdQuery(user?.id ?? ''); console.log('userData:', userData?.followers);
     const [filteredFollowersNames, setFilteredFollowersNames] = useState<string[]>([]);
-    const userName = useSelector((state: RootState) => state?.auth?.user?.username);
+    const userName = useSelector((state: RootState) => state?.auth?.user?.username); // username de l'utilisateur connecter
 
     useEffect(() => {
-        if (followersData?.data?.followersNames && userName) {
-            const filteredNames = followersData.data.followersNames.filter(
-                (followerName) => followerName !== userName
-            );
-            setFilteredFollowersNames(filteredNames);
-        }
-    }, [followersData, userName]);
+      if (userData?.followers && user?.username && userName) {
+          const filteredNames = userData.followers.filter(
+              (follower) => follower.username !== user?.username && follower.username !== userName
+          ).map((follower) => follower.username);
+          setFilteredFollowersNames(filteredNames);
+      }
+  }, [user?.username, userName, userData]);
 
     return (
     <div className='userProfile-card'
@@ -38,7 +38,7 @@ const UserProfilCard: FunctionComponent<UserProfilCardProps> = ({user, cardRef, 
             alt="User Profile Thumbnail"
             loading="lazy"
           />
-          <MemoizedBtnFollow followerId={user?.id ?? ''} />
+          <MemoizedBtnFollow userToFollowId={user?.id ?? ''} />
         </div>
         <div className="profile__info-body">
           <h3 className="fs-20-700">{user?.username}</h3>
