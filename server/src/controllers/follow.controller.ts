@@ -53,7 +53,31 @@ const followUser = async (req: Request, res: Response) => {
                 });
             }
 
-            return apiSuccess(res, 'User unfollowed successfully', null);
+             // Récupérer les listes de followings et followers
+             const updatedFollowings = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followings', 
+                    through: { attributes: [] }, // Ignore la table de jonction
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followerId }
+            });
+
+            const updatedFollowers = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followers', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followedId }
+            });
+
+            return apiSuccess(res, 'User unfollowed successfully', {
+                followings: updatedFollowings[0]?.get('followings'),
+                followers: updatedFollowers[0]?.get('followers'),
+            });
         } else {
             // Follow: créer un nouvel abonnement
             await db.UserFollowers.create({ followerId: followerId, followedId: followedId });
@@ -76,7 +100,30 @@ const followUser = async (req: Request, res: Response) => {
                 });
             }
 
-            return apiSuccess(res, 'User followed successfully', null);
+            // Récupérer les listes de followings et followers
+            const updatedFollowings = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followings', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followerId }
+            });
+
+            const updatedFollowers = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followers', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followedId }
+            });
+            return apiSuccess(res, 'User followed successfully', {
+                followings: updatedFollowings[0]?.get('followings'),
+                followers: updatedFollowers[0]?.get('followers'),
+            });
         }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while following the user.');
