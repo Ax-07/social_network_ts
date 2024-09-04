@@ -64,8 +64,12 @@ db.Comment.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' });
 db.User.belongsToMany(db.User, { through: UserFollowers, as: 'followers', foreignKey: 'followedId', otherKey: 'followerId' });
 db.User.belongsToMany(db.User, { through: UserFollowers, as: 'followings', foreignKey: 'followerId', otherKey: 'followedId' });
 
-db.User.belongsToMany(db.Post, { through: UserBookmarks, as: 'bookmarks', foreignKey: 'userId' });
-db.Post.belongsToMany(db.User, { through: UserBookmarks, as: 'bookmarkedBy', foreignKey: 'postId' });
+db.UserFollowers.belongsTo(db.User, { foreignKey: 'followerId', as: 'follower' });
+db.UserFollowers.belongsTo(db.User, { foreignKey: 'followedId', as: 'followed' });
+
+// Association entre User et Post via UserBookmarks (table de jonction)
+db.User.belongsToMany(db.Post, { through: db.UserBookmarks, as: 'bookmarks', foreignKey: 'userId' });
+db.Post.belongsToMany(db.User, { through: db.UserBookmarks, as: 'bookmarkedBy', foreignKey: 'postId' });
 
 db.User.belongsToMany(db.Post, { through: PostLike, as: 'likedPosts', foreignKey: 'userId' });
 db.Post.belongsToMany(db.User, { through: PostLike, as: 'likers', foreignKey: 'postId' });
