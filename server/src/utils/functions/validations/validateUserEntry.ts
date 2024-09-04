@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { UserAttributes } from "../../../models/user.model";
+import { UserAttributes } from "../../../models/users/user.model";
 
 interface UserEntry extends Optional<UserAttributes, "id"> {};
 
@@ -28,14 +28,6 @@ const validateUserEntry = (entry: UserEntry) => {
 
     if (entry.bio !== undefined && (typeof entry.bio !== 'string' || entry.bio.length > 160)) {
         errors.push('Bio must be a string with a maximum length of 160 characters');
-    }
-
-    if (entry.followers !== undefined && !Array.isArray(entry.followers)) {
-        errors.push('Followers must be an array of strings');
-    }
-
-    if (entry.followings !== undefined && !Array.isArray(entry.followings)) {
-        errors.push('Followings must be an array of strings');
     }
 
     return errors;
