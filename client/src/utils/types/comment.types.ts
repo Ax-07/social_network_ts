@@ -7,7 +7,7 @@ export interface CommentTypes {
   userId: string;
   content: string;
   media?: string | null;
-  likers?: string[] | [];
+  likers?: { id: string; username: string }[] | [];
   commentsCount?: number;
   reposters?: string[] | [];
   views?: number;

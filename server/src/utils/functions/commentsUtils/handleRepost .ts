@@ -7,24 +7,38 @@ export const handleRepost = async (
     userId: string,
     transaction: Transaction
   ) => {
+    // Vérifiez si le post commenté existe
     const commentedPost = await db.Post.findByPk(commentedPostId, { transaction });
     if (!commentedPost) {
       throw new Error(`The specified post with ID ${commentedPostId} does not exist.`);
     }
-  
-    const reposters = commentedPost.reposters || [];
-    if (!reposters.includes(userId)) {
-      reposters.push(userId);
-      await commentedPost.update({ reposters }, { transaction });
 
+    // Vérifiez si l'utilisateur a déjà reposté ce post
+    const existingRepost = await db.PostRepost.findOne({
+      where: {
+        userId: userId,
+        postId: commentedPostId,
+      },
+      transaction,
+    });
+
+    // Si l'utilisateur n'a pas déjà reposté, créez une nouvelle entrée dans PostRepost
+    if (!existingRepost) {
+      await db.PostRepost.create({
+        userId: userId,
+        postId: commentedPostId,
+      }, { transaction });
+
+      // Créez une notification pour le propriétaire du post original
       const response = await db.Notification.create({
         userId: commentedPost.userId,
         senderId: userId,
         type: "repost",
         postId: commentedPost.id,
         message: "Votre publication a été partagée",
-      }, { transaction});
+      }, { transaction });
 
+      // Émettre la notification via socket.io
       if (response) {
         io.to(commentedPost.userId).emit("notification", {
           id: response.id,

@@ -1,4 +1,3 @@
-// src/models/comment.model.ts
 import { Sequelize, DataTypes, Model, Optional } from "sequelize";
 
 interface CommentAttributes {
@@ -7,28 +6,21 @@ interface CommentAttributes {
   content: string;
   media?: string;
   commentsCount?: number;
-  likers?: string[] | [];
-  reposters?: string[] | null;
   postId?: string;
   commentId?: string;
   commentedPostId?: string;
   commentedCommentId?: string;
-  views?: number; // Ajout du nombre de vues
+  views?: number;
 }
 
 interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> {}
 
-class Comment
-  extends Model<CommentAttributes, CommentCreationAttributes>
-  implements CommentAttributes
-{
+class Comment extends Model<CommentAttributes, CommentCreationAttributes> implements CommentAttributes {
   public id!: number;
   public userId!: string;
   public content!: string;
   public media!: string;
   public commentsCount?: number;
-  public likers!: string[];
-  public reposters!: string[];
   public postId!: string;
   public commentId!: string;
   public commentedPostId!: string;
@@ -67,16 +59,6 @@ const initializeCommentModel = (sequelize: Sequelize): typeof Comment => {
         type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: 0,
-      },
-      likers: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: [],
-      },
-      reposters: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: [],
       },
       postId: {
         type: DataTypes.STRING,

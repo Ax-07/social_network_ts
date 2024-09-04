@@ -35,7 +35,7 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const rePost = async (req: Request, res: Response) => {
-  const { userId, originalPostId, content } = req.body; console.log(req.body);
+  const { userId, originalPostId, content } = req.body;
 
   if (!userId || !originalPostId) {
     return apiError(res, 'Validation error', 'userId and originalPostId are required', 400);
@@ -45,6 +45,7 @@ const rePost = async (req: Request, res: Response) => {
   if (errors.length > 0) {
     return apiError(res, 'Validation error', errors, 400);
   }
+
   try {
     // Commencer une transaction pour garantir l'intégrité des données
     const transaction = await db.sequelize.transaction();
@@ -55,40 +56,53 @@ const rePost = async (req: Request, res: Response) => {
         await transaction.rollback();
         return apiError(res, `The specified ${userId} user does not exist.`, 404);
       }
+      
       const post = await db.Post.findByPk(originalPostId, { transaction });
-
       if (!post) {
         await transaction.rollback();
         return apiError(res, `The specified ${originalPostId} post does not exist.`, 404);
       }
 
-      // Ajoutez l'utilisateur à la liste des reposters
-      const reposters = post.reposters ? [...post.reposters] : [];
-      if (!reposters.includes(userId)) {
-        reposters.push(userId); console.log('reposters', reposters);
-        await post.update({ reposters: reposters }, { transaction });
+      // Vérifier si l'utilisateur a déjà reposté ce post
+      const existingRepost = await db.PostRepost.findOne({
+        where: {
+          userId: userId,
+          postId: originalPostId,
+        },
+        transaction,
+      });
+
+      if (existingRepost) {
+        await transaction.rollback();
+        return apiError(res, 'You have already reposted this post.', 400);
       }
 
-      const rePost = await db.Post.create({
+      // Créer un nouveau repost
+      const newRepost = await db.Post.create({
         userId,
-        originalPostId: post.id, // Référence au post original
-        content: content
+        originalPostId: post.id,
+        content: content || null,
       }, { transaction });
 
-      if(rePost){
-        io.to(post.userId).emit('notification', {
-          id: rePost.id,
-          type: 'repost',
-          postId: post.id,
-          userId: post.userId,
-          senderId: userId,
-          message: 'Votre publication a été partagée',
-          createdAt: rePost.createdAt
-        });
-      }
+      // Ajouter une entrée dans la table PostRepost
+      await db.PostRepost.create({
+        userId: userId,
+        postId: post.id,
+      }, { transaction });
+
+      // Envoyer une notification (exemple avec socket.io)
+      io.to(post.userId).emit('notification', {
+        id: newRepost.id,
+        type: 'repost',
+        postId: post.id,
+        userId: post.userId,
+        senderId: userId,
+        message: 'Votre publication a été partagée',
+        createdAt: newRepost.createdAt
+      });
 
       await transaction.commit();
-      return apiSuccess(res, 'Post reposted successfully', rePost, 201);
+      return apiSuccess(res, 'Post reposted successfully', newRepost, 201);
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -100,7 +114,22 @@ const rePost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await db.Post.findAll();
+    const posts = await db.Post.findAll({
+      include: [
+        {
+          model: db.User,
+          as: 'likers',
+          through: { attributes: [] }, // Ignorer les attributs de la table de jonction
+          attributes: ['id', 'username'],
+        },
+        {
+          model: db.User,
+          as: 'reposters',
+          through: { attributes: [] },
+          attributes: ['id', 'username'],
+        }
+      ]
+    });
     return apiSuccess(res, 'All posts', posts, 200);
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while getting all posts.');
@@ -113,7 +142,22 @@ const getPostById = async (req: Request, res: Response) => {
     return apiError(res, 'Post ID is required', 400);
   }
   try {
-    const post = await db.Post.findByPk(postId);
+    const post = await db.Post.findByPk(postId, {
+      include: [
+        {
+          model: db.User,
+          as: 'likers',
+          through: { attributes: [] },
+          attributes: ['id', 'username'],
+        },
+       {
+        model: db.User,
+        as: 'reposters',
+        through: { attributes: [] },
+        attributes: ['id', 'username'],
+       }
+      ],
+    });
     if (post === null) {
       return apiError(res, 'Post not found from getPostById', 404);
     } else {
@@ -191,36 +235,7 @@ const viewPost = async (req: Request, res: Response) => {
   } catch (error) {
     return handleControllerError(res, error, 'An error occurred while viewing the post.');
   }
-}
-
-const getBookmarkedPosts = async (req: Request, res: Response) => {
-  const userId = req.query.id as string;
-  if (!userId) {
-    return apiError(res, 'User ID is required', 400);
-  }
-
-  try {
-    const user = await db.User.findByPk(userId);
-    if (user === null) {
-      return apiError(res, 'User not found', 404);
-    }
-
-    const bookmarkedPostsIds = user.bookmarks;
-
-    // If the user has no bookmarks, return an empty array
-    if (!Array.isArray(bookmarkedPostsIds) || bookmarkedPostsIds.length === 0) {
-      return apiSuccess(res, `No bookmarked posts found for user ${userId}`, [], 200);
-    }
-
-    const bookmarkedPosts = await db.Post.findAll({ where: { id: bookmarkedPostsIds } });
-
-    return apiSuccess(res, `Bookmarked posts for user ${userId}`, bookmarkedPosts, 200);
-
-  } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while getting bookmarked posts.');
-  }
 };
-
 
 export { 
   createPost,
@@ -230,5 +245,4 @@ export {
   updatePost,
   deletePost,
   viewPost,
-  getBookmarkedPosts
 };

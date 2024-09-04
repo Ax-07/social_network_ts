@@ -4,7 +4,7 @@ import db from "../models";
 import { handleControllerError } from "../utils/errors/controllers.error";
 import { CustomRequest } from "../utils/types/customRequest";
 import generateUniqueHandle from "../utils/functions/generateUniqueHandle";
-import { User as UserType } from "../models/user.model";
+import { User as UserType } from "../models/users/user.model";
 import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const { User } = db;

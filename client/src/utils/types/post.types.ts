@@ -3,9 +3,9 @@ export interface PostTypes {
   userId: string;
   content: string;
   media?: string | null;
-  likers?: string[] | [];
+  likers?: { id: string, username: string }[] | [];
   commentsCount?: number;
-  reposters?: string[] | [];
+  reposters?: { id: string, username: string }[] | [];
   originalPostId?: string | null;
   views?: number;
   createdAt?: string;

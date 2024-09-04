@@ -1,7 +1,8 @@
+import { postApi } from "../api/postApi";
 import { UserApi } from "../api/userApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updateUserCacheAfterFollow = async (userId: string, followerId: string, dispatch: any, queryFulfilled: any) => {
+export const updateUserCacheAfterFollow = async (userId: string, userToFollowId: string, dispatch: any, queryFulfilled: any) => {
     try {
         const { data } = await queryFulfilled;
         dispatch(
@@ -13,7 +14,7 @@ export const updateUserCacheAfterFollow = async (userId: string, followerId: str
             })
         );
         dispatch(
-            UserApi.util.updateQueryData("getUserById", followerId, (draft) => {
+            UserApi.util.updateQueryData("getUserById", userToFollowId, (draft) => {
                 const userUpdated = draft.data;
                 if (userUpdated) {
                     userUpdated.followers = data.data.followers;
@@ -26,10 +27,10 @@ export const updateUserCacheAfterFollow = async (userId: string, followerId: str
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updatePostCacheAfterAddToBookmarks = async ({userId}: {userId: string, postId: string}, {dispatch, queryFulfilled}: {dispatch: any, queryFulfilled: any}) => {
+export const updatePostCacheAfterAddToBookmarks = async (userId: string, postId: string, {dispatch, queryFulfilled}: {dispatch: any, queryFulfilled: any}) => {
     try {
         const { data } = await queryFulfilled;
-        console.log('Data from queryFulfilled:', data);
+        console.log('Data from queryFulfilled:', data, 'userId:', userId, 'postId:', postId);
     
         dispatch(
           UserApi.util.updateQueryData("getUserById", userId, (draft) => {
@@ -44,6 +45,19 @@ export const updatePostCacheAfterAddToBookmarks = async ({userId}: {userId: stri
             }
           })
         );
+
+// Mettre à jour le cache de `getBookmarkedPosts`
+dispatch(
+  postApi.util.updateQueryData("getBookmarkedPosts", userId, (draft) => {
+    // Ajouter ou supprimer le postId des bookmarks
+    const isAlreadyBookmarked = draft.data.some((post) => post.id === postId);
+
+    if (isAlreadyBookmarked) {
+      // Si le post était déjà bookmarké, on le retire
+      draft.data = draft.data.filter((post) => post.id !== postId);
+    }
+  })
+);
       } catch (error) {
         console.error("Failed to update cache after adding post to bookmarks:", error);
       }

@@ -5,94 +5,126 @@ import { apiError, apiSuccess } from '../utils/functions/apiResponses';
 import { io } from '../services/notifications';
 
 const followUser = async (req: Request, res: Response) => {
-    const { userId, followerId } = req.body;
+    // followerId represent l'id de l'utilisateur connecter
+    // followedId celui de l'utilisateur qu'il veut suivre
+    const { followerId, followedId } = req.body; 
 
-    // Vérification de la présence des champs nécessaires
-    if (!userId || !followerId) {
+    if (!followerId || !followedId) {
         return apiError(res, 'Missing fields', 400);
     }
 
     try {
-        // Récupération des utilisateurs par leurs IDs
-        const user = await db.User.findByPk(userId);
         const follower = await db.User.findByPk(followerId);
+        const followed = await db.User.findByPk(followedId);
 
-        // Vérification de l'existence des utilisateurs
-        if (!user || !follower) {
+        if (!follower || !followed) {
             return apiError(res, 'User not found', 404);
         }
 
-        // Récupération des listes de suivis et abonnés
-        let followings = user.followings || [];
-        let followers = follower.followers || [];
-
-        // Vérification si l'utilisateur suit déjà le follower
-        const isFollowing = followings.includes(followerId);
-
-        // Vérification si le follower est déjà suivi par l'utilisateur
-        const isFollower = followers.includes(userId);
-
-        // vérification que l'utilisateur n'essaie pas de se suivre lui même
-        if ( userId === followerId ) {
+        // Vérification que l'utilisateur n'essaie pas de se suivre lui-même
+        if (followerId === followedId) {
             return apiError(res, "You can't follow yourself", 400);
         }
-        
-        // Si l'utilisateur ne suit pas le follower
-        if (!isFollowing && !isFollower) {
-            // Ajout du follower à la liste des abonnements de l'utilisateur
-            followings = [...followings, followerId];
-            // Ajout de l'utilisateur à la liste des abonnés du follower
-            followers = [...followers, userId];
 
+        // Vérification si l'utilisateur suit déjà la personne
+        const existingFollow = await db.UserFollowers.findOne({
+            where: { followerId: followerId, followedId: followedId },
+        });
 
-            await user.update({ followings });
-            await follower.update({ followers });
+        if (existingFollow) {
+            // Unfollow: retirer l'abonnement
+            await existingFollow.destroy();
 
             const response = await db.Notification.create({
-                userId: followerId,
-                senderId: userId,
-                type: 'follow',
-                message: `${user.username} started following you`,
-            })
+                userId: followedId,
+                senderId: followerId,
+                type: 'unfollow',
+                message: `${follower.username} unfollowed you`,
+            });
+
             if (response) {
-                io.to(followerId).emit('notification', {
+                io.to(followedId).emit('notification', {
                     id: response.id,
-                    userId: followerId,
-                    senderId: userId,
-                    type: 'follow',
-                    message: `${user.username} started following you`,
+                    userId: followedId,
+                    senderId: followerId,
+                    type: 'unfollow',
+                    message: `${follower.username} unfollowed you`,
                     createdAt: response.createdAt,
                 });
             }
-        } else if (isFollowing && isFollower) {
-            // Si l'utilisateur suit déjà le follower
-            // Retrait du follower de la liste des abonnements de l'utilisateur
-            followings = followings.filter((id) => id !== followerId);
-            // Retrait de l'utilisateur de la liste des abonnés du follower
-            followers = followers.filter((id) => id !== userId);
 
-            await user.update({ followings });
-            await follower.update({ followers });
+             // Récupérer les listes de followings et followers
+             const updatedFollowings = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followings', 
+                    through: { attributes: [] }, // Ignore la table de jonction
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followerId }
+            });
+
+            const updatedFollowers = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followers', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followedId }
+            });
+
+            return apiSuccess(res, 'User unfollowed successfully', {
+                followings: updatedFollowings[0]?.get('followings'),
+                followers: updatedFollowers[0]?.get('followers'),
+            });
+        } else {
+            // Follow: créer un nouvel abonnement
+            await db.UserFollowers.create({ followerId: followerId, followedId: followedId });
 
             const response = await db.Notification.create({
-                userId: followerId,
-                senderId: userId,
+                userId: followedId,
+                senderId: followerId,
                 type: 'follow',
-                message: `${user.username} unfollowed you`,
+                message: `${follower.username} started following you`,
             });
+
             if (response) {
-                io.to(followerId).emit('notification', {
+                io.to(followedId).emit('notification', {
                     id: response.id,
-                    userId: followerId,
-                    senderId: userId,
+                    userId: followedId,
+                    senderId: followerId,
                     type: 'follow',
-                    message: `${user.username} unfollowed you`,
+                    message: `${follower.username} started following you`,
                     createdAt: response.createdAt,
                 });
-            };
-        }
+            }
 
-        return apiSuccess(res, 'User followed successfully', { followings: user.followings, followers: follower.followers });
+            // Récupérer les listes de followings et followers
+            const updatedFollowings = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followings', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followerId }
+            });
+
+            const updatedFollowers = await db.User.findAll({
+                include: {
+                    model: db.User, 
+                    as: 'followers', 
+                    through: { attributes: [] },
+                    attributes: ['id', 'username', 'profilPicture'],
+                },
+                where: { id: followedId }
+            });
+            return apiSuccess(res, 'User followed successfully', {
+                followings: updatedFollowings[0]?.get('followings'),
+                followers: updatedFollowers[0]?.get('followers'),
+            });
+        }
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while following the user.');
     }
@@ -107,15 +139,21 @@ const getFollowersNames = async (req: Request, res: Response) => {
 
     try {
         const user = await db.User.findByPk(id);
+
         if (!user) {
             return apiError(res, 'User not found', 404);
         }
 
-        // Récupération des noms des abonnés
+        // Récupération des noms des abonnés à partir de la table de jonction UserFollowers
+        const followers = await db.UserFollowers.findAll({
+            where: { followerId: id },
+            include: [{ model: db.User, as: 'follower', attributes: ['username'] }],
+        });
+
         const followersNames = await Promise.all(
-            (user.followers ?? []).map(async (followerId: string) => {
-                const follower = await db.User.findByPk(followerId);
-                return follower?.username || 'Unknown'; // On retourne 'Unknown' si l'utilisateur n'est pas trouvé
+            followers.map(async (follower) => {
+                const followerName = await db.User.findByPk(follower.followerId);
+                return followerName?.username ?? 'Unknown';
             })
         );
 
@@ -123,7 +161,6 @@ const getFollowersNames = async (req: Request, res: Response) => {
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while getting followers.');
     }
-}
-
+};
 
 export { followUser, getFollowersNames };

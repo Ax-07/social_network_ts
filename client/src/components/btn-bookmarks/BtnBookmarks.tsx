@@ -12,8 +12,8 @@ const BtnBookmarks: FunctionComponent<BtnBookmarksProps> = ({ postId, userId }) 
     const [isBookmarked, setIsBookmarked] = useState(false);
     
     useEffect(() => {
-        const userBookmarks = user?.bookmarks || [];
-        setIsBookmarked(userBookmarks.includes(postId));
+        const userBookmarks = user?.bookmarks || []; console.log('userBookmarks:', userBookmarks);
+        setIsBookmarked(userBookmarks.map((bookmark) => bookmark.postId).includes(postId));
     }, [postId, user?.bookmarks]);
 
     const handleAddToBookmarks = useCallback(async () => {

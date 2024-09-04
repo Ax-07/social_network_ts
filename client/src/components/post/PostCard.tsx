@@ -69,7 +69,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
           <div className="post-card__footer">
             <BtnComment postId={post.id} commentsCount={post.commentsCount} />
             <PostFormProvider origin="modal-repost">
-              <BtnRepost postId={post.id} reposterCount={post.reposters?.length}/>
+              <BtnRepost postId={post.id} reposterCount={post.reposters?.length ?? 0}/>
             </PostFormProvider>
             <BtnLike post={post} />
             <BtnViews viewsCount={post.views} />
