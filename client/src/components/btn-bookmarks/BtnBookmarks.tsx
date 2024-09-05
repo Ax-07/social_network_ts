@@ -37,6 +37,7 @@ const BtnBookmarks: FunctionComponent<BtnBookmarksProps> = ({ postId, userId }) 
                 checked={isBookmarked}
                 className='btn-bookmarks__checkbox'
                 onChange={handleAddToBookmarks}
+                aria-label={isBookmarked ? "Retirer des favoris" : "Ajouter aux favoris"}
             />
             <label htmlFor={`bookmark-${postId}`} className='btn-bookmarks__label'>
                 <span className='btn-bookmarks__icon'></span>
