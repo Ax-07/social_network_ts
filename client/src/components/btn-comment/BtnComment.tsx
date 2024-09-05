@@ -13,7 +13,6 @@ const BtnComment: FunctionComponent<BtnCommentProps> = ({
   commentId,
   commentsCount,
 }) => {
-
   let modaleName: PostFormOrigin;
   if (postId) {
     modaleName = "modal-comment-post";
@@ -21,8 +20,14 @@ const BtnComment: FunctionComponent<BtnCommentProps> = ({
     modaleName = "modal-comment-comment";
   }
   return (
-    <ButtonModal modalName={modaleName} postId={postId} commentId={commentId} className="btn__modal-comment">
-      <img src="/src/assets/icons/faMessage.svg" alt="icon comment" />
+    <ButtonModal
+      modalName={modaleName}
+      postId={postId}
+      commentId={commentId}
+      className="btn__modal-comment"
+      aria-label={`Commenter ce ${postId ? 'post' : 'commentaire'}. ${commentsCount} commentaires`}
+    >
+      <img src="/src/assets/icons/faMessage.svg" alt="Icône de commentaire" />
       <p>{commentsCount}</p>
     </ButtonModal>
   );
