@@ -20,9 +20,9 @@ const BtnViews: FunctionComponent<BtnViewsProps> = ({viewsCount}) => {
       }
     }, [viewsCount]);
   return (
-    <div className="btn__modal-comment">
-        <img src="/src/assets/icons/faStats.svg" alt="icon retweet" />
-        <p>{viewsCount} {showIncrement && <span>+ 1</span>}</p>
+    <div className="btn__modal-comment" aria-label={`Nombre de vues: ${viewsCount}`}>
+      <img src="/src/assets/icons/faStats.svg" alt="Icône des statistiques" />
+      <p>{viewsCount} {showIncrement && <span>+ 1</span>}</p>
     </div>
   );
 };
