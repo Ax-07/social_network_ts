@@ -70,10 +70,11 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
     setCommentId(commentId ?? '');
     handleClose();
   }
+  
 
   return (
     <>
-      <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen}>
+      <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen} aria-label="Ouvrir le menu de repost">
         <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
         <p>{reposterCount}</p>
       </div>
@@ -84,12 +85,12 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
             className="btn-repost__modal"
             style={{ position: 'absolute', top: modalPosition.top, left: modalPosition.left }}
           >
-            <div className="btn-repost__modal-option" onClick={handleClose}>
-              <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
+          <div className="btn-repost__modal-option" onClick={handleClose} aria-label="Reposter sans commentaire">
+            <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
               <p>Repost</p>
             </div>
-            <div className="btn-repost__modal-option" onClick={handleOpenRepostModal}>
-              <img src="/src/assets/icons/faPencilAlt.svg" alt="icon pen" />
+            <div className="btn-repost__modal-option" onClick={handleOpenRepostModal} aria-label="Reposter avec commentaire">
+            <img src="/src/assets/icons/faPencilAlt.svg" alt="icon pen" />
               <p>Citation</p>
             </div>
           </div>,
@@ -102,11 +103,11 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
             className="btn-repost__modal"
             style={{ position: 'absolute', top: modalPosition.top, left: modalPosition.left }}
           >
-            <div className="btn-repost__modal-option" onClick={handleClose}>
+            <div className="btn-repost__modal-option" onClick={handleClose} aria-label="Reposter sans commentaire">
               <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
               <p>Repost</p>
             </div>
-            <div className="btn-repost__modal-option" onClick={handleOpenRepostModal}>
+            <div className="btn-repost__modal-option" onClick={handleOpenRepostModal} aria-label="Reposter avec commentaire">
               <img src="/src/assets/icons/faPencilAlt.svg" alt="icon pen" />
               <p>Citation</p>
             </div>
