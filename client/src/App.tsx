@@ -10,35 +10,60 @@ import Pages from "./pages";
 import Modals from "./components/modal/Modals";
 import PostPage from "./pages/post/PostPage";
 import CommentPage from "./pages/post/CommentPage";
+import { useCachePostViews } from "./components/post/functions/cachePostViews";
 
 function App() {
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1020;
   const refreshToken = useSelector((state: RootState) => state.auth?.refreshToken);
   const isAuth = useSelector((state: RootState) => state.auth?.isAuthenticated);
-  const [ googleRefreshToken ] = useGoogleRefreshTokenMutation();
+  const [googleRefreshToken] = useGoogleRefreshTokenMutation();
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isAuth || !refreshToken) return;
-      googleRefreshToken({refreshToken: refreshToken});
+      googleRefreshToken({ refreshToken: refreshToken });
     }, 1000 * 60 * 15); // 15 minutes
     return () => clearInterval(interval);
   }, [isAuth, refreshToken, googleRefreshToken]);
 
+  useCachePostViews();
+
+  // Gestion du focus pour la navigation
+  useEffect(() => {
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.focus(); // Assure que le focus est sur le contenu principal lors de la navigation
+    }
+  }, []);
+
   return (
     <div className="app">
-      <picture className="picture-background">
-        <source srcSet="/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp" media="(max-width: 600px)" />
+      {/* Image de fond : aria-hidden car elle est purement décorative */}
+      <picture className="picture-background" aria-hidden="true">
+        <source
+          srcSet="/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp"
+          media="(max-width: 600px)"
+        />
         <source
           srcSet="/images/app-background/tablet-unsplash_eNoeWZkO7Zc.webp"
           media="(min-width: 601px) and (max-width: 1024px)"
         />
-        <source srcSet="/images/app-background/desktop-unsplash_eNoeWZkO7Zc.webp" media="(min-width: 1025px)" />
-        <img src="/images/app-background/mobile-image.webp" alt="image de fond de l'application" loading="lazy" />
+        <source
+          srcSet="/images/app-background/desktop-unsplash_eNoeWZkO7Zc.webp"
+          media="(min-width: 1025px)"
+        />
+        <img
+          src="/images/app-background/mobile-image.webp"
+          alt="Fond d'écran du site"
+          loading="lazy"
+        />
       </picture>
-      <SideMenu />
-      <main>
+
+        <SideMenu />
+
+      {/* Le contenu principal doit être focusable pour la navigation au clavier */}
+      <main tabIndex={-1} aria-live="polite">
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/auth" element={<Pages.AuthPage />} />
@@ -53,9 +78,17 @@ function App() {
           <Route path="/profile/:id/*" element={<Pages.Profile />} />
           <Route path="/more" element={<Pages.More />} />
         </Routes>
+
+        {/* Composant des modales */}
         <Modals />
       </main>
-        {!isTablet && <SideColumn />}
+
+      {/* Rendu conditionnel de la colonne latérale */}
+      {!isTablet && (
+        <aside aria-label="Colonne latérale supplémentaire">
+          <SideColumn />
+        </aside>
+      )}
     </div>
   );
 }
