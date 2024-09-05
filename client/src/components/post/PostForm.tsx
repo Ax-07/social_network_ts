@@ -37,16 +37,17 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
 
      return (
         <div className={`addpost addpost--${origin}`}>
-          <div className="addpost__avatar">
+          <figure className="addpost__avatar">
             <ProfilPicture user={user}/>
-          </div>
+          </figure>
           <form onSubmit={handleSubmit} className="addpost__form">
-            <div className="addpost__header">
+            <header className="addpost__header">
               <select name="" id="">
                 <option value="public">Public</option>
                 <option value="private">Privé</option>
               </select>
-            </div>
+            </header>
+            <label htmlFor="content" className="sr-only">Contenu de la publication</label>
             <textarea className="addpost__input"
               placeholder={placeholder}
               name="content"
@@ -56,6 +57,9 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
               value={form.content}
               onInput={handleInputTextarea}
             />
+            <p id="content-description" className="sr-only">
+              {`Ajoutez du texte à votre publication. Limite de caractères : ??.`}
+            </p>
             {isPreview && (
               <PreviewPicture
                 media={preview}
@@ -71,12 +75,12 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
               />
             )}
             {form.originalPostId &&
-            (<div className='addpost__repost-card'>
+            (<aside className='addpost__repost-card'>
               <RepostCard originalPostId={form.originalPostId} orignalCommentId={form.originalCommentId}/>
-            </div>
+            </aside>
           )}
           
-            <div className="addpost__bottom">
+            <footer className="addpost__bottom">
               <InputPicture setMedia={handleFileChange} inputRef={inputFileRef} />
               <Button type="submit"
                 className="btn__post btn__post-submit"
@@ -84,7 +88,7 @@ const PostForm: FunctionComponent<PostFormProps> = ({ handleSubmit, origin }) =>
               >
                 {buttonText}
               </Button>
-            </div>
+            </footer>
           </form>
         </div>
       );
