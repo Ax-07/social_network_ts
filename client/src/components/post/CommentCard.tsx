@@ -32,20 +32,35 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({ comment, origin }) =
                     <UserNameHoverDisplayCard user={commenter} createdAt={comment.createdAt} />
                     <p className="post-card__content">{comment.content}</p>
                     {comment.media && isWebp && (
+                    <figure className="post-card__media">
                         <img className="post-card__img" src={comment.media} alt={""} loading="lazy" />
+                        <figcaption className="sr-only">Aperçu de l'image</figcaption>
+                        </figure>
                     )}
                     {comment.media && isMp4 && (
-                        <video className="post-card__video" src={comment.media} controls />
-                    )}
+                    <figure className="post-card__media">
+                        <video 
+                            className="post-card__video" 
+                            src={comment.media} 
+                            controls 
+                            aria-label="Vidéo du commentaire" 
+                        />
+                        <figcaption className='sr-only'>Vidéo du commentaire</figcaption>
+                    </figure>                    )}
                     {comment.media && isYoutubeVideo && (
-                        <iframe
-                            style={{ width: "100%", aspectRatio: "16/9" }}
-                            className="post-card__youtube"
-                            src={comment.media}
-                            title="YouTube video player"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
+                        <figure className="post-card__media">
+                            <iframe
+                                style={{ width: "100%", aspectRatio: "16/9" }}
+                                className="post-card__youtube"
+                                src={comment.media}
+                                title="Lecteur vidéo YouTube"
+                                aria-label="Vidéo YouTube du commentaire"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                loading="lazy"
+                            ></iframe>
+                        <figcaption className='sr-only'>Vidéo YouTube du commentaire</figcaption>
+                    </figure>
                     )}
                     {origin !== 'repost' && <div className="post-card__footer">
                         <BtnComment commentId={comment.id} commentsCount={commentsCount} />
