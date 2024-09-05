@@ -21,12 +21,14 @@ const InputPicture: FunctionComponent<InputPictureProps> = ({ setMedia, inputRef
 
   return (
     <div className="input-picture">
-      <div onClick={handleUploadClick} className="custom-file-upload">
-        <img src="/src/assets/icons/icon_image.svg" alt="" />
+      <label htmlFor="upload-input" className="sr-only">Télécharger une image ou une vidéo</label>
+      <div onClick={handleUploadClick} className="custom-file-upload" role='button' aria-label="Télécharger une image ou une vidéo">
+        <img src="/src/assets/icons/icon_image.svg" alt="Icône pour télécharger une image" />
       </div>
       <input
         ref={inputRef}
         type="file"
+        id="upload-input"
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
