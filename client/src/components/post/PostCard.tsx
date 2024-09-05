@@ -12,8 +12,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import BtnBookmarks from "../btn-bookmarks/BtnBookmarks";
 import interceptor from "./functions/interceptor";
-import { useIncrementPostViewsMutation } from "../../services/api/postApi";
 import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../userProfile/UserHoverDisplayCard ";
+import { cachePostView } from "./functions/cachePostViews";
 
 export type PostProps = {
   post: PostTypes;
@@ -28,10 +28,9 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const isMp4 = post?.media?.endsWith(".mp4");
   const isYoutubeVideo = post?.media?.includes("youtube.com");
   const cardRef = useRef<HTMLDivElement>(null);
-  const [incrementPostViews] = useIncrementPostViewsMutation();
 
   useEffect(() => {
-    interceptor({ action: () => posterId !== userId && incrementPostViews(post.id), ref: cardRef });
+    interceptor({ action: () => posterId !== userId && cachePostView(post.id), ref: cardRef });
   }, [cardRef, post.id]);
   
   return (
@@ -39,26 +38,43 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
       {origin !== "post-page" && (
         <NavLink to={`/home/posts/${post.id}`} className="post-card__link" />
       )}
-      <article className="post-card" ref={cardRef}>
-        <UserThumbnailHoverDisplayCard user={poster} />
+      <article className="post-card" ref={cardRef} aria-labelledby={`post-title-${post.id}`}>
+      <UserThumbnailHoverDisplayCard user={poster} />
         <div className="post-card__wrapper">
           <UserNameHoverDisplayCard user={poster} createdAt={post.createdAt} />
-          {post.content && <p className="post-card__content">{post.content}</p>}
+          {post.content && (
+            <p className="post-card__content" id={`post-title-${post.id}`}>
+              {post.content}
+            </p>
+          )}
+          
+          {/* Utilisation de <figure> pour les médias */}
           {post.media && isWebp && (
-            <img className="post-card__img" src={post.media} alt="" loading="lazy"/>
+            <figure className="post-card__media">
+              <img className="post-card__img" src={post.media} alt="Image du post" loading="lazy" />
+              <figcaption className="sr-only">Aperçu de l'image</figcaption>
+            </figure>
           )}
           {post.media && isMp4 && (
-            <video className="post-card__video" src={post.media} controls />
+            <figure className="post-card__media">
+              <video className="post-card__video" src={post.media} controls aria-label="Vidéo du post" />
+              <figcaption className="sr-only">Vidéo du post</figcaption>
+            </figure>
           )}
           {post.media && isYoutubeVideo && (
-            <iframe
-              style={{ width: "100%", aspectRatio: "16/9" }}
-              className="post-card__youtube"
-              src={post.media}
-              title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+            <figure className="post-card__media">
+              <iframe
+                style={{ width: "100%", aspectRatio: "16/9" }}
+                className="post-card__youtube"
+                src={post.media}
+                title="Lecteur vidéo YouTube"
+                aria-label="Vidéo YouTube du post"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              ></iframe>
+              <figcaption className="sr-only">Vidéo YouTube du post</figcaption>
+            </figure>
           )}
           {post.originalPostId && 
           (<div className="post-card__repost-card">
