@@ -69,6 +69,7 @@ const BtnLike: FunctionComponent<BtnLikeProps> = ({ post, comment }) => {
           className="btn__like-checkbox"
           checked={post ? isPostLiked : isCommentLiked}
           onChange={handleLike}
+          aria-label={`Aimer ce ${post ? 'post' : 'commentaire'} ${post ? isPostLiked ? 'Annuler' : 'Aimer' : isCommentLiked ? 'Annuler' : 'Aimer'}`}
         />
         <label htmlFor={uniqueId} className="btn__like-label">
           <span className="btn__like-icon"></span>
