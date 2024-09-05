@@ -14,7 +14,7 @@ const PostList = () => {
       <ul className="post__list">
         {sortedPosts.map((post) => (
           <li className="post__item" key={post.id}>
-            <PostCard key={post.id} post={post} origin="post-list"/>
+            <PostCard post={post} origin="post-list"/>
           </li>
         ))}
       </ul>
