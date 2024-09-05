@@ -34,11 +34,7 @@ interface AddPostProps {
  * - Enfin, il ferme la modale si une fonction `onClose` est fournie (en fonction de l'origine).
  */
 const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
-  const {
-    form,
-    resetForm,
-  } = usePostFormContext();
-
+  const { form, resetForm} = usePostFormContext();
   const [addPost, { isLoading }] = useAddPostMutation();
   const pushToast = usePushToast();
 
@@ -63,9 +59,10 @@ const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
       onClose && onClose();
     }
   };
-  if (isLoading) return <p>Publication en cours...</p>;
+  if (isLoading) return <p aria-live="polite">Publication en cours...</p>;
+
   
-  return <PostForm handleSubmit={handleSubmit} origin={origin} />
+  return <PostForm handleSubmit={handleSubmit} origin={origin} aria-live="assertive"/>
 };
 
 export default AddPost;
