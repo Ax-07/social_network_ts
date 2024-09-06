@@ -61,27 +61,34 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon, userId }) 
   const isTablet = windowWidth <= 1280;
   const { notifications } = useNotifications(userId as string);
 
-  const [isNotification, setIsNotification ] = useState(false);
+  const [notificationsHasNotRead, setNotificationsHasNotRead] = useState(0);
 
+  // Gestion des notifications
   useEffect(() => {
-    if(notifications.length > 0) {
-      setIsNotification(true);
+    // Réinitialiser le compteur à chaque mise à jour des notifications
+    if (notifications && notifications.length > 0) {
+      const unreadNotificationsCount = notifications.filter(
+        (notification) => !notification.isRead
+      ).length;
+
+      // Mettre à jour le compteur des notifications non lues
+      setNotificationsHasNotRead(unreadNotificationsCount);
     } else {
-      setIsNotification(false);
+      // S'il n'y a pas de notifications, réinitialiser le compteur
+      setNotificationsHasNotRead(0);
     }
+    
+    // Log des notifications pour vérifier le contenu
+    console.log('notifications', notifications);
   }, [notifications]);
 
-  const resetNotifications = () => {
-    setIsNotification(false);
-  };
-
   return (
-    <li className="sidemenu__item" onClick={resetNotifications}>
+    <li className="sidemenu__item">
       <NavLink to={to} className="sidemenu__link">
         <img src={icon} alt={`icon ${name}`} />
-        {isNotification && userId &&
+        {notificationsHasNotRead > 0 && userId &&
         <span className="sidemenu__link-notifications">
-          <p>{notifications.length}</p>
+          <p>{notificationsHasNotRead}</p>
         </span>}
         {!isTablet && name}
       </NavLink>
