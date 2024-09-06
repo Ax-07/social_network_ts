@@ -4,6 +4,7 @@ import { usePushToast } from '../../../components/toast/Toasts';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../../services/notifications/notificationSlice';
 import { NotificationTypes } from '../../../utils/types/notification.types';
+import { useGetAllNotificationsByUserIdQuery } from '../../../services/api/notificationApi';
 
 /**
  * Hook personnalisé pour gérer les notifications en temps réel via WebSocket.
@@ -30,6 +31,7 @@ import { NotificationTypes } from '../../../utils/types/notification.types';
  */
 const useNotifications = (userId: string): { notifications: NotificationTypes[], socket: Socket | null } => {
   const [notifications, setNotifications] = useState<NotificationTypes[]>([]);
+  const {data: { data: notificationsFromDatabase } = {}} = useGetAllNotificationsByUserIdQuery(userId);
   const [socket, setSocket] = useState<Socket | null>(null);
   const pushToast = usePushToast();
   const dispatch = useDispatch();
@@ -67,13 +69,17 @@ const useNotifications = (userId: string): { notifications: NotificationTypes[],
       }));
     });
 
-    setSocket(newSocket);
+    // Mettre à jour l'état local avec les notifications de la base de données
+    if (notificationsFromDatabase) {
+      setNotifications(notificationsFromDatabase);
+    }
+    setSocket(newSocket); // Mettre à jour l'état du socket
 
     // Nettoyage lors du démontage du composant
     return () => {
       newSocket.close();
     };
-  }, [dispatch, pushToast, userId]);
+  }, [dispatch, notificationsFromDatabase, pushToast, userId]);
 
   return { notifications, socket };
 };
