@@ -81,21 +81,19 @@ export const updatePostCacheAfterLike = async ( dispatch: any, id: string, query
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string, originalPostId: string, queryFulfilled: any ) => {
   try {
-    const { data } = await queryFulfilled;
+    const { data } = await queryFulfilled; console.log('repost data:', data);
     dispatch(
       postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
         draftPosts.data.unshift(data.data); // Ajouter le nouveau post en tête de la liste
       })
     );
     dispatch(
-      postApi.util.updateQueryData("getPostById", originalPostId, (draft) => {
-        const postUpdated = draft.data;
-        if (postUpdated) {
-          const reposters = postUpdated.reposters ? [...postUpdated.reposters] : [];
-          if (!reposters.includes(userId)) {
-            reposters.push(userId);
-            postUpdated.reposters = reposters;
-          }
+      postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
+        const postToUpdate = draftPosts.data.find((post) => post.id === originalPostId);
+        if (postToUpdate) {
+          const reposters = postToUpdate.reposters ?? [];
+          reposters.push({id: userId});
+          postToUpdate.reposters = reposters;
         }
       })
     )
