@@ -13,6 +13,6 @@ router.get('/posts/bookmarks', checkAuth, getBookmarkedPosts);
 router.get('/posts/:id', getPostById);
 router.patch('/posts/:id', checkAuth, uploadFileMiddleware, updatePost);
 router.delete('/posts/:id', checkAuth, deletePost);
-router.patch('/posts/:id/views', checkAuth, viewPost);
+router.post('/posts/views', checkAuth, viewPost);
 
 export default router;
