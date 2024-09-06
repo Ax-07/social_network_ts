@@ -87,7 +87,14 @@
         border-radius: 14px;
         flex: 1;
 
-        &>img,
+    }
+
+    &__media {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    
+        & > img,
         video {
             max-width: 516px;
             width: 100%;
