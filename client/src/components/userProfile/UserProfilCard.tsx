@@ -27,15 +27,12 @@ const UserProfilCard: FunctionComponent<UserProfilCardProps> = ({user, cardRef, 
   }, [user?.username, userName, userData]);
 
     return (
-    <div className='userProfile-card'
-      ref={cardRef}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}>
+    <div className='userProfile-card' ref={cardRef} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div className="profile__info">
         <div className="profile__info-header">
           <img className="userprofile__picture"
             src={ user?.profilPicture ? user.profilPicture : "/images/Default-user-picture.png" }
-            alt="User Profile Thumbnail"
+            alt={`Photo de profil de ${user?.username ?? "l'utilisateur"}`}
             loading="lazy"
           />
           <MemoizedBtnFollow userToFollowId={user?.id ?? ''} />
@@ -46,17 +43,29 @@ const UserProfilCard: FunctionComponent<UserProfilCardProps> = ({user, cardRef, 
           <p className="fs-15-600">{user?.bio}</p>
         </div>
         <div className="profile__info-follow">
-            <div className="profile__info-follow-row">
-                <h3 className="fs-20-700">{user?.followings?.length} Abonnements</h3>
-            </div>
-            <div className="profile__info-follow-row">
-                <h3 className="fs-20-700">{user?.followers?.length} Abonnés</h3>
-            </div>
-            <p className="fs-15-600">Suivi par {
-              filteredFollowersNames && filteredFollowersNames?.map((followerName, index) => (
+          <ul className="profile__info-follow-list">
+            <li className="profile__info-follow-row">
+              <h3 className="fs-20-700" aria-label={`${user?.followings?.length ?? 0} abonnements`}>
+                {user?.followings?.length ?? 0} Abonnements
+              </h3>
+            </li>
+            <li className="profile__info-follow-row">
+              <h3 className="fs-20-700" aria-label={`${user?.followers?.length ?? 0} abonnés`}>
+                {user?.followers?.length ?? 0} Abonnés
+              </h3>
+            </li>
+          </ul>
+          {filteredFollowersNames.length > 0 ? (
+            <p className="fs-15-600">
+              Suivi par{' '}
+              {filteredFollowersNames.map((followerName, index) => (
                 <span key={index}>{followerName}{index === filteredFollowersNames.length - 1 ? ' ' : ', '}</span>
-              ))
-              } que vous suivez</p>
+              ))}
+              que vous suivez
+            </p>
+          ) : (
+            <p className="fs-15-600">Aucun de vos abonnés ne suit cet utilisateur.</p>
+          )}
         </div>
       </div>
     </div>
