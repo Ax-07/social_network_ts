@@ -91,14 +91,12 @@ export const postApi = createApi({
         updatePostCacheAfterRepost(dispatch, userId, originalPostId, queryFulfilled);
       },
     }),
-    incrementPostViews: builder.mutation<PostResponse, string>({
-      query: (id) => ({
-        url: `/posts/${id}/views`,
-        method: "PATCH",
+    incrementPostViews: builder.mutation<PostResponseArray, {postId: string, count: string}[]>({
+      query: (postViewCounts) => ({
+        url: `/posts/views`,
+        method: "POST",
+        body: { postViewCounts },
       }),
-      onQueryStarted: async (_id, { dispatch, queryFulfilled }) => {
-        updatePostCacheAfterViews(dispatch, _id, queryFulfilled);
-      }
     }),
     getBookmarkedPosts: builder.query<PostResponseArray, string>({
       query: (userId) => `/posts/bookmarks?id=${userId}`,
