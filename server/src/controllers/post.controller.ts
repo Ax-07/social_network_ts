@@ -126,7 +126,7 @@ const getAllPosts = async (req: Request, res: Response) => {
           model: db.User,
           as: 'reposters',
           through: { attributes: [] },
-          attributes: ['id', 'username'],
+          attributes: ['id'],
         }
       ]
     });
@@ -219,23 +219,45 @@ const deletePost = async (req: Request, res: Response) => {
  * @returns le post avec le nombre de vues incrémenté
  */
 const viewPost = async (req: Request, res: Response) => {
-  const postId = req.params.id;
-  if (!postId) {
-    return apiError(res, 'Post ID is required', 400);
+  const { postViewCounts } = req.body; // Un tableau d'objets { postId, count }
+  console.log("postViewCounts", postViewCounts);
+
+  if (!Array.isArray(postViewCounts) || postViewCounts.length === 0) {
+    return apiError(res, 'Post IDs and counts are required', 400);
   }
+
   try {
-    const post = await db.Post.findByPk(postId);
-    if (post === null) {
-      return apiError(res, 'Post not found', 404);
-    } else {
-      post.views += 1;
-      await post.save();
-      return apiSuccess(res, `Post ${postId} viewed successfully`, post, 200);
+    // Utiliser Promise.all pour traiter tous les posts en parallèle
+    const posts = await Promise.all(
+      postViewCounts.map(async ({ postId, count }) => {
+        const post = await db.Post.findByPk(postId);
+
+        if (!post) {
+          return null; // Continuer si le post n'existe pas
+        }
+
+        // Incrémenter les vues en fonction du compteur
+        post.views += count;
+        await post.save();
+
+        return post; // Retourner le post mis à jour
+      })
+    );
+
+    // Filtrer les posts mis à jour
+    const updatedPosts = posts.filter(post => post !== null);
+
+    if (updatedPosts.length === 0) {
+      return apiError(res, 'No valid posts found', 404);
     }
+
+    return apiSuccess(res, 'Posts viewed successfully', updatedPosts, 200);
   } catch (error) {
-    return handleControllerError(res, error, 'An error occurred while viewing the post.');
+    return handleControllerError(res, error, 'An error occurred while viewing the posts.');
   }
 };
+
+
 
 export { 
   createPost,
