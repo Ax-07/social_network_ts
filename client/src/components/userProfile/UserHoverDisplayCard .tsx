@@ -27,6 +27,7 @@ const UserThumbnailHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = (
         className="post-card__user"
         onMouseEnter={handleMouseEnterThumbnail}
         onMouseLeave={handleMouseLeaveThumbnail}
+        aria-label={`Voir plus d'informations sur l'utilisateur ${user?.username}`}
       >
         <ProfilPicture user={user} />
       </div>
@@ -55,17 +56,19 @@ const UserNameHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ use
 
     return (
         <>
-        <Link to={`/profile/${user?.id}`} className="post-card__header">
-            <h3 className="post-card__header-username" 
+        <Link to={`/profile/${user?.id}`} className="post-card__header" aria-label={`Voir le profil de ${user?.username}`}>
+            <h2 className="post-card__header-username" 
               onMouseEnter={handleMouseEnterThumbnail}
               onMouseLeave={handleMouseLeaveThumbnail}
+              aria-label={`Voir plus d'informations sur l'utilisateur ${user?.username}`}
             >
               {user?.username}
-            </h3>
+            </h2>
             <div className="post-card__header-wrapper">
               <p className="post-card__header-handle" 
                 onMouseEnter={handleMouseEnterThumbnail}
                 onMouseLeave={handleMouseLeaveThumbnail}
+                aria-label={`Voir plus d'informations sur l'utilisateur ${user?.username}`}
               >
                   {user?.handle}
               </p>
