@@ -29,10 +29,19 @@ export const notificationApi = createApi({
       }),
       invalidatesTags: ["Notifications"],
     }),
+    updateNotifications: builder.mutation<string, {userId : string, notificationsIds: string }>({
+      query: ({ userId, notificationsIds }) => ({
+        url: `/notifications/${userId}/markAsRead`,
+        method: "PATCH",
+        body: { notificationsIds },
+      }),
+      invalidatesTags: ["Notifications"],
+    }),
   }),
 });
 
 export const {
   useGetAllNotificationsByUserIdQuery,
   useRemoveNotificationMutation,
+  useUpdateNotificationsMutation,
 } = notificationApi;
