@@ -46,7 +46,7 @@
             @extend .background-blur;
             background: $color-dark-gray;
 
-            & > a {
+            &_item {
                 width: 100%;
                 padding: 10px;
                 border-radius: 10px;
@@ -90,4 +90,22 @@
     border-radius: 10px;
     @extend .background-blur;
     @extend .userprofile;
+}
+
+.profile {
+    &__info {
+        @include flex(column, flex-start, flex-start, 10px);
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+
+        &-body {
+            width: 100%;
+        }
+
+        &-follow {
+            @include flex(column, flex-start, flex-start, 10px);
+            width: 100%;
+        }
+    }
 }
