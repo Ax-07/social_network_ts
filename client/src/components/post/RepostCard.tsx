@@ -37,26 +37,37 @@ const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, orignalComme
           <UserNameHoverDisplayCard user={poster} createdAt={postByOriginalId.createdAt} /> 
           {postByOriginalId.content && <p className="post-card__content">{postByOriginalId.content}</p>}
           {postByOriginalId.media && isWebp && (
-            <img className="post-card__img" src={postByOriginalId.media} alt="" loading="lazy"/>
-            )}
-            {postByOriginalId.media && isMp4 && (
-              <video className="post-card__video" src={postByOriginalId.media} controls />
-              )}
-              {postByOriginalId.media && isYoutubeVideo && (
-                <iframe
+          <figure className="post-card__media">
+            <img className="post-card__img" src={postByOriginalId.media} alt="Aperçu du post" loading="lazy" />
+            <figcaption className="sr-only">Aperçu de l'image</figcaption>
+            </figure>
+          )}
+          {postByOriginalId.media && isMp4 && (
+            <figure className="post-card__media">
+              <video className="post-card__video" src={postByOriginalId.media} controls aria-label="Vidéo du post" />
+              <figcaption className="sr-only">Vidéo du post</figcaption>
+            </figure>
+          )}
+          {postByOriginalId.media && isYoutubeVideo && (
+            <figure className="post-card__media">
+              <iframe
                 style={{ width: "100%", aspectRatio: "16/9" }}
                 className="post-card__youtube"
                 src={postByOriginalId.media}
-                title="YouTube video player"
+                title="Lecteur vidéo YouTube"
+                aria-label="Vidéo YouTube du post"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                ></iframe>
-                )} 
-                {commentByOriginalId && 
-                <div>
-                  <CommentCard comment={commentByOriginalId} origin="repost" />
-                </div>
-                }
+                loading="lazy"
+              ></iframe>
+            <figcaption className="sr-only">Vidéo YouTube du post</figcaption>
+          </figure>
+          )} 
+          {commentByOriginalId && 
+            <div>
+              <CommentCard comment={commentByOriginalId} origin="repost" />
+          </div>
+          }
         </div>
       </article>
     </>
