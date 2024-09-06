@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
-import { useGetAllNotificationsByUserIdQuery } from '../../services/api/notificationApi';
+import { useGetAllNotificationsByUserIdQuery, useUpdateNotificationsMutation } from '../../services/api/notificationApi';
 import { NotificationTypes } from '../../utils/types/notification.types';
 import TabList from '../../components/tabList/TabList';
 import { Routes, Route } from 'react-router-dom';
@@ -12,6 +12,7 @@ const Notifications: React.FC = () => {
   const notificationsFromStore = useSelector((state: RootState) => state.notifications.notifications);
   const {data: {data: notificationFromApi} = {}} = useGetAllNotificationsByUserIdQuery(userId as string);
   const [uniqueNotifications, setUniqueNotifications] = useState<NotificationTypes[]>([]);
+  const [updateNotifications] = useUpdateNotificationsMutation();
   
   useEffect(() => {
     if (notificationFromApi) {
@@ -31,6 +32,14 @@ const Notifications: React.FC = () => {
       setUniqueNotifications(sortedNotifications);
     }
   }, [notificationFromApi, notificationsFromStore]);
+
+  useEffect(() => {
+    const unreadNotifications = uniqueNotifications.filter((notif) => !notif.isRead);
+    const unreadNotificationsIds = unreadNotifications.map((notif) => notif.id);
+    if (unreadNotificationsIds.length > 0) {
+      updateNotifications({userId: userId ?? "", notificationsIds: unreadNotificationsIds.join(',')});
+    }
+  }, [uniqueNotifications, updateNotifications, userId]);
 
 
   return (
