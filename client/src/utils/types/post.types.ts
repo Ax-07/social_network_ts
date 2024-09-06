@@ -5,7 +5,7 @@ export interface PostTypes {
   media?: string | null;
   likers?: { id: string, username: string }[] | [];
   commentsCount?: number;
-  reposters?: { id: string, username: string }[] | [];
+  reposters: { id: string}[];
   originalPostId?: string | null;
   views?: number;
   createdAt?: string;
