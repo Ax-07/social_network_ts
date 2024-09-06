@@ -3,7 +3,7 @@ import { useWindowSize } from "../../utils/hooks/useWindowSize";
 import { RootState } from "../../services/stores";
 import { NavLink } from "react-router-dom";
 import { logout } from "../../services/auth/authSlice";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { User } from "../../utils/types/user.types";
 
 interface IProfilPicture {
@@ -39,7 +39,7 @@ export const ProfilPicture: FunctionComponent<IProfilPicture> = ({ user, withLin
   );
 
   return withLink && user?.id ? (
-    <NavLink to={`/profile/${user.id}`}>
+    <NavLink to={`/profile/${user.id}`} aria-label={`Voir le profil de ${user.username}`}>
       {profileImage}
     </NavLink>
   ) : (
@@ -53,10 +53,26 @@ const UserProfileThumbnail = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1280;
+
   const handleLogout = () => {
     dispatch(logout());
     setIsOpen(false);
   };
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsOpen(false);
+    }
+  };
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   return (
     <>
       <div className="userprofile__thumbnail" onClick={() => setIsOpen(!isOpen)}>
@@ -67,23 +83,46 @@ const UserProfileThumbnail = () => {
               <h3 className="fs-15-700">{user?.username}</h3>
               <p className="fs-15-600">{user?.handle}</p>
             </div>
-            <span className="fs-16-700">...</span>
+            <span className="fs-16-700" aria-hidden="true">...</span>
           </>
         )}
       </div>
       
-        {isOpen && (
+      {isOpen && (
         <>
-        <div className="userprofile__thumbnail-menu">
-          <NavLink to={`/profile/${user?.id}`} onClick={()=> setIsOpen(false)} className="fs-16-700">
-            Profile
-          </NavLink>
-          <a href="/" onClick={handleLogout} className="fs-16-700">
-            Se deconnecter de {user?.handle}
-          </a>
-          <span className="userprofile__thumbnail-menu-square"></span>
-        </div>
-        <div className="userprofile__thumbnail-menu-overlay" onClick={() => setIsOpen(false)}></div>
+          {/* Menu déroulant avec rôle "menu" et "menuitem" */}
+          <nav className="userprofile__thumbnail-menu" role="menu">
+            <ul>
+              <li className="userprofile__thumbnail-menu_item" role="menuitem">
+                <NavLink 
+                  to={`/profile/${user?.id}`} 
+                  onClick={() => setIsOpen(false)} 
+                  className="fs-16-700"
+                  aria-label="Voir le profil"
+                >
+                  Profil
+                </NavLink>
+              </li>
+              <li className="userprofile__thumbnail-menu_item" role="menuitem">
+                <a 
+                  href="/" 
+                  onClick={handleLogout} 
+                  className="fs-16-700"
+                  aria-label={`Se déconnecter de ${user?.handle}`}
+                >
+                  Se déconnecter de {user?.handle}
+                </a>
+              </li>
+            </ul>
+            <span className="userprofile__thumbnail-menu-square" aria-hidden="true"></span>
+          </nav>
+
+          {/* Overlay cliquable pour fermer le menu */}
+          <div 
+            className="userprofile__thumbnail-menu-overlay" 
+            onClick={() => setIsOpen(false)} 
+            aria-hidden="true"
+          ></div>
         </>
       )}
     </>
