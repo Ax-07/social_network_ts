@@ -1,6 +1,6 @@
 .tablist {
     position: sticky;
-    z-index: 2;
+    z-index: 4;
     top: 0px;
     @include flex(row, center, flex-start);
     width: 100%;
