@@ -137,7 +137,7 @@ main {
   width: 100%;
 }
 
-.background-blur, .notification-page__item, .auth-page__container, .home, .post-page, .btn-repost__modal, .modal-content, .addpost, .userProfile-card, .userprofile__thumbnail-menu, .sidemenu__container {
+.background-blur, .notification-page__item, .auth-page__container, .home, .bookmarks-page, .post-page, .btn-repost__modal, .modal-content, .addpost, .userProfile-card, .userprofile__thumbnail-menu, .sidemenu__container {
   background-color: rgba(28, 39, 51, 0.3);
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
@@ -314,13 +314,13 @@ main {
   border-radius: 10px;
   background: #6c757d;
 }
-.userprofile__thumbnail-menu > a {
+.userprofile__thumbnail-menu_item {
   width: 100%;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
 }
-.userprofile__thumbnail-menu > a:hover {
+.userprofile__thumbnail-menu_item:hover {
   background-color: #bbb;
   color: #6c757d;
 }
@@ -352,9 +352,31 @@ main {
   border-radius: 10px;
 }
 
+.profile__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+}
+.profile__info-body {
+  width: 100%;
+}
+.profile__info-follow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
 .tablist {
   position: sticky;
-  z-index: 2;
+  z-index: 4;
   top: 0px;
   display: flex;
   flex-direction: row;
@@ -546,8 +568,13 @@ main {
   border-radius: 14px;
   flex: 1;
 }
-.post-card__wrapper > img,
-.post-card__wrapper video {
+.post-card__media {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+.post-card__media > img,
+.post-card__media video {
   max-width: 516px;
   width: 100%;
   -o-object-fit: cover;
@@ -1266,7 +1293,7 @@ iframe[name=callout] {
     display: none;
   }
 }
-.home, .post-page {
+.home, .bookmarks-page, .post-page {
   position: relative;
   display: flex;
   flex-direction: column;
