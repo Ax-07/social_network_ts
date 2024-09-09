@@ -1,4 +1,4 @@
-import TabList from "../../components/tabList/TabList";
+import TabList from "../../components/Base/tabList/TabList";
 import { useGetFollowersNamesQuery, useGetUserByIdQuery } from "../../services/api/userApi";
 import { useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";

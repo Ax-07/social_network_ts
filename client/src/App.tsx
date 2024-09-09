@@ -10,7 +10,7 @@ import Pages from "./pages";
 import Modals from "./components/modal/Modals";
 import PostPage from "./pages/post/PostPage";
 import CommentPage from "./pages/post/CommentPage";
-import { useCachePostViews } from "./components/post/functions/cachePostViews";
+import { useCachePostViews } from "./utils/functions/cachePostViews";
 
 function App() {
   const { windowWidth } = useWindowSize();
@@ -39,7 +39,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* Image de fond : aria-hidden car elle est purement décorative */}
       <picture className="picture-background" aria-hidden="true">
         <source
           srcSet="/images/app-background/mobile-unsplash_eNoeWZkO7Zc.webp"
@@ -59,10 +58,8 @@ function App() {
           loading="lazy"
         />
       </picture>
+      <SideMenu />
 
-        <SideMenu />
-
-      {/* Le contenu principal doit être focusable pour la navigation au clavier */}
       <main tabIndex={-1} aria-live="polite">
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
@@ -78,12 +75,9 @@ function App() {
           <Route path="/profile/:id/*" element={<Pages.Profile />} />
           <Route path="/more" element={<Pages.More />} />
         </Routes>
-
-        {/* Composant des modales */}
         <Modals />
       </main>
 
-      {/* Rendu conditionnel de la colonne latérale */}
       {!isTablet && (
         <aside aria-label="Colonne latérale supplémentaire">
           <SideColumn />

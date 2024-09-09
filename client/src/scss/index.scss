@@ -10,19 +10,27 @@
 @import '../layouts/sideMenu/sideMenu.scss';
 
 // components styles
+// Base
+@import '../components/Base/tabList/tablist.scss';
+@import '../components/Base/button/button.scss';
+
+// Actions
+@import '../components/Actions/addPicture/addPicture.scss';
+@import '../components/Actions/btn-like/btn-like.scss';
+@import '../components/Actions/btn-bookmarks/btn-bookmarks.scss';
+@import '../components/Actions/btn-follow/btnFollow.scss';
+@import '../components/Actions/btn-repost/btnRepost.scss';
+@import '../components/Actions/google-auth-btn/googleAuthBtn.scss';
+
+// Form
+@import '../components/Form/addPost.scss';
+
+
 @import '../components/userProfile/userProfile.scss';
-@import '../components/tabList/tablist.scss';
-@import '../components/post/addPost.scss';
-@import '../components/post/post.scss';
-@import '../components/addPicture/addPicture.scss';
-@import '../components/button/button.scss';
+@import '../components/Display/post.scss';
 @import '../components/modal/modal.scss';
-@import '../components/btn-like/btn-like.scss';
-@import '../components/btn-bookmarks/btn-bookmarks.scss';
-@import '../components/btn-repost/btnRepost.scss';
-@import '../components/google-auth-btn/googleAuthBtn.scss';
 @import '../components/toast/taost.scss';
-@import '../components/searchBar/searchBar.scss';
+@import '../components/Actions/searchBar/searchBar.scss';
 
 // pages styles
 @import '../pages/home/home.scss';

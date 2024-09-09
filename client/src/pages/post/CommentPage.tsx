@@ -1,9 +1,9 @@
 import { NavLink, useParams } from "react-router-dom";
 import { useGetCommentByIdQuery } from "../../services/api/commentApi";
-import CommentCard from "../../components/post/CommentCard";
-import AddComment from "../../components/post/AddComment";
-import CommentList from "../../components/post/CommentList";
-import { PostFormProvider } from "../../components/post/context/postFormContext";
+import CommentCard from "../../components/Display/comment/CommentCard";
+import AddComment from "../../components/Form/AddComment";
+import CommentList from "../../components/Display/comment/CommentList";
+import { PostFormProvider } from "../../components/Form/context/postFormContext";
 
 const CommentPage = () => {
     const { id } = useParams<{ id: string }>();

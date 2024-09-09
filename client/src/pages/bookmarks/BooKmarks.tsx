@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useGetBookmarkedPostsQuery } from "../../services/api/postApi";
 import { RootState } from "../../services/stores";
-import PostCard from "../../components/post/PostCard";
+import PostCard from "../../components/Display/post/PostCard";
 import { useEffect } from "react";
 
 const BooKmarks = () => {

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import PostList from "../../components/post/PostsList";
-import TabList from "../../components/tabList/TabList";
-import { PostFormProvider } from "../../components/post/context/postFormContext";
-import AddPost from "../../components/post/AddPost";
+import PostList from "../../components/Display/post/PostsList";
+import TabList from "../../components/Base/tabList/TabList";
+import { PostFormProvider } from "../../components/Form/context/postFormContext";
+import AddPost from "../../components/Form/AddPost";
 
 const Home = () => {
   return (

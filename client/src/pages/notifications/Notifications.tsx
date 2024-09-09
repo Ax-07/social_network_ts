@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { useGetAllNotificationsByUserIdQuery, useUpdateNotificationsMutation } from '../../services/api/notificationApi';
 import { NotificationTypes } from '../../utils/types/notification.types';
-import TabList from '../../components/tabList/TabList';
+import TabList from '../../components/Base/tabList/TabList';
 import { Routes, Route } from 'react-router-dom';
 import NotificationsList from './NotificationsList';
 

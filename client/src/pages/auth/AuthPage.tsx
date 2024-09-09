@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GoogleAuthBtn from "../../components/google-auth-btn/GoogleAuthBtn";
+import GoogleAuthBtn from "../../components/Actions/google-auth-btn/GoogleAuthBtn";
 import Login from "./Login";
 import Register from "./Register";
 

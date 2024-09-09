@@ -1,9 +1,9 @@
 import { NavLink, useParams } from "react-router-dom";
 import { useGetPostByIdQuery } from "../../services/api/postApi";
-import PostCard from "../../components/post/PostCard";
-import AddComment from "../../components/post/AddComment";
-import CommentList from "../../components/post/CommentList";
-import { PostFormProvider } from "../../components/post/context/postFormContext";
+import PostCard from "../../components/Display/post/PostCard";
+import AddComment from "../../components/Form/AddComment";
+import CommentList from "../../components/Display/comment/CommentList";
+import { PostFormProvider } from "../../components/Form/context/postFormContext";
 
 const PostPage = () => {
     const { id } = useParams<{ id: string }>(); console.log(id);
