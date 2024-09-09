@@ -1,0 +1,132 @@
+.post {
+    width: 100%;
+    background-color: rgba(28, 39, 51, 0.5);
+
+    &__list {
+        width: 100%;
+    }
+
+    &__item {
+        position: relative;
+        width: 100%;
+        border-bottom: 1px solid $color-light;
+    }
+
+
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.post-card {
+    position: relative;
+    @include flex(row, flex-start, flex-start);
+    padding: 12px 10px;
+    width: 100%;
+
+    &__link {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__user {
+        position: relative;
+        z-index: 3;
+        width: 48px;
+        height: 48px;
+        margin-right: 8px;
+        // background-color: $color-light;
+
+        &>img {
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+
+    &__header {
+        position: relative;
+        z-index: 2;
+        @include flex(row, flex-start, center, 10px);
+        width: 100%;
+        margin-bottom: 10px;
+        cursor: pointer;
+
+        &-wrapper {
+            @include flex(row, flex-start, center, 8px);
+        }
+
+        &-username {
+            @extend .fs-15-700;
+            color: $color-light;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        &-handle {
+            @extend .fs-15-400;
+            color: $color-light;
+        }
+
+        &-point {
+            width: 4px;
+            aspect-ratio: 1/1;
+            background-color: $color-light;
+            border-radius: 50%;
+        }
+    }
+
+    &__wrapper {
+        @include flex(column, flex-start, flex-start);
+        border-radius: 14px;
+        flex: 1;
+
+    }
+
+    &__media {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    
+        & > img,
+        video {
+            max-width: 516px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid $color-light;
+        }
+    }
+
+    &__content {
+        @extend .fs-15-500;
+        color: $color-light-gray;
+        flex: 1;
+        word-break: break-word;
+        min-height: 50px;
+    }
+
+    &__footer {
+        position: relative;
+        z-index: 2;
+        @include flex(row, space-around, center, 10px);
+        width: 100%;
+        padding-top: 10px;
+        margin-top: 20px;
+    }
+
+    &__repost-card {
+        position: relative;
+        width: 100%;
+        border: 1px solid $color-light;
+        border-radius: 14px;
+        margin-bottom: 10px;
+    }
+
+}
