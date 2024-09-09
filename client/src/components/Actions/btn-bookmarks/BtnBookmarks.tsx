@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FunctionComponent } from 'react';
-import { useAddToBookmarksMutation, useGetUserByIdQuery } from '../../services/api/userApi';
+import { useAddToBookmarksMutation, useGetUserByIdQuery } from '../../../services/api/userApi';
 
 interface BtnBookmarksProps {
     postId: string;
