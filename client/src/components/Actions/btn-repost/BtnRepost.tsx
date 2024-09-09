@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect, type FunctionComponent } from "react";
 import ReactDOM from "react-dom";
-import { useModal } from "../modal/hook/useModal";
+import { useModal } from "../../modal/hook/useModal";
+import { PostFormProvider } from "../../Form/context/postFormContext";
+import { PostFormOrigin } from "../../Form/PostForm";
 
 interface BtnRepostProps {
+  origin?: PostFormOrigin;
   postId?: string;
   commentId?: string;
   reposterCount?: number;
 }
 
-const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, reposterCount }) => {
+const BtnRepost: FunctionComponent<BtnRepostProps> = ({ origin, postId, commentId, reposterCount }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
@@ -74,6 +77,7 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
 
   return (
     <>
+    <PostFormProvider origin={origin}>
       <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen} aria-label="Ouvrir le menu de repost">
         <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
         <p>{reposterCount}</p>
@@ -114,8 +118,7 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
           </div>,
           document.getElementById('btn-repost-comment-modal') || document.body
         )}
-
-
+     </PostFormProvider>
     </>
   );
 };
