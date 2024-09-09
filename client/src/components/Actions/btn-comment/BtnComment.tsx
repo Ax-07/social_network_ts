@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
-import ButtonModal from "../modal/ButtonModal";
-import { PostFormOrigin } from "../post/PostForm";
+import ButtonModal from "../../modal/ButtonModal";
+import { PostFormOrigin } from "../../Form/PostForm";
 
 interface BtnCommentProps {
   postId?: string;
