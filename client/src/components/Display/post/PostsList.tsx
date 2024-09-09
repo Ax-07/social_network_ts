@@ -1,4 +1,4 @@
-import { useGetPostsQuery } from "../../services/api/postApi";
+import { useGetPostsQuery } from "../../../services/api/postApi";
 import PostCard from "./PostCard";
 
 const PostList = () => {

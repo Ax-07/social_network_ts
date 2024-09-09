@@ -1,11 +1,11 @@
 import { type FunctionComponent, type PropsWithChildren } from 'react';
 import { ProfilPicture } from '../userProfile/UserProfileThumbnail';
-import PreviewPicture from '../addPicture/PreviewPicture';
+import PreviewPicture from '../Actions/addPicture/PreviewPicture';
 import { autoResizeTextarea } from '../../utils/functions/autoResizeTextarea';
-import Button from '../button/Button';
-import InputPicture from '../addPicture/InputPicure';
+import Button from '../Base/button/Button';
+import InputPicture from '../Actions/addPicture/InputPicure';
 import { usePostFormContext } from './hooks/usePostFormContext';
-import RepostCard from './RepostCard';
+import RepostCard from '../Display/repost/RepostCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { getTextareaCharacterCount } from '../../utils/functions/textareaCharacterCount';
@@ -111,7 +111,8 @@ export type PostFormOrigin =
   | "btn-repost" // Repost d'une publication
   | "modal-repost" // Repost d'une publication via le modal
   | "btn-repost-with-comment" // Repost d'une publication avec commentaire
-  | "modal-repost-comment"; // Repost d'une publication avec commentaire via le modal
+  | "modal-repost-comment" // Repost d'une publication avec commentaire via le modal
+  | "modal-message"; // Envoie de message via le modal
 
 /**
  * @description Fonction pour changer le texte du bouton et le placeholder du textarea, en fonction de l'origine du formulaire
@@ -167,6 +168,10 @@ const switchOrigin = (origin: PostFormOrigin) => {
     case "btn-repost-with-comment":
       buttonText = "Reposter";
       placeholder = "Ajouter un commentaire...";
+      break;
+    case "modal-message":
+      buttonText = "Envoyer";
+      placeholder = "Envoyer un message...";
       break;
     default:
       buttonText = "Publier";

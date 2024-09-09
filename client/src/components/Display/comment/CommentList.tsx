@@ -1,7 +1,7 @@
 import { FunctionComponent, useEffect } from "react";
-import { useGetCommentsByCommentIdQuery, useGetCommentsByPostIdQuery } from "../../services/api/commentApi";
+import { useGetCommentsByCommentIdQuery, useGetCommentsByPostIdQuery } from "../../../services/api/commentApi";
 import CommentCard from "./CommentCard";
-import { useModal } from "../modal/hook/useModal";
+import { useModal } from "../../modal/hook/useModal";
 
 interface CommentListProps {
     postId?: string | undefined;

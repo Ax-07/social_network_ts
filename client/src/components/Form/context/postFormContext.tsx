@@ -1,11 +1,18 @@
-import React, { createContext, useState, useCallback, useEffect, useRef, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../services/stores";
 import { FormState } from "../../../utils/types/form.types";
 import { PostFormOrigin } from "../PostForm";
 
 export interface PostFormContextType {
-  origin: string;
+  origin: PostFormOrigin | undefined;
   form: FormState;
   setForm: React.Dispatch<React.SetStateAction<FormState>>;
   isValidForm: boolean;
@@ -21,15 +28,22 @@ export interface PostFormContextType {
 }
 
 interface PostFormProviderProps {
-  origin: PostFormOrigin;
+  origin: PostFormOrigin | undefined;
   children: ReactNode;
   originalPostId?: string;
   originalCommentId?: string;
 }
 
-export const PostFormContext = createContext<PostFormContextType | undefined>(undefined);
+export const PostFormContext = createContext<PostFormContextType | undefined>(
+  undefined
+);
 
-export const PostFormProvider = ({ origin, children, originalPostId, originalCommentId }: PostFormProviderProps) => {
+export const PostFormProvider = ({
+  origin,
+  children,
+  originalPostId,
+  originalCommentId,
+}: PostFormProviderProps) => {
   const userId = useSelector((state: RootState) => state?.auth?.user?.id);
   const [form, setForm] = useState<FormState>({
     userId: userId,
@@ -67,14 +81,15 @@ export const PostFormProvider = ({ origin, children, originalPostId, originalCom
   const setOriginalCommentId = useCallback(
     (originalCommentId: string) => {
       setForm((prevForm) => ({ ...prevForm, originalCommentId }));
-    }, [setForm]
+    },
+    [setForm]
   );
 
-useEffect(() => {
-  if (originalCommentId) {
-    setOriginalCommentId(originalCommentId);
-  }
-}, [originalCommentId, setOriginalCommentId]);
+  useEffect(() => {
+    if (originalCommentId) {
+      setOriginalCommentId(originalCommentId);
+    }
+  }, [originalCommentId, setOriginalCommentId]);
 
   const resetForm = useCallback(() => {
     setForm({
@@ -107,15 +122,19 @@ useEffect(() => {
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const content = e.target.value;
       setForm((prevForm) => ({ ...prevForm, content }));
-      const file = form.file; console.log("file", file);
+      const file = form.file;
+      console.log("file", file);
 
       if (content.includes("youtube.com") || content.includes("youtu.be")) {
         const youtubeUrl = embedYoutube(content);
         setPreview(youtubeUrl);
         setForm((prevForm) => ({ ...prevForm, file: youtubeUrl }));
         setMimetype("video/youtube");
-      } 
-      else if ((!content.includes("youtube.com") || !content.includes("youtu.be")) && file?.toString().includes("youtube.com") || file?.toString().includes("youtu.be")) {
+      } else if (
+        ((!content.includes("youtube.com") || !content.includes("youtu.be")) &&
+          file?.toString().includes("youtube.com")) ||
+        file?.toString().includes("youtu.be")
+      ) {
         setForm((prevForm) => ({ ...prevForm, file: "" }));
         setPreview("");
         setMimetype("");
@@ -124,25 +143,25 @@ useEffect(() => {
     [form]
   );
 
-    return (
-        <PostFormContext.Provider
-        value={{
-            origin,
-            form,
-            setForm,
-            isValidForm,
-            preview,
-            isPreview,
-            mimetype,
-            inputFileRef,
-            resetForm,
-            handleFileChange,
-            handleContentChange,
-            setPreview,
-            setMimetype,
-        }}
-        >
-        {children}
-        </PostFormContext.Provider>
-    );
-  };
+  return (
+    <PostFormContext.Provider
+      value={{
+        origin,
+        form,
+        setForm,
+        isValidForm,
+        preview,
+        isPreview,
+        mimetype,
+        inputFileRef,
+        resetForm,
+        handleFileChange,
+        handleContentChange,
+        setPreview,
+        setMimetype,
+      }}
+    >
+      {children}
+    </PostFormContext.Provider>
+  );
+};
