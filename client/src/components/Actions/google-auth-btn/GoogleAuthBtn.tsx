@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useGoogleLoginMutation } from "../../services/auth/googleAuthApi";
+import { useGoogleLoginMutation } from "../../../services/auth/googleAuthApi";
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../services/auth/authSlice';
+import { loginSuccess } from '../../../services/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 declare global {
