@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import PostList from "../../components/Display/post/PostsList";
 import TabList from "../../components/Base/tabList/TabList";
-import { PostFormProvider } from "../../components/Form/context/postFormContext";
 import AddPost from "../../components/Form/AddPost";
 
 const Home = () => {
@@ -13,9 +12,7 @@ const Home = () => {
           { name: "Abonnements", to: "/home/abonnements", end: false },
         ]}
       />
-      <PostFormProvider origin="page-home">
-        <AddPost origin="page-home" />
-      </PostFormProvider>
+      <AddPost origin="page-home" />
       <Routes>
         <Route path="/" element={<PostList />} />
         <Route path="/abonnements" element={<h2>Abonnements</h2>} />
