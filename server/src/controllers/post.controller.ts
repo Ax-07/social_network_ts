@@ -35,13 +35,13 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const rePost = async (req: Request, res: Response) => {
-  const { userId, originalPostId, content } = req.body;
+  const { userId, originalPostId, originalCommentId, content } = req.body;
 
   if (!userId || !originalPostId) {
     return apiError(res, 'Validation error', 'userId and originalPostId are required', 400);
   }
 
-  const errors = validatePostEntry({ userId, originalPostId, content });
+  const errors = validatePostEntry({ userId, originalPostId, originalCommentId, content });
   if (errors.length > 0) {
     return apiError(res, 'Validation error', errors, 400);
   }
@@ -62,25 +62,34 @@ const rePost = async (req: Request, res: Response) => {
         await transaction.rollback();
         return apiError(res, `The specified ${originalPostId} post does not exist.`, 404);
       }
+      
+      if (originalCommentId) {
+        const comment = await db.Comment.findByPk(originalCommentId, { transaction });
+        if (!comment) {
+          await transaction.rollback();
+          return apiError(res, `The specified ${originalCommentId} comment does not exist.`, 404);
+        }
+      }
 
       // Vérifier si l'utilisateur a déjà reposté ce post
-      const existingRepost = await db.PostRepost.findOne({
-        where: {
-          userId: userId,
-          postId: originalPostId,
-        },
-        transaction,
-      });
+      // const existingRepost = await db.PostRepost.findOne({
+      //   where: {
+      //     userId: userId,
+      //     postId: originalPostId,
+      //   },
+      //   transaction,
+      // });
 
-      if (existingRepost) {
-        await transaction.rollback();
-        return apiError(res, 'You have already reposted this post.', 400);
-      }
+      // if (existingRepost) {
+      //   await transaction.rollback();
+      //   return apiError(res, 'You have already reposted this post.', 400);
+      // }
 
       // Créer un nouveau repost
       const newRepost = await db.Post.create({
         userId,
         originalPostId: post.id,
+        originalCommentId: originalCommentId || null,
         content: content || null,
       }, { transaction });
 
@@ -88,6 +97,13 @@ const rePost = async (req: Request, res: Response) => {
       await db.PostRepost.create({
         userId: userId,
         postId: post.id,
+      }, { transaction });
+
+      // Ajouter une entrée dans la table commentRepost
+      await db.CommentRepost.create({
+        userId: userId,
+        originalPostId: post.id,
+        commentId: originalCommentId,
       }, { transaction });
 
       // Envoyer une notification (exemple avec socket.io)
