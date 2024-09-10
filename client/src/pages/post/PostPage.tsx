@@ -3,7 +3,6 @@ import { useGetPostByIdQuery } from "../../services/api/postApi";
 import PostCard from "../../components/Display/post/PostCard";
 import AddComment from "../../components/Form/AddComment";
 import CommentList from "../../components/Display/comment/CommentList";
-import { PostFormProvider } from "../../components/Form/context/postFormContext";
 
 const PostPage = () => {
     const { id } = useParams<{ id: string }>(); console.log(id);
@@ -23,9 +22,7 @@ const PostPage = () => {
             </NavLink>
             </div>
             <PostCard post={post.data} origin="post-page"/>
-            <PostFormProvider origin="post-page-comment">
-                <AddComment origin="post-page-comment" />
-            </PostFormProvider>
+            <AddComment origin="post-page-comment" />
             <CommentList postId={id} />
         </section>
     );
