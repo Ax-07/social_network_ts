@@ -1,11 +1,13 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { UserAttributes } from '../users/user.model';
 import { CommentAttributes } from './comment.model';
+import { PostAttributes } from '../posts/post.model';
 
 
 interface CommentRepostAttributes {
     id: string;
     userId: UserAttributes['id'];
+    originalPostId: PostAttributes['id'];
     commentId: CommentAttributes['id'];
 }
 
@@ -14,6 +16,7 @@ interface CommentRepostCreationAttributes extends Optional<CommentRepostAttribut
 class CommentRepost extends Model<CommentRepostAttributes, CommentRepostCreationAttributes> implements CommentRepostAttributes {
     public id!: string;
     public userId!: UserAttributes['id'];
+    public originalPostId!: PostAttributes['id'];
     public commentId!: CommentAttributes['id'];
 
     public readonly createdAt!: Date;
@@ -33,6 +36,14 @@ const initializeCommentRepostModel = (sequelize: Sequelize): typeof CommentRepos
                 allowNull: false,
                 references: {
                     model: 'users',
+                    key: 'id',
+                },
+            },
+            originalPostId: {
+                type: DataTypes.UUID,
+                allowNull: false,
+                references: {
+                    model: 'posts',
                     key: 'id',
                 },
             },
