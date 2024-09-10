@@ -1,25 +1,28 @@
 import { useState, useRef, useEffect, type FunctionComponent } from "react";
 import ReactDOM from "react-dom";
-import { useModal } from "../../modal/hook/useModal";
-import { PostFormProvider } from "../../Form/context/postFormContext";
-import { PostFormOrigin } from "../../Form/PostForm";
+import { FormOrigin } from "../../Form/Form";
+import { useDispatch, useSelector } from "react-redux";
+import { setForm } from "../../../services/forms/formSlice";
+import { RootState } from "../../../services/stores";
+import { closeModal, openModal } from "../../../services/modals/modalSlice";
 
 interface BtnRepostProps {
-  origin?: PostFormOrigin;
   postId?: string;
   commentId?: string;
   reposterCount?: number;
 }
 
-const BtnRepost: FunctionComponent<BtnRepostProps> = ({ origin, postId, commentId, reposterCount }) => {
+const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, reposterCount }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
-  const { modals, openModal, closeModal, setPostId, setCommentId } = useModal();
+  const dispatch = useDispatch();
+  const { modals} = useSelector((state: RootState) => state.modals);
+  // const { modals, openModal, closeModal, setPostId, setCommentId } = useModal();
 
   let btnName: string = '';
-  let modalName: string = '';
+  let modalName: FormOrigin; // Permet à modalName d'être indéfini initialement
   if (commentId && postId) {
     btnName = 'btn-repost-with-comment';
     modalName = 'modal-repost-comment';
@@ -28,6 +31,34 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ origin, postId, commentI
     modalName = 'modal-repost';
   }
 
+
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    dispatch(openModal(btnName));
+    // openModal(btnName); // Ouvrir la modal
+  };
+
+  useEffect(() => {
+    if (!modals[btnName]) {
+      setIsOpen(false);
+    }
+  }, [btnName, modals]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    dispatch(closeModal(btnName as string)); // Fermer la modal
+  };
+
+  const handleOpenRepostModal = () => {
+    // openModal(modalName);
+    dispatch(setForm({origin: modalName, formState: {originalPostId: postId, originalCommentId: commentId}}));
+    dispatch(openModal(modalName));
+    // setPostId(postId ?? '');
+    // setCommentId(commentId ?? '');
+    handleClose();
+  }
+  
   useEffect(() => {
     const updateModalPosition = () => {
       if (modals[btnName] && buttonRef.current) {
@@ -50,37 +81,11 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ origin, postId, commentI
       window.removeEventListener('scroll', updateModalPosition);
     };
   }, [btnName, modals, isOpen]);
-
-  const handleOpen = () => {
-    setIsOpen(true);
-    openModal(btnName); // Ouvrir la modal
-  };
-
-  useEffect(() => {
-    if (!modals[btnName]) {
-      setIsOpen(false);
-    }
-  }, [btnName, modals]);
-
-  const handleClose = () => {
-    setIsOpen(false);
-    closeModal(btnName); // Fermer la modal
-  };
-
-  const handleOpenRepostModal = () => {
-    openModal(modalName);
-    setPostId(postId ?? '');
-    setCommentId(commentId ?? '');
-    handleClose();
-  }
-  
-
   return (
     <>
-    <PostFormProvider origin={origin}>
       <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen} aria-label="Ouvrir le menu de repost">
         <img src="/src/assets/icons/faRetweet.svg" alt="icon retweet" />
-        <p>{reposterCount}</p>
+        <p>{reposterCount ?? 0}</p>
       </div>
 
       {isOpen && btnName === 'btn-repost' &&
@@ -118,7 +123,6 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ origin, postId, commentI
           </div>,
           document.getElementById('btn-repost-comment-modal') || document.body
         )}
-     </PostFormProvider>
     </>
   );
 };
