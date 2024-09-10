@@ -10,6 +10,8 @@ import { authApi } from "./auth/authApi";
 import { googleAuthApi } from "./auth/googleAuthApi";
 import authSlice from "./auth/authSlice";
 import notificationSlice from "./notifications/notificationSlice";
+import modalSlice from "./modals/modalSlice";
+import formSlice from "./forms/formSlice";
 import { notificationApi } from "./api/notificationApi";
 
 const persistConfig = {
@@ -29,12 +31,21 @@ const store = configureStore({
         [googleAuthApi.reducerPath]: googleAuthApi.reducer,
         auth: persistedAuthSlice,
         notifications: notificationSlice,
+        modals: modalSlice,
+        form: formSlice,
         [notificationApi.reducerPath]: notificationApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,
-        }).concat(postApi.middleware, UserApi.middleware, commentApi.middleware, authApi.middleware, googleAuthApi.middleware, notificationApi.middleware),
+        }).concat(
+            postApi.middleware, 
+            UserApi.middleware, 
+            commentApi.middleware, 
+            authApi.middleware, 
+            googleAuthApi.middleware, 
+            notificationApi.middleware
+        ),
 });
 
 const persistor = persistStore(store);
