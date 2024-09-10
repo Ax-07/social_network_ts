@@ -1,7 +1,6 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { useGetCommentsByCommentIdQuery, useGetCommentsByPostIdQuery } from "../../../services/api/commentApi";
 import CommentCard from "./CommentCard";
-import { useModal } from "../../modal/hook/useModal";
 
 interface CommentListProps {
     postId?: string | undefined;
@@ -10,15 +9,7 @@ interface CommentListProps {
 const CommentList: FunctionComponent<CommentListProps> = ({ postId, commentId }) => {
     const { data: commentsByPost, isLoading: isLoadingPostRelatedComments, isError: hasErrorLoadingPostComments } = useGetCommentsByPostIdQuery(postId ?? "");
     const { data: repliesByComment, isLoading: isLoadingCommentReplies, isError: hasErrorLoadingCommentReplies } = useGetCommentsByCommentIdQuery(commentId ?? "");
-    const { setCommentedPostId, setCommentedCommentId } = useModal();
 
-    useEffect(() => {
-        if (postId) {
-            setCommentedPostId(postId ?? "");
-        } else {
-            setCommentedCommentId(commentId ?? "");
-        }
-    }, [postId, commentId, setCommentedPostId, setCommentedCommentId]);
 
     // Déterminer quelle donnée afficher
     const comments = postId && !commentId ? commentsByPost : repliesByComment;
