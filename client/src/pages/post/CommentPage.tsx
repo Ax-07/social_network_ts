@@ -3,7 +3,6 @@ import { useGetCommentByIdQuery } from "../../services/api/commentApi";
 import CommentCard from "../../components/Display/comment/CommentCard";
 import AddComment from "../../components/Form/AddComment";
 import CommentList from "../../components/Display/comment/CommentList";
-import { PostFormProvider } from "../../components/Form/context/postFormContext";
 
 const CommentPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -23,9 +22,7 @@ const CommentPage = () => {
             </NavLink>
             </div>
             <CommentCard comment={comment.data} origin="comment-page"/>
-            <PostFormProvider origin="comment-page-comment">
-                <AddComment origin="comment-page-comment" />
-            </PostFormProvider>
+            <AddComment origin="comment-page-comment" />
             <CommentList commentId={id}/>
         </section>
     );
