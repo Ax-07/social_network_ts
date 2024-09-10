@@ -7,6 +7,7 @@ interface PostAttributes {
   commentsCount?: number;
   media?: string | null;
   originalPostId?: string | null;
+  originalCommentId?: string | null;
   views?: number;
 }
 
@@ -19,6 +20,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
   public media!: string | null;
   public commentsCount!: number;
   public originalPostId!: string | null;
+  public originalCommentId?: string | null | undefined;
   public views!: number;
 
   public readonly createdAt!: Date;
@@ -59,6 +61,14 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
         allowNull: true,
         references: {
           model: 'posts',
+          key: 'id',
+        },
+      },
+      originalCommentId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: 'comments',
           key: 'id',
         },
       },
