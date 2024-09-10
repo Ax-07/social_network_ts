@@ -47,13 +47,13 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
           <MediaDisplay media={post.media}/>
           {post.originalPostId && 
           (<div className="post-card__repost-card">
-            <RepostCard originalPostId={post.originalPostId as string} origin=""/>
+            <RepostCard originalPostId={post.originalPostId as string} originalCommentId={post.originalCommentId as string}/>
           </div>
-        )}
+          )}
 
           <div className="post-card__footer">
             <BtnComment postId={post.id} commentsCount={post.commentsCount} />
-            <BtnRepost origin="modal-repost" postId={post.id} reposterCount={post.reposters?.length ?? 0}/>
+            <BtnRepost postId={post.id} reposterCount={post.reposters?.length ?? 0}/>
             <BtnLike post={post} />
             <BtnViews viewsCount={post.views} />
             <BtnBookmarks postId={post.id} userId={userId ?? ""}/>
