@@ -31,7 +31,7 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({ comment, origin }) =
                     {comment?.media && <MediaDisplay media={comment.media}/>}
                     {origin !== 'repost' && <div className="post-card__footer">
                         <BtnComment commentId={comment.id} commentsCount={commentsCount} />
-                        <BtnRepost origin='modal-repost-comment' postId={comment.postId} commentId={comment.id} reposterCount={comment.reposters?.length}/>
+                        <BtnRepost postId={comment.postId} commentId={comment.id} reposterCount={comment.reposters?.length}/>
                         <BtnLike comment={comment} />
                         <BtnViews viewsCount={comment.views} />
                         <BtnBookmarks postId={comment.id} userId={commenterId ?? ""}/>
