@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 
 interface PreviewPictureProps {
   media: string;
-  mimetype: string;
+  mimetype?: string | undefined;
   onCancel: () => void;
 }
 
