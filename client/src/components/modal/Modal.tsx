@@ -1,17 +1,21 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import { useModal } from './hook/useModal';
-import { PostFormOrigin } from '../post/PostForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../services/stores';
+import { closeModal } from '../../services/modals/modalSlice';
+import { FormOrigin } from '../Form/Form';
 
-interface ModalProps extends PropsWithChildren<{
-  modalName: PostFormOrigin;
-}> {}
+interface ModalProps extends PropsWithChildren {
+  modalName: FormOrigin;
+}
 
-const Modal: FunctionComponent<ModalProps> = ({ children, modalName }) => {
-  const { modals, closeModal } = useModal();
-  if (!modals[modalName]) return null;
+const Modal: FunctionComponent<ModalProps> = ({ modalName, children }) => {
+  const dispatch = useDispatch();
+  const {modals} = useSelector((state: RootState) => state.modals);
+  // const { modals, closeModal } = useModal();
+  if (!modalName || !modals[modalName]) return null;
 
   const handleOverlayClick = () => {
-    closeModal(modalName);
+    dispatch(closeModal(modalName));
   };
 
   const handleContentClick = (e: React.MouseEvent) => {
@@ -22,7 +26,7 @@ const Modal: FunctionComponent<ModalProps> = ({ children, modalName }) => {
     <div className="modal-overlay" onClick={handleOverlayClick}>
       {modalName !== 'btn-repost' && modalName !== 'btn-repost-with-comment' &&
       <div className="modal-content" onClick={handleContentClick}>
-        <button onClick={()=> closeModal(modalName)} className="modal-close">❌</button>
+        <button onClick={()=> dispatch(closeModal(modalName!))} className="modal-close">❌</button>
         {children}
       </div>}
     </div>
