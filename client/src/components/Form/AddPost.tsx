@@ -1,11 +1,11 @@
 import { useAddPostMutation } from "../../services/api/postApi";
 import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
-import PostForm, { PostFormOrigin } from "./PostForm";
-import { usePostFormContext } from "./hooks/usePostFormContext";
+import Form, { FormOrigin } from "./Form";
+import { useForm } from "./hooks/useForm";
 
 interface AddPostProps {
-  origin: PostFormOrigin;
+  origin: FormOrigin;
   onClose?: () => void;
 }
 
@@ -18,7 +18,7 @@ interface AddPostProps {
  * 
  * @component
  * @param {AddPostProps} props - Les propriétés du composant.
- * @param {PostFormOrigin} props.origin - L'origine du formulaire, déterminant le contexte dans lequel le post est créé.
+ * @param {FormOrigin} props.origin - L'origine du formulaire, déterminant le contexte dans lequel le post est créé.
  * @param {() => void} [props.onClose] - Fonction optionnelle pour fermer la modale après la soumission réussie du post.
  * 
  * @returns {JSX.Element} Le formulaire de création de post, ou un message de chargement si la publication est en cours.
@@ -34,7 +34,7 @@ interface AddPostProps {
  * - Enfin, il ferme la modale si une fonction `onClose` est fournie (en fonction de l'origine).
  */
 const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
-  const { form, resetForm} = usePostFormContext();
+  const { form, resetFormState } = useForm(origin);
   const [addPost, { isLoading }] = useAddPostMutation();
   const pushToast = usePushToast();
 
@@ -45,24 +45,31 @@ const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
       formData.append("userId", form.userId as string);
       formData.append("content", form.content as string);
       if (typeof form.file === "string") {
-        formData.append("media", form.file); // Ici on ajoute le lien vers une video youtube
-      } else {
-        formData.append("media", form.file as Blob); // Ici on ajoute le fichier media (video ou image)
+        formData.append("media", form.file); // Ici on ajoute le lien vers une vidéo YouTube
+      } else if (form.file) {
+        formData.append("media", form.file as Blob); // Ici on ajoute le fichier média (vidéo ou image)
       }
       
       const response = await addPost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
-      pushToast({ message: (error as ApiError).data.message, type: "error" });
+      // Vérification si l'erreur a une structure attendue
+      if (error && (error as ApiError)?.data?.message) {
+        pushToast({ message: (error as ApiError).data.message, type: "error" });
+      } else {
+        // Message d'erreur générique
+        pushToast({ message: "Une erreur est survenue", type: "error" });
+      }
     } finally {
-      resetForm();
+      resetFormState();
       onClose && onClose();
     }
   };
+  
   if (isLoading) return <p aria-live="polite">Publication en cours...</p>;
 
   
-  return <PostForm handleSubmit={handleSubmit} origin={origin} aria-live="assertive"/>
+  return <Form origin={origin} handleSubmit={handleSubmit} aria-live="assertive"/>
 };
 
 export default AddPost;

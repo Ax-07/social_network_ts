@@ -1,20 +1,16 @@
 import { useRepostMutation } from "../../services/api/postApi";
 import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
-import PostForm, { PostFormOrigin } from "./PostForm";
-import { usePostFormContext } from "./hooks/usePostFormContext";
+import Form, { FormOrigin } from "./Form";
+import { useForm } from "./hooks/useForm";
 
 interface AddPostProps {
-  origin: PostFormOrigin;
+  origin: FormOrigin;
   onClose?: () => void;
 }
 
 const AddRepost = ({ origin, onClose }: AddPostProps) => {
-  const {
-    form,
-    resetForm,
-  } = usePostFormContext();
-
+  const { form, resetFormState } = useForm(origin);
   const [repost, { isLoading }] = useRepostMutation();
   const pushToast = usePushToast();
 
@@ -32,13 +28,13 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
     } catch (error) {
       pushToast({ message: (error as ApiError).data.message, type: "error" });
     } finally {
-      resetForm();
+      resetFormState();
       onClose && onClose();
     }
   };
   
     if (isLoading) return <p>Publication en cours...</p>;
-  return <PostForm handleSubmit={handleSubmit} origin={origin}/>
+  return <Form origin={origin} handleSubmit={handleSubmit}/>
 };
 
 export default AddRepost;

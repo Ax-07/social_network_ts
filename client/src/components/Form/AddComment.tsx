@@ -1,15 +1,14 @@
-import PostForm, { PostFormOrigin } from './PostForm';
-import { usePostFormContext } from './hooks/usePostFormContext';
+import Form, { FormOrigin } from './Form';
 import { useAddCommentMutation } from '../../services/api/commentApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { useParams } from 'react-router-dom';
 import { usePushToast } from '../toast/Toasts';
 import { ApiError } from '../../utils/types/api.types';
-import { useModal } from '../modal/hook/useModal';
+import { useForm } from './hooks/useForm';
 
 interface AddCommentProps{
-  origin: PostFormOrigin;
+  origin: FormOrigin;
   onClose?: () => void;
 }
 
@@ -22,7 +21,7 @@ interface AddCommentProps{
  * 
  * @component
  * @param {AddCommentProps} props - Les propriétés du composant.
- * @param {PostFormOrigin} props.origin - L'origine du formulaire, qui détermine quel ID (postId ou commentId) doit être utilisé.
+ * @param {FormOrigin} props.origin - L'origine du formulaire, qui détermine quel ID (postId ou commentId) doit être utilisé.
  * @param {() => void} [props.onClose] - Fonction optionnelle à appeler pour fermer le modal ou le composant après l'ajout du commentaire.
  * 
  * @returns {JSX.Element} Le formulaire de commentaire, ou un message de chargement si la requête est en cours.
@@ -38,9 +37,9 @@ interface AddCommentProps{
 const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
   const postIdFromParams = useParams<{ id: string }>().id;
   const commentIdFromParams = useParams<{ id: string }>().id;
-  const { postId, commentId, commentedPostId, commentedCommentId } = useModal();
+  // const { postId, commentId, commentedPostId, commentedCommentId } = useModal();
   const userId = useSelector((state: RootState) => state.auth.user?.id);
-  const postForm = usePostFormContext();
+  const { form, resetFormState, } = useForm(origin);
   const [addComment, { isLoading }] = useAddCommentMutation();
   const pushToast = usePushToast();
 
@@ -49,11 +48,11 @@ const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
   switch (origin) {
     case "modal-comment-post":
       formKey = "postId";
-      id = postId;
+      id = form.originalPostId;
       break;
     case "modal-comment-comment":
       formKey = "commentId";
-      id = commentId;
+      id = form.originalCommentId;
       break;
     case "post-page-comment":
       formKey = "postId";
@@ -65,7 +64,7 @@ const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
       break;
     default:
       formKey = "postId";
-      id = postId;
+      id = form.originalPostId;
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,33 +73,33 @@ const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
       formKey,
       id,
       userId,
-      content: postForm.form.content,
-      file: postForm.form.file
+      content: form.content,
+      file: form.file
     });
     try {
       const formData = new FormData();
       formData.append(formKey, id as string);
       formData.append("userId", userId as string);
-      formData.append("content", postForm.form.content as string);
-      if (typeof postForm.form.file === "string") {
-        formData.append("media", postForm.form.file);
+      formData.append("content", form.content as string);
+      if (typeof form.file === "string") {
+        formData.append("media", form.file);
       } else {
-        formData.append("media", postForm.form.file as Blob);
+        formData.append("media", form.file as Blob);
       }
 
-      const response = await addComment({formData: formData , origin, commentedPostId: commentedPostId, commentedCommentId: commentedCommentId}).unwrap();
+      const response = await addComment({formData: formData , origin, commentedPostId: form.originalPostId, commentedCommentId: form.originalCommentId}).unwrap();
       pushToast({ message: response.message, type: "success" });
     } catch (error) {
       pushToast({ message: (error as ApiError).data.message, type: "error" });
     } finally {
-      postForm.resetForm();
+      resetFormState();
       onClose && onClose();
     }
   };
 
   if (isLoading) return <p>Publication en cours...</p>;
 
-  return <PostForm handleSubmit={handleSubmit} origin={origin} />
+  return <Form handleSubmit={handleSubmit} origin={origin} />
 };
 
 export default AddComment;
