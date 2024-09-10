@@ -22,6 +22,10 @@ const validatePostEntry = (entry: PostEntry) => {
         errors.push(`OriginalPostId must be a non-empty string, entry is ${typeof entry.originalPostId}`);
     }
 
+    if (entry.originalCommentId && (typeof entry.originalCommentId !== 'string')) {
+        errors.push(`OriginalCommentId must be a non-empty string, entry is ${typeof entry.originalCommentId}`);
+    }
+
     return errors;
 }
 
