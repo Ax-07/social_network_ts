@@ -1,9 +1,11 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CommentAttributes } from './comment.model';
+import { PostAttributes } from '../posts/post.model';
 
 interface CommentLikeAttributes {
     id: string;
     userId: CommentAttributes['userId'];
+    originalPostId?: PostAttributes['id'];
     commentId: CommentAttributes['id'];
 }
 
@@ -12,6 +14,7 @@ interface CommentLikeCreationAttributes extends Optional<CommentLikeAttributes, 
 class CommentLike extends Model<CommentLikeAttributes, CommentLikeCreationAttributes> implements CommentLikeAttributes {
     public id!: string;
     public userId!: CommentAttributes['userId'];
+    public originalPostId!: PostAttributes['id'];
     public commentId!: CommentAttributes['id'];
 
     public readonly createdAt!: Date;
@@ -31,6 +34,14 @@ const initializeCommentLikeModel = (sequelize: Sequelize): typeof CommentLike =>
                 allowNull: false,
                 references: {
                     model: 'users',
+                    key: 'id',
+                },
+            },
+            originalPostId: {
+                type: DataTypes.UUID,
+                allowNull: false,
+                references: {
+                    model: 'posts',
                     key: 'id',
                 },
             },
