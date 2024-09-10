@@ -7,6 +7,7 @@ export interface PostTypes {
   commentsCount?: number;
   reposters: { id: string}[];
   originalPostId?: string | null;
+  originalCommentId?: string | null;
   views?: number;
   createdAt?: string;
   updatedAt?: string;
