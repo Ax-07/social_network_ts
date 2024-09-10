@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import ButtonModal from "../../modal/ButtonModal";
-import { PostFormOrigin } from "../../Form/PostForm";
+import { FormOrigin } from "../../Form/Form";
 
 interface BtnCommentProps {
   postId?: string;
@@ -13,12 +13,14 @@ const BtnComment: FunctionComponent<BtnCommentProps> = ({
   commentId,
   commentsCount,
 }) => {
-  let modaleName: PostFormOrigin;
+  let modaleName: FormOrigin;
   if (postId) {
     modaleName = "modal-comment-post";
+    
   } else {
     modaleName = "modal-comment-comment";
   }
+
   return (
     <ButtonModal
       modalName={modaleName}
