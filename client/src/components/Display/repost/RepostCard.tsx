@@ -9,13 +9,13 @@ import MediaDisplay from "../../Base/mediaDisplay/MediaDisplay";
 
 export type PostProps = {
   originalPostId: string;
-  orignalCommentId?: string;
+  originalCommentId?: string;
   origin?: string;
 };
 
-const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, orignalCommentId, origin }) => {
+const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, originalCommentId, origin }) => {
     const { data: { data: postByOriginalId } = {} } = useGetPostByIdQuery(originalPostId ?? "");
-    const { data: { data: commentByOriginalId } = {} } = useGetCommentByIdQuery(orignalCommentId ?? 'null');
+    const { data: { data: commentByOriginalId } = {} } = useGetCommentByIdQuery(originalCommentId ?? "");
     const { data: { data: poster } = {} } = useGetUserByIdQuery(postByOriginalId?.userId ?? "");
  
   useEffect(() => {
