@@ -3,7 +3,7 @@ import { User } from '../../utils/types/user.types';
 import { useGetUserByIdQuery } from '../../services/api/userApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
-import MemoizedBtnFollow from '../btn-follow/BtnFollow';
+import MemoizedBtnFollow from '../Actions/btn-follow/BtnFollow';
 
 interface UserProfilCardProps {
     user: User | null;
@@ -13,7 +13,7 @@ interface UserProfilCardProps {
 }
 
 const UserProfilCard: FunctionComponent<UserProfilCardProps> = ({user, cardRef, onMouseLeave, onMouseEnter}) => {
-    const {data: {data: userData} = {}} = useGetUserByIdQuery(user?.id ?? ''); console.log('userData:', userData?.followers);
+    const {data: {data: userData} = {}} = useGetUserByIdQuery(user?.id ?? '');
     const [filteredFollowersNames, setFilteredFollowersNames] = useState<string[]>([]);
     const userName = useSelector((state: RootState) => state?.auth?.user?.username); // username de l'utilisateur connecter
 
