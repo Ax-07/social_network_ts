@@ -1,13 +1,14 @@
 import { useSelector } from "react-redux";
-import { useGetBookmarkedPostsQuery } from "../../services/api/postApi";
 import { RootState } from "../../services/stores";
 import PostCard from "../../components/Display/post/PostCard";
 import { useEffect } from "react";
+import { useGetBookmarksQuery } from "../../services/api/bookmarkApi";
+import CommentCard from "../../components/Display/comment/CommentCard";
 
 const BooKmarks = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id);
   const userHandle = useSelector((state: RootState) => state.auth.user?.handle);
-  const { data: { data: postsBookmarked } = {}, refetch } = useGetBookmarkedPostsQuery(
+  const { data: { data: postsBookmarked } = {}, refetch } = useGetBookmarksQuery(
     userId as string
   );
 
@@ -24,9 +25,10 @@ const BooKmarks = () => {
       </div>
       <div className="post">
         <ul className="post__list">
-          {postsBookmarked?.map((post) => (
-            <li className="post__item" key={post.id}>
-              <PostCard key={post.id} post={post} origin="post-list" />
+          {postsBookmarked?.map((bookmark) => (
+            <li className="post__item" key={bookmark.id}>
+              {bookmark.post && <PostCard key={bookmark.postId} post={bookmark.post} origin="post-list" />}
+              {bookmark.comment && <CommentCard key={bookmark.commentId} comment={bookmark.comment} origin="comment-list"/>}
             </li>
           ))}
         </ul>
