@@ -3,9 +3,9 @@ import { useAddCommentMutation } from '../../services/api/commentApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { useParams } from 'react-router-dom';
-import { usePushToast } from '../toast/Toasts';
 import { ApiError } from '../../utils/types/api.types';
 import { useForm } from './hooks/useForm';
+import { usePushToast } from '../toast/useToast';
 
 interface AddCommentProps{
   origin: FormOrigin;
@@ -88,7 +88,7 @@ const AddComment = ({ origin, onClose }: AddCommentProps): JSX.Element => {
       }
 
       const response = await addComment({formData: formData , origin, commentedPostId: form.originalPostId, commentedCommentId: form.originalCommentId}).unwrap();
-      pushToast({ message: response.message, type: "success" });
+      pushToast({ type: "success", message: response.message });
     } catch (error) {
       pushToast({ message: (error as ApiError).data.message, type: "error" });
     } finally {

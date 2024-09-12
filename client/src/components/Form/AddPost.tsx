@@ -1,6 +1,6 @@
 import { useAddPostMutation } from "../../services/api/postApi";
-import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
+import { usePushToast } from "../toast/useToast";
 import Form, { FormOrigin } from "./Form";
 import { useForm } from "./hooks/useForm";
 

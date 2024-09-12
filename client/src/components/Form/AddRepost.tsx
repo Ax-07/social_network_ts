@@ -1,6 +1,6 @@
 import { useRepostMutation } from "../../services/api/postApi";
-import { usePushToast } from "../toast/Toasts";
 import { ApiError } from "../../utils/types/api.types";
+import { usePushToast } from "../toast/useToast";
 import Form, { FormOrigin } from "./Form";
 import { useForm } from "./hooks/useForm";
 
@@ -21,7 +21,9 @@ const AddRepost = ({ origin, onClose }: AddPostProps) => {
       formData.append("userId", form.userId as string);
       formData.append("content", form.content as string);
       formData.append("originalPostId", form.originalPostId as string);
-      formData.append("originalCommentId", form.originalCommentId as string);
+      if (form.originalCommentId) {
+        formData.append("originalCommentId", form.originalCommentId as string);
+      }
 
       const response = await repost(formData).unwrap();
       pushToast({ message: response.message, type: "success" });
