@@ -26,7 +26,7 @@ const SideMenu = () => {
           <ul className="sidemenu__list">
             <MenuLink to="/home" name="Home" icon="/src/assets/icons/faHome.svg" />
             <MenuLink to="/explore" name="Explore" icon="/src/assets/icons/faSearch.svg" />
-            <MenuLink to="/notifications" name="Notifications" icon="/src/assets/icons/faBell.svg" userId={userId}/>
+            <MenuLink to="/notifications" name="Notifications" icon="/src/assets/icons/faBell.svg" userId={userId} />
             <MenuLink to="/messages" name="Messages" icon="/src/assets/icons/faEnvelope.svg" />
             <MenuLink to="/bookmarks" name="Bookmarks" icon="/src/assets/icons/faBookmark.svg" />
             <MenuLink to="/lists" name="Lists" icon="/src/assets/icons/faListDots.svg" />
@@ -60,36 +60,30 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon, userId }) 
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1280;
   const { notifications } = useNotifications(userId as string);
-
-  const [notificationsHasNotRead, setNotificationsHasNotRead] = useState(0);
+  const [notificationsCount, setNotificationsCount] = useState(0);
 
   // Gestion des notifications
   useEffect(() => {
-    // Réinitialiser le compteur à chaque mise à jour des notifications
-    if (notifications && notifications.length > 0) {
+    if (userId) {
       const unreadNotificationsCount = notifications.filter(
         (notification) => !notification.isRead
       ).length;
-
-      // Mettre à jour le compteur des notifications non lues
-      setNotificationsHasNotRead(unreadNotificationsCount);
-    } else {
-      // S'il n'y a pas de notifications, réinitialiser le compteur
-      setNotificationsHasNotRead(0);
+      setNotificationsCount(unreadNotificationsCount);
     }
-    
-    // Log des notifications pour vérifier le contenu
-    console.log('notifications', notifications);
-  }, [notifications]);
+  }, [notifications, userId]);
 
   return (
     <li className="sidemenu__item">
       <NavLink to={to} className="sidemenu__link">
         <img src={icon} alt={`icon ${name}`} />
-        {notificationsHasNotRead > 0 && userId &&
-        <span className="sidemenu__link-notifications">
-          <p>{notificationsHasNotRead}</p>
-        </span>}
+        {notificationsCount > 0 && userId && (
+          <span
+            className="sidemenu__link-notifications"
+            aria-label={`You have ${notificationsCount} unread notifications`}
+          >
+            <p>{notificationsCount}</p>
+          </span>
+        )}
         {!isTablet && name}
       </NavLink>
     </li>
