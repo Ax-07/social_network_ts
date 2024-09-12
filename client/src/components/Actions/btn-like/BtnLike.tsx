@@ -3,10 +3,10 @@ import { useLikePostMutation } from "../../../services/api/postApi";
 import { PostTypes } from "../../../utils/types/post.types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../services/stores";
-import { usePushToast } from "../../toast/Toasts";
 import { ApiError } from "../../../utils/types/api.types";
 import { CommentTypes } from "../../../utils/types/comment.types";
 import { useLikeCommentMutation } from "../../../services/api/commentApi";
+import { usePushToast } from "../../toast/useToast";
 
 interface BtnLikeProps {
   post?: PostTypes;
