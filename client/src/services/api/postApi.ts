@@ -7,7 +7,6 @@ import {
   updatePostCacheAfterLike,
   updatePostCacheAfterRepost,
   updatePostCacheAfterUpdate,
-  updatePostCacheAfterViews
 } from "../utils/postApiHelpers";
 
 const localUrl = "http://localhost:8080/api";
@@ -98,16 +97,6 @@ export const postApi = createApi({
         body: { postViewCounts },
       }),
     }),
-    getBookmarkedPosts: builder.query<PostResponseArray, string>({
-      query: (userId) => `/posts/bookmarks?id=${userId}`,
-      providesTags: (result) =>
-        result && Array.isArray(result.data)
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Posts" as const, id })),
-              { type: "Posts", id: "BOOKMARKS" },
-            ]
-          : [{ type: "Posts", id: "BOOKMARKS" }],
-    }),
   }),
 });
 
@@ -120,5 +109,4 @@ export const {
   useLikePostMutation,
   useRepostMutation,
   useIncrementPostViewsMutation,
-  useGetBookmarkedPostsQuery,
 } = postApi;
