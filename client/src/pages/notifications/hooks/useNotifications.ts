@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { usePushToast } from '../../../components/toast/Toasts';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../../services/notifications/notificationSlice';
 import { NotificationTypes } from '../../../utils/types/notification.types';
 import { useGetAllNotificationsByUserIdQuery } from '../../../services/api/notificationApi';
+import { Dispatch } from '@reduxjs/toolkit/react';
+import { ToastType } from '../../../components/toast/Toast';
+import { usePushToast } from '../../../components/toast/useToast';
 
 /**
  * Hook personnalisé pour gérer les notifications en temps réel via WebSocket.
@@ -13,7 +15,6 @@ import { useGetAllNotificationsByUserIdQuery } from '../../../services/api/notif
  * affiche des toasts pour les notifications reçues, et met à jour l'état global avec les nouvelles notifications.
  * 
  * @function useNotifications
- * @param {string} userId - L'ID de l'utilisateur actuel, utilisé pour l'authentification via WebSocket.
  * 
  * @returns {{ notifications: NotificationTypes[], socket: Socket | null }} 
  * Un objet contenant les notifications reçues et la connexion WebSocket actuelle.
@@ -31,57 +32,89 @@ import { useGetAllNotificationsByUserIdQuery } from '../../../services/api/notif
  */
 const useNotifications = (userId: string): { notifications: NotificationTypes[], socket: Socket | null } => {
   const [notifications, setNotifications] = useState<NotificationTypes[]>([]);
-  const {data: { data: notificationsFromDatabase } = {}} = useGetAllNotificationsByUserIdQuery(userId);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const { data: { data: notificationsFromDatabase } = {} } = useGetAllNotificationsByUserIdQuery(userId);
   const pushToast = usePushToast();
   const dispatch = useDispatch();
-  
+  const socketRef = useRef<Socket | null>(null);
+
+  // Initialiser la connexion socket
   useEffect(() => {
-    // Créer une connexion WebSocket
-    const newSocket = io('http://localhost:8080', {
-      path: '/socket.io', // Spécifiez le chemin pour les notifications
-      auth: {
-        token: userId, // Envoyer l'ID de l'utilisateur comme jeton d'authentification
-      },
-    });
+    if (!userId || socketRef.current) return;
 
-    // Écoute des notifications
-    newSocket.on('notification', (notification: NotificationTypes) => {
-      setNotifications(prev => [...prev, notification]);
+    const cleanup = initializeSocketConnection(userId, setNotifications, pushToast, dispatch, socketRef);
 
-      // Afficher une notification pour chaque notification reçue
-      pushToast({
-        type: 'notification',
-        message: notification.message,
-      });
+    return cleanup;
+  }, [userId, dispatch, pushToast]);
 
-      // Ajouter la notification à la liste des notifications
-      dispatch(addNotification({
-        id: notification.id,
-        userId: userId,
-        senderId: notification.senderId,
-        type: notification.type,
-        message: notification.message,
-        isRead: false,
-        postId: notification.postId,
-        commentId: notification.commentId,
-        createdAt: notification.createdAt,
-      }));
-    });
-
-    // Mettre à jour l'état local avec les notifications de la base de données
+  // Mettre à jour les notifications avec celles de la base de données
+  useEffect(() => {
     if (notificationsFromDatabase) {
       setNotifications(notificationsFromDatabase);
     }
-    setSocket(newSocket); // Mettre à jour l'état du socket
+  }, [notificationsFromDatabase]);
 
-    // Nettoyage lors du démontage du composant
-    return () => {
-      newSocket.close();
-    };
-  }, [dispatch, notificationsFromDatabase, pushToast, userId]);
-
-  return { notifications, socket };
+  return { notifications, socket: socketRef.current };
 };
 
 export default useNotifications;
+
+const handleNewNotification = (
+  notification: NotificationTypes,
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationTypes[]>>,
+  pushToast: (toast: ToastType) => void,
+  dispatch: Dispatch,
+  userId: string
+) => {
+  setNotifications(prev => {
+    if (!prev.some(n => n.id === notification.id)) {
+      return [...prev, notification];
+    }
+    return prev;
+  });
+
+  // Afficher la notification via toast
+  pushToast({
+    type: 'notification',
+    message: notification.message,
+  });
+
+  // Ajouter la notification dans Redux
+  dispatch(addNotification({
+    id: notification.id,
+    userId: userId,
+    senderId: notification.senderId,
+    type: notification.type,
+    message: notification.message,
+    isRead: false,
+    postId: notification.postId,
+    commentId: notification.commentId,
+    createdAt: notification.createdAt,
+  }));
+};
+
+const initializeSocketConnection = (
+  userId: string,
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationTypes[]>>,
+  pushToast: (toast: ToastType) => void,
+  dispatch: Dispatch,
+  socketRef: React.MutableRefObject<Socket | null>
+) => {
+  const newSocket = io('http://localhost:8080', {
+    path: '/socket.io',
+    auth: { token: userId },
+  });
+
+  socketRef.current = newSocket;
+
+  // Écoute des événements de notification
+  newSocket.on('notification', (notification: NotificationTypes) => {
+    handleNewNotification(notification, setNotifications, pushToast, dispatch, userId);
+  });
+
+  return () => {
+    if (newSocket) {
+      newSocket.close();
+      socketRef.current = null;
+    }
+  };
+};
