@@ -36,7 +36,7 @@ h1, h2, h3, h4, h5, h6, p {
   font-weight: 400;
 }
 
-.fs-15-700, .post-card__header-username, .sidemenu__link-notifications > p {
+.fs-15-700, .post-card__header-username {
   font-size: 0.9375rem;
   font-weight: 700;
 }
@@ -253,10 +253,10 @@ main {
 }
 .sidemenu__link-notifications > p {
   position: absolute;
-  top: 47%;
-  left: 53%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 10px;
+  font-size: small;
   line-height: 100%;
   color: #fff;
   text-align: center;
@@ -1105,11 +1105,19 @@ iframe[name=callout] {
   cursor: pointer;
 }
 
-.toast {
+.toasts {
   position: fixed;
   z-index: 1000;
   top: 100px;
   right: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.toast {
   display: flex;
   gap: 30px;
   width: 300px;
