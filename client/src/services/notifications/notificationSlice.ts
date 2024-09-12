@@ -1,20 +1,20 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { initialState, NotificationTypes } from "../../utils/types/notification.types";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { initialState, NotificationTypes } from '../../utils/types/notification.types';
 
 const notificationSlice = createSlice({
-  name: "notifications",
+  name: 'notifications',
   initialState,
   reducers: {
     addNotification(state, action: PayloadAction<NotificationTypes>) {
-      state.notifications = [...state.notifications, action.payload];
+      state.notifications.push(action.payload);
     },
-    removeNotification(state, action: PayloadAction<string>) {
-      state.notifications = state.notifications.filter(
-        (notification) => notification.id !== action.payload
+    updateNotificationStatus(state, action: PayloadAction<{ ids: string[]; isRead: boolean }>) {
+      state.notifications = state.notifications.map((notif) =>
+        action.payload.ids.includes(notif.id) ? { ...notif, isRead: action.payload.isRead } : notif
       );
     },
   },
 });
 
-export const { addNotification, removeNotification } = notificationSlice.actions;
+export const { addNotification, updateNotificationStatus } = notificationSlice.actions;
 export default notificationSlice.reducer;
