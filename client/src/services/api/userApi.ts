@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { FollowersNamesRequest, User, UserResponse, UserResponseArray } from "../../utils/types/user.types";
-import { updatePostCacheAfterAddToBookmarks, updateUserCacheAfterFollow } from "../utils/userApiQueryStarted";
+import { updateUserCacheAfterFollow } from "../utils/userApiQueryStarted";
 import { RootState } from "../stores";
 
 const localUrl = "http://localhost:8080/api";
@@ -59,16 +59,6 @@ export const UserApi = createApi({
         getFollowersNames: builder.query<FollowersNamesRequest, string>({
             query: (id) => `/users/${id}/followers`,
         }),
-        addToBookmarks: builder.mutation<UserResponse, { userId: string; postId: string }>({
-            query: ({ userId, postId }) => ({
-                url: `/users/${userId}/bookmarks`,
-                method: "PATCH",
-                body: {userId, postId },
-            }),
-            onQueryStarted: async ({ userId, postId }, { dispatch, queryFulfilled }) => {
-                updatePostCacheAfterAddToBookmarks( userId, postId , { dispatch, queryFulfilled });
-            }
-        }),
     }),
 });
 
@@ -80,5 +70,4 @@ export const {
   useDeleteUserMutation,
   useFollowMutation,
   useGetFollowersNamesQuery,
-  useAddToBookmarksMutation,
 } = UserApi;
