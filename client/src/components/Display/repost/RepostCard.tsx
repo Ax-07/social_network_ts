@@ -1,4 +1,4 @@
-import { useEffect, type FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { useGetUserByIdQuery } from "../../../services/api/userApi";
 import { NavLink } from "react-router-dom";
 import { useGetPostByIdQuery } from "../../../services/api/postApi";
@@ -17,10 +17,6 @@ const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, originalComm
     const { data: { data: postByOriginalId } = {} } = useGetPostByIdQuery(originalPostId ?? "");
     const { data: { data: commentByOriginalId } = {} } = useGetCommentByIdQuery(originalCommentId ?? "");
     const { data: { data: poster } = {} } = useGetUserByIdQuery(postByOriginalId?.userId ?? "");
- 
-  useEffect(() => {
-    console.log('origin', origin)
-  }, [origin])
   
   if (!postByOriginalId) return null;
 
