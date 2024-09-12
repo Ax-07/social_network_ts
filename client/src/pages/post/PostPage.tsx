@@ -5,27 +5,31 @@ import AddComment from "../../components/Form/AddComment";
 import CommentList from "../../components/Display/comment/CommentList";
 
 const PostPage = () => {
-    const { id } = useParams<{ id: string }>(); console.log(id);
-    const { data: post, error, isLoading } = useGetPostByIdQuery(id as string);
+  const { id } = useParams<{ id: string }>();
+  const {
+    data: { data: post } = {},
+    error,
+    isLoading,
+  } = useGetPostByIdQuery(id as string);
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {(error as Error).message}</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {(error as Error).message}</div>;
 
-    // Vérifiez si `post` est défini avant de rendre `PostCard`
-    if (!post) return <div>No post found</div>;
+  // Vérifiez si `post` est défini avant de rendre `PostCard`
+  if (!post) return <div>No post found</div>;
 
-    return (
-        <section className="post-page">
-            <div>
-            <NavLink to={"/home"}>
-                <img src="/src/assets/icons/faArrowLeft.svg" alt="icon arrow left" />
-            </NavLink>
-            </div>
-            <PostCard post={post.data} origin="post-page"/>
-            <AddComment origin="post-page-comment" />
-            <CommentList postId={id} />
-        </section>
-    );
+  return (
+    <section className="post-page">
+      <header>
+        <NavLink to={"/home"}>
+          <img src="/src/assets/icons/faArrowLeft.svg" alt="icon arrow left" />
+        </NavLink>
+      </header>
+      <PostCard post={post} origin="post-page" />
+      <AddComment origin="post-page-comment" />
+      <CommentList postId={id} />
+    </section>
+  );
 };
 
 export default PostPage;
