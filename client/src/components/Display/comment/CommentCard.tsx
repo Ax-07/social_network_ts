@@ -34,7 +34,7 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({ comment, origin }) =
                         <BtnRepost postId={comment.postId} commentId={comment.id} reposterCount={comment.reposters?.length}/>
                         <BtnLike comment={comment} />
                         <BtnViews viewsCount={comment.views} />
-                        <BtnBookmarks postId={comment.id} userId={commenterId ?? ""}/>
+                        <BtnBookmarks commentId={comment.id} userId={commenterId ?? ""}/>
                     </div>}
                 </div>
             </article>
