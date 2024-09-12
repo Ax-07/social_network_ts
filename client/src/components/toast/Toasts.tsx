@@ -1,15 +1,14 @@
-import{ useCallback, useContext } from 'react';
-import { ToastType } from './Toast';
-import { PushToastContext, ToastsContext } from './ToastContext';
+import { useContext } from "react";
+import Toast from "./Toast";
+import { ToastsContext } from "./ToastContext";
 
-export const usePushToast = () => {
-    const pushToastRef = useContext(PushToastContext);
-    return useCallback(
-      (toast: ToastType) => {
-        pushToastRef.current(toast);
-      },
-      [pushToastRef]
-    );
-  };
-  
-  export const useToasts = () => useContext(ToastsContext);
+export const Toasts = () => {
+  const toasts = useContext(ToastsContext);
+  return (
+    <div className="toasts">
+      {toasts.map((toast, index) => (
+        <Toast key={index} {...toast} />
+      ))}
+    </div>
+  );
+};

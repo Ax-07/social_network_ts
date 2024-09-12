@@ -5,7 +5,7 @@ import infoIcon from "../../assets/icons/faInfoCircle.svg";
 import errorIcon from "../../assets/icons/faCircleXmark.svg";
 
 export interface ToastType {
-  type: "success" | "error" | "info" | "warning" | "default" | "notification";
+  type: "success" | "error" | "info" | "warning" | "notification" | "default";
   message: string;
 }
 
@@ -19,42 +19,53 @@ const Toast: FunctionComponent<ToastType> = ({ type, message }) => {
     case "success":
       {
         (icon = successIcon),
-        (title = "Success"),
-        (name = "success"),
-        (color = "#00DF80");
+          (title = "Success"),
+          (name = "success"),
+          (color = "#00DF80");
       }
       break;
     case "error":
       {
         (icon = errorIcon),
-        (title = "Error"),
-        (name = "error"),
-        (color = "#F04248");
+          (title = "Error"),
+          (name = "error"),
+          (color = "#F04248");
       }
       break;
     case "info":
       {
         (icon = infoIcon),
-        (title = "Info"),
-        (name = "info"),
-        (color = "#1d9bf0");
+          (title = "Info"),
+          (name = "info"),
+          (color = "#1d9bf0");
       }
       break;
     case "warning":
       {
         (icon = warningIcon),
-        (title = "Warning"),
-        (name = "warning"),
-        (color = "#FFD21E");
+          (title = "Warning"),
+          (name = "warning"),
+          (color = "#FFD21E");
+      }
+      break;
+    case "notification":
+      {
+        (icon = infoIcon),
+          (title = "Notification"),
+          (name = "notification"),
+          (color = "#1d9bf0");
       }
       break;
     default: {
-      (icon = "default"), (title = "Default"), (name = "default"), (color = "#fff");
+      (icon = "default"),
+        (title = "Default"),
+        (name = "default"),
+        (color = "#fff");
     }
   }
 
   return (
-    <div className="toast" style={{boxShadow: `3px 3px 10px ${color}`}}>
+    <div className="toast" style={{ boxShadow: `3px 3px 10px ${color}` }}>
       <div className={`toast__icon-wrapper toast__icon-wrapper-${name}`}></div>
       <img className="toast__icon" src={icon} alt={`icon ${name}`} />
       <div className="toast__content">

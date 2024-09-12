@@ -1,7 +1,7 @@
 // ToastsContext.tsx
-import { createContext, PropsWithChildren, useContext, useState, useRef, useCallback } from "react";
-import Toast from "./Toast";
+import { createContext, PropsWithChildren, useState, useRef, useCallback } from "react";
 import { ToastType } from "./Toast";
+import { Toasts } from "./Toasts";
 
 export const ToastsContext = createContext<ToastType[]>([]);
 export const PushToastContext = createContext<{ current: (toast: ToastType) => void }>({ current: () => {} });
@@ -30,16 +30,3 @@ export const ToastsProvider = ({ children }: PropsWithChildren) => {
     </PushToastContext.Provider>
   );
 };
-
-const Toasts = () => {
-  const toasts = useContext(ToastsContext);
-  return (
-    <div className="toasts">
-      {toasts.map((toast, index) => (
-        <Toast key={index} {...toast} />
-      ))}
-    </div>
-  );
-};
-
-
