@@ -62,13 +62,13 @@ const formSlice = createSlice({
     },
   });
 
-// Sélecteur mémoïsé pour récupérer l'état du formulaire pour un `origin`
-export const selectFormByOrigin = createSelector(
-    (state: RootState) => state.form,  // Récupérer tous les formulaires
-    (_: RootState, origin: FormOrigin) => origin, // Récupérer l'origin en paramètre
-    (forms, origin) => forms[origin] || {}  // Retourner l'état du formulaire pour cet origin
-  );
-
-export const { setForm, resetForm, handleFileChange, handleContentChange, setPreview, setMimetype } = formSlice.actions;
-export default formSlice.reducer;
-export type { FormState, FormsState };
+  // Sélecteur mémoïsé pour récupérer l'état du formulaire pour un `origin`
+  export const selectFormByOrigin = createSelector(
+      (state: RootState) => state.form,  // Récupérer tous les formulaires
+      (_: RootState, origin: FormOrigin) => origin, // Récupérer l'origin en paramètre
+      (forms, origin) => forms[origin] || {}  // Retourner l'état du formulaire pour cet origin
+    );
+  
+  export const { setForm, resetForm, handleFileChange, handleContentChange, setPreview, setMimetype } = formSlice.actions;
+  export default formSlice.reducer;
+  export type { FormState, FormsState };
