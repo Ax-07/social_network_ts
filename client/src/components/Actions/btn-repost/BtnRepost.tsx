@@ -31,8 +31,6 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
     modalName = 'modal-repost';
   }
 
-
-
   const handleOpen = () => {
     setIsOpen(true);
     dispatch(openModal(btnName));
@@ -52,6 +50,7 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
 
   const handleOpenRepostModal = () => {
     // openModal(modalName);
+    console.log("postId", postId, "commentId", commentId);
     dispatch(setForm({origin: modalName, formState: {originalPostId: postId, originalCommentId: commentId}}));
     dispatch(openModal(modalName));
     // setPostId(postId ?? '');
@@ -81,6 +80,7 @@ const BtnRepost: FunctionComponent<BtnRepostProps> = ({ postId, commentId, repos
       window.removeEventListener('scroll', updateModalPosition);
     };
   }, [btnName, modals, isOpen]);
+
   return (
     <>
       <div ref={buttonRef} className="btn-repost__primary" onClick={handleOpen} aria-label="Ouvrir le menu de repost">
