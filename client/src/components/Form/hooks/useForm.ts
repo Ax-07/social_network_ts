@@ -15,16 +15,16 @@ import { FormOrigin } from "../Form";
 
 export const useForm = (origin: FormOrigin) => {
   const dispatch = useDispatch();
+  // Vérifie que origin est défini avant de l'utiliser
+  if (!origin) {
+    console.error("Origin is not defined.");
+  }
   // Sélectionner le formulaire spécifique à l'origin
   const form = useSelector((state: RootState) => {
     // Si origin est défini, on récupère le formulaire, sinon on retourne un objet vide
     return origin ? selectFormByOrigin(state, origin) : {};
   });
   const inputFileRef = useRef<HTMLInputElement>(null);
-  // Vérifie que origin est défini avant de l'utiliser
-  if (!origin) {
-    console.error("Origin is not defined.");
-  }
 
 
   const setFormState = (formState: Partial<FormState>) => {
