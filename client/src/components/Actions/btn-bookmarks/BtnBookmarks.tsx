@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FunctionComponent } from 'react';
 import { useGetBookmarksQuery, useToggleBookmarkMutation } from '../../../services/api/bookmarkApi';
+import { usePushToast } from '../../toast/useToast';
 
 interface BtnBookmarksProps {
     userId: string;
@@ -11,9 +12,9 @@ const BtnBookmarks: FunctionComponent<BtnBookmarksProps> = ({ postId, userId, co
     const { data: { data: bookmarks } = {} } = useGetBookmarksQuery(userId);
     const [toggleBookmark] = useToggleBookmarkMutation();
     const [isBookmarked, setIsBookmarked] = useState(false);
-  
+    const pushToast = usePushToast();
+
     useEffect(() => {
-        console.log(bookmarks);
         if (!bookmarks) return;
       const idToCheck = postId || commentId;
       if (idToCheck) {
@@ -26,10 +27,15 @@ const BtnBookmarks: FunctionComponent<BtnBookmarksProps> = ({ postId, userId, co
       try {
         await toggleBookmark({ userId, postId, commentId });
         setIsBookmarked((prev) => !prev);  // Inverser l'état après succès de l'API
+        if (isBookmarked) {
+          pushToast({ type: "success", message: "Retiré des favoris" });
+        } else {
+          pushToast({ type: "success", message: "Ajouté aux favoris" });
+        }
       } catch (error) {
         console.error(error);
       }
-    }, [toggleBookmark, userId, postId, commentId]);
+    }, [userId, toggleBookmark, postId, commentId, isBookmarked, pushToast]);
   
     return (
       <div className='btn-bookmarks'>
