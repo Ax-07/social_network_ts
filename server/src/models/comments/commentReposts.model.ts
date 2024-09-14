@@ -42,6 +42,7 @@ const initializeCommentRepostModel = (sequelize: Sequelize): typeof CommentRepos
             originalPostId: {
                 type: DataTypes.UUID,
                 allowNull: false,
+                unique: false,
                 references: {
                     model: 'posts',
                     key: 'id',
@@ -50,6 +51,7 @@ const initializeCommentRepostModel = (sequelize: Sequelize): typeof CommentRepos
             commentId: {
                 type: DataTypes.UUID,
                 allowNull: false,
+                unique: false,
                 references: {
                     model: 'comments',
                     key: 'id',
