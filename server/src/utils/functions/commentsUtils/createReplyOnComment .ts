@@ -1,6 +1,7 @@
 import { Transaction } from "sequelize";
 import db from "../../../models";
 import { io } from "../../../services/notifications";
+import { sendNotification } from "../notificationsUtils/sendNotification";
 
 /**
  * Crée un commentaire sur un commentaire parent, met à jour le nombre de commentaires du commentaire parent,
@@ -41,27 +42,15 @@ export const createReplyOnComment = async (
 
     const parentCommentOwner = await db.User.findByPk(parentComment.userId, { transaction });
     if (parentCommentOwner) {
-        const response = await db.Notification.create(
-            {
-                userId: parentCommentOwner.id,
-                senderId: userId,
-                type: "comment",
-                message: `${userName} a commenté votre commentaire`,
-                commentId,
-            },
-            { transaction }
-        );
-        if (response) {
-            io.to(parentComment.userId).emit("notification", {
-                id: response.id,
-                userId: parentCommentOwner.id,
-                senderId: userId,
-                type: "comment",
-                message: `${userName} a commenté votre commentaire`,
-                commentId: parentComment.id,
-                createdAt: response.createdAt,
-            });
-        }
+        await sendNotification({
+            userId: parentComment.userId,
+            senderId: userId,
+            type: "comment",
+            message: `${userName} a commenté votre commentaire`,
+            commentId,
+            io,
+            transaction,
+        });
     }
 
     return comment;
