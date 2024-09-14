@@ -168,7 +168,7 @@ export const updateCommentsCacheAfterLike = async ( dispatch: any, id: string, q
       commentApi.util.updateQueryData("getCommentById", id, (draft) => {
         const commentUpdated = draft.data;
         if (commentUpdated) {
-          commentUpdated.likers = data.data.likers;
+          commentUpdated.commentLikers = data.data.likers;
         }
       })
     );
@@ -177,7 +177,7 @@ export const updateCommentsCacheAfterLike = async ( dispatch: any, id: string, q
         commentApi.util.updateQueryData("getCommentsByPostId", commentedPostId, (draftComments) => {
           const commentToUpdate = draftComments.data.find((comment) => comment.id === id);
           if (commentToUpdate) {
-              commentToUpdate.likers = data.data.likers;
+              commentToUpdate.commentLikers = data.data.likers;
             } else {
               console.log("commentToUpdate not found");
             }})
@@ -187,7 +187,7 @@ export const updateCommentsCacheAfterLike = async ( dispatch: any, id: string, q
         commentApi.util.updateQueryData("getCommentsByCommentId", commentedCommentId, (draftComments) => {
           const commentToUpdate = draftComments.data.find((comment) => comment.id === id);
           if (commentToUpdate) {
-              commentToUpdate.likers = data.data.likers;
+              commentToUpdate.commentLikers = data.data.likers;
             } else {
               console.log("commentToUpdate not found");
             }})
