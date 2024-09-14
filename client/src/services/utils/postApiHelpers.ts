@@ -79,7 +79,7 @@ export const updatePostCacheAfterLike = async ( dispatch: any, id: string, query
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string, originalPostId: string, queryFulfilled: any ) => {
+export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string, originalPostId: string, originalCommentId: string, queryFulfilled: any ) => {
   try {
     const { data } = await queryFulfilled; console.log('repost data:', data);
     dispatch(
@@ -87,6 +87,7 @@ export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string,
         draftPosts.data.unshift(data.data); // Ajouter le nouveau post en tête de la liste
       })
     );
+    if (originalPostId) {
     dispatch(
       postApi.util.updateQueryData("getPosts", undefined, (draftPosts) => {
         const postToUpdate = draftPosts.data.find((post) => post.id === originalPostId);
@@ -95,8 +96,20 @@ export const updatePostCacheAfterRepost = async ( dispatch: any, userId: string,
           reposters.push({id: userId});
           postToUpdate.reposters = reposters;
         }
-      })
-    )
+      }
+    ));
+    dispatch(
+      postApi.util.updateQueryData("getPostById", originalPostId, (draft) => {
+        const postUpdated = draft?.data;
+        if (postUpdated) {
+          const reposters = postUpdated.reposters ?? [];
+          reposters.push({id: userId});
+          postUpdated.reposters = reposters;
+        }}
+    ));
+  } else if (originalCommentId) {
+      console.log('originalCommentId:', originalCommentId);
+  }
   } catch (error) {
     console.error("Failed to update cache after reposting:", error);
   }
