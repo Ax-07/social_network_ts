@@ -27,8 +27,9 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (posterId === userId) return;
     interceptor({ action: () => posterId !== userId && cachePostView(post.id), ref: cardRef });
-  }, [cardRef, post.id]);
+  }, [cardRef, post.id, posterId, userId]);
   
   return (
     <>
