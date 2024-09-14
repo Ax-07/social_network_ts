@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 
 // Définition des attributs du modèle Notification
-interface NotificationAttributes {
+export interface NotificationAttributes {
   id: string;
   userId: string; // ID de l'utilisateur qui reçoit la notification
   type: string; // Type de notification ('comment', 'like', etc.)
