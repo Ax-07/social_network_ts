@@ -39,7 +39,7 @@ const initializeCommentLikeModel = (sequelize: Sequelize): typeof CommentLike =>
             },
             originalPostId: {
                 type: DataTypes.UUID,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'posts',
                     key: 'id',
@@ -47,7 +47,7 @@ const initializeCommentLikeModel = (sequelize: Sequelize): typeof CommentLike =>
             },
             commentId: {
                 type: DataTypes.UUID,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'comments',
                     key: 'id',
