@@ -125,7 +125,23 @@ const getCommentsByPostId = async (req: Request, res: Response) => {
     return apiError(res, "Post ID is required", 400);
   }
   try {
-    const comments = await db.Comment.findAll({ where: { postId } });
+    const comments = await db.Comment.findAll({ 
+      where: { postId },
+      include: [
+        {
+          model: db.User,
+          as: "commentLikers",
+          through: { attributes: [] },
+          attributes: ["id", "username"],
+        },
+        {
+          model: db.User,
+          as: "commentReposters",
+          through: { attributes: [] },
+          attributes: ["id"],
+        },
+      ],
+    });
     return apiSuccess(res, `Comments for post ${postId}`, comments);
   } catch (error) {
     return handleControllerError(
