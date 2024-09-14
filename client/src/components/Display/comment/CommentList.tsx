@@ -10,7 +10,6 @@ const CommentList: FunctionComponent<CommentListProps> = ({ postId, commentId })
     const { data: commentsByPost, isLoading: isLoadingPostRelatedComments, isError: hasErrorLoadingPostComments } = useGetCommentsByPostIdQuery(postId ?? "");
     const { data: repliesByComment, isLoading: isLoadingCommentReplies, isError: hasErrorLoadingCommentReplies } = useGetCommentsByCommentIdQuery(commentId ?? "");
 
-
     // Déterminer quelle donnée afficher
     const comments = postId && !commentId ? commentsByPost : repliesByComment;
     const isLoading = postId && !commentId ? isLoadingPostRelatedComments : isLoadingCommentReplies;
