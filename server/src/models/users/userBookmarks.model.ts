@@ -1,11 +1,13 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { UserAttributes } from './user.model';
 import { PostAttributes } from '../posts/post.model';
+import { CommentAttributes } from '../comments/comment.model';
 
 interface UserBookmarksAttributes {
     id: string;
     userId: UserAttributes['id'];
-    postId: PostAttributes['id'];
+    postId?: PostAttributes['id'];
+    commentId?: CommentAttributes['id'];
 }
 
 interface UserBookmarksCreationAttributes extends Optional<UserBookmarksAttributes, 'id'> {}
@@ -14,6 +16,7 @@ class UserBookmarks extends Model<UserBookmarksAttributes, UserBookmarksCreation
     public id!: string;
     public userId!: UserAttributes['id'];
     public postId!: PostAttributes['id'];
+    public commentId!: CommentAttributes['id'];
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -37,9 +40,17 @@ const initializeUserBookmarksModel = (sequelize: Sequelize): typeof UserBookmark
             },
             postId: {
                 type: DataTypes.UUID,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'posts',
+                    key: 'id',
+                },
+            },
+            commentId: {
+                type: DataTypes.UUID,
+                allowNull: true,
+                references: {
+                    model: 'comments',
                     key: 'id',
                 },
             },
@@ -47,6 +58,16 @@ const initializeUserBookmarksModel = (sequelize: Sequelize): typeof UserBookmark
         {
             sequelize,
             tableName: 'user_bookmarks',
+            indexes: [
+                {
+                    fields: ['userId', 'postId'],
+                    unique: true,
+                },
+                {
+                    fields: ['userId', 'commentId'],
+                    unique: true,
+                }
+            ],
         }
     );
 
