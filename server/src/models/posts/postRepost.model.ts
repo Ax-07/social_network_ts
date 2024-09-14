@@ -38,6 +38,7 @@ const initializePostRepostModel = (sequelize: Sequelize): typeof PostRepost => {
             postId: {
                 type: DataTypes.UUID,
                 allowNull: false,
+                unique: false,
                 references: {
                     model: 'posts',
                     key: 'id',
