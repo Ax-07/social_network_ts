@@ -57,6 +57,12 @@ const getUserById = async (req: Request, res: Response) => {
           as: 'bookmarks', // Alias défini dans l'association belongsToMany pour bookmarks
           through: { attributes: [] }, // Ignorer les champs de la table de jonction
           attributes:[['id', 'postId']] // Sélectionner les identifiants des posts en utilisant un alias 
+        },
+        {
+          model: db.Comment, // Inclure les commentaires ajoutés en favoris
+          as: 'bookmarkedComments', // Alias défini dans l'association belongsToMany pour bookmarks
+          through: { attributes: [] }, // Ignorer les champs de la table de jonction
+          attributes:[['id', 'commentId']] // Sélectionner les identifiants des commentaires en utilisant un
         }
       ]
     });
