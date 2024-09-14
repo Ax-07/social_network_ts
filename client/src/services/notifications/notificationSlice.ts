@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { initialState, NotificationTypes } from '../../utils/types/notification.types';
+import { mergeNotifications } from '../../pages/notifications/functions/mergeNotifications';
 
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    addNotification(state, action: PayloadAction<NotificationTypes>) {
-      state.notifications.push(action.payload);
+    initNotifications: (state, action: PayloadAction<NotificationTypes[]>) => {
+      state.notifications = mergeNotifications(action.payload, state.notifications);
+    },
+    addNotification: (state, action: PayloadAction<NotificationTypes>) => {
+      // Fusionner les nouvelles notifications reçues via WebSocket avec celles déjà dans l'état
+      state.notifications = mergeNotifications([action.payload], state.notifications);
     },
     updateNotificationStatus(state, action: PayloadAction<{ ids: string[]; isRead: boolean }>) {
       state.notifications = state.notifications.map((notif) =>
@@ -16,5 +21,5 @@ const notificationSlice = createSlice({
   },
 });
 
-export const { addNotification, updateNotificationStatus } = notificationSlice.actions;
+export const { initNotifications, addNotification, updateNotificationStatus } = notificationSlice.actions;
 export default notificationSlice.reducer;
