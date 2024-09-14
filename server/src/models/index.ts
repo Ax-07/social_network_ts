@@ -70,6 +70,12 @@ db.UserFollowers.belongsTo(db.User, { foreignKey: 'followedId', as: 'followed' }
 // Association entre User et Post via UserBookmarks (table de jonction)
 db.User.belongsToMany(db.Post, { through: db.UserBookmarks, as: 'bookmarks', foreignKey: 'userId' }); // Un utilisateur a plusieurs posts bookmarkés
 db.Post.belongsToMany(db.User, { through: db.UserBookmarks, as: 'bookmarkedBy', foreignKey: 'postId' }); // Un post est bookmarké par plusieurs utilisateurs
+db.User.belongsToMany(db.Comment, { through: db.UserBookmarks, as: 'bookmarkedComments', foreignKey: 'userId' }); // Un utilisateur a plusieurs commentaires bookmarkés
+db.Comment.belongsToMany(db.User, { through: db.UserBookmarks, as: 'bookmarkedCommentBy', foreignKey: 'commentId' }); // Un commentaire est bookmarké par plusieurs utilisateurs
+
+db.UserBookmarks.belongsTo(db.User, { foreignKey: 'userId', as: 'user' }); // Un utilisateur appartient à un bookmark
+db.UserBookmarks.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' }); // Un post appartient à un bookmark
+db.UserBookmarks.belongsTo(db.Comment, { foreignKey: 'commentId', as: 'comment' }); // Un commentaire appartient à un bookmark
 
 // Association entre User et Post via PostLike (table de jonction)
 db.User.belongsToMany(db.Post, { through: PostLike, as: 'likedPosts', foreignKey: 'userId' }); // Un utilisateur a plusieurs posts likés
