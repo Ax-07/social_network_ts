@@ -11,7 +11,7 @@ export interface User {
     birthdate?: Date; // Date de naissance
     followers?: {id: string, username: string, profilPicture: string}[]; // Liste des abonnés
     followings?: {id: string, username: string, profilPicture: string}[]; // Liste des abonnements
-    bookmarks?: {postId: string, userId: string}[]; // Liste des signets (id est l'id du post)
+    bookmarks?: UserBookmarks[]; // Liste des signets (id est l'id du post)
     notifications?: { type: string; message: string; postId: string }[]; // Liste des notifications
     createdAt?: Date; // Date de création
 }
@@ -33,7 +33,8 @@ export interface UserFollow {
 
 export interface UserBookmarks {
     userId: string; // Identifiant de l'utilisateur
-    postId: string; // Identifiant de la publication
+    postId?: string; // Identifiant de la publication
+    commentId?: string; // Identifiant du commentaire
 }
 
 export interface UserResponseArray {
