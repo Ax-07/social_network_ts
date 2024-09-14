@@ -8,6 +8,7 @@ import { UserApi } from "./api/userApi";
 import { commentApi } from "./api/commentApi";
 import { authApi } from "./auth/authApi";
 import { googleAuthApi } from "./auth/googleAuthApi";
+import { bookmarkApi } from "./api/bookmarkApi";
 import authSlice from "./auth/authSlice";
 import notificationSlice from "./notifications/notificationSlice";
 import modalSlice from "./modals/modalSlice";
@@ -29,6 +30,7 @@ const store = configureStore({
         [commentApi.reducerPath]: commentApi.reducer,
         [authApi.reducerPath]: authApi.reducer,
         [googleAuthApi.reducerPath]: googleAuthApi.reducer,
+        [bookmarkApi.reducerPath]: bookmarkApi.reducer,
         auth: persistedAuthSlice,
         notifications: notificationSlice,
         modals: modalSlice,
@@ -44,7 +46,8 @@ const store = configureStore({
             commentApi.middleware, 
             authApi.middleware, 
             googleAuthApi.middleware, 
-            notificationApi.middleware
+            notificationApi.middleware,
+            bookmarkApi.middleware,
         ),
 });
 
