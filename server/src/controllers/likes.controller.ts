@@ -6,15 +6,15 @@ import { apiError, apiSuccess } from "../utils/functions/apiResponses";
 
 const likePost = async (req: Request, res: Response) => {
     const { postId, likerId } = req.body;
+    if (!postId || !likerId) {
+        return apiError(res, 'Missing fields', 400);
+    }
     const errors = validateLikeEntry(req.body);
     if (errors.length > 0) {
-        return apiError(res, 'Validation error', errors, 400);
+        return apiError(res, 'Validation error ici', errors, 400);
     }
 
     try {
-        if (!postId || !likerId) {
-            return apiError(res, 'Missing fields', 400);
-        }
 
         const post = await db.Post.findByPk(postId);
         if (!post) {
@@ -47,22 +47,22 @@ const likePost = async (req: Request, res: Response) => {
             }, 200);
         }
     } catch (error) {
+        console.log("error", error)
         return handleControllerError(res, error, 'An error occurred while liking the post.');
     }
 };
 
 const likeComment = async (req: Request, res: Response) => {
     const { commentId, likerId } = req.body;
+    if (!commentId || !likerId) {
+        return apiError(res, 'Missing fields', 400);
+    }
     const errors = validateLikeEntry(req.body);
     if (errors.length > 0) {
-        return apiError(res, 'Validation error', errors, 400);
+        return apiError(res, 'Validation error ici', errors, 400);
     }
 
     try {
-        if (!commentId || !likerId) {
-            return apiError(res, 'Missing fields', 400);
-        }
-
         const comment = await db.Comment.findByPk(commentId);
         if (!comment) {
             return apiError(res, 'Comment not found', 404);
@@ -81,13 +81,20 @@ const likeComment = async (req: Request, res: Response) => {
         if (existingLike) {
             // Retirer le like
             await existingLike.destroy();
-            return apiSuccess(res, 'Comment unliked successfully', null, 200);
+            const likers = await db.CommentLike.findAll({ where: { commentId: commentId } });
+            return apiSuccess(res, 'Comment unliked successfully', {
+                likers: likers.map((like) => like.userId),
+            }, 200);
         } else {
             // Ajouter le like
             await db.CommentLike.create({ commentId: commentId, userId: likerId });
-            return apiSuccess(res, 'Comment liked successfully', null, 200);
+            const likers = await db.CommentLike.findAll({ where: { commentId: commentId } });
+            return apiSuccess(res, 'Comment liked successfully', {
+                likers: likers.map((like) => like.userId),
+            }, 200);
         }
     } catch (error) {
+        console.log("error", error)
         return handleControllerError(res, error, 'An error occurred while liking the comment.');
     }
 };
