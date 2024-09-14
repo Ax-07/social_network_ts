@@ -10,9 +10,7 @@ import useNotifications from "../../pages/notifications/hooks/useNotifications";
 const SideMenu = () => {
   const { windowWidth } = useWindowSize();
   const isTablet = windowWidth <= 1280;
-  const isUserConnected = useSelector(
-    (state: { auth: AuthState }) => state.auth.isAuthenticated
-  );
+  const isUserConnected = useSelector((state: { auth: AuthState }) => state.auth.isAuthenticated);
   const userId = useSelector((state: { auth: AuthState }) => state.auth.user?.id);
 
   return (
@@ -62,15 +60,19 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({ to, name, icon, userId }) 
   const { notifications } = useNotifications(userId as string);
   const [notificationsCount, setNotificationsCount] = useState(0);
 
-  // Gestion des notifications
+  // Afficher le nombre de notifications non lues
   useEffect(() => {
     if (userId) {
-      const unreadNotificationsCount = notifications.filter(
-        (notification) => !notification.isRead
-      ).length;
-      setNotificationsCount(unreadNotificationsCount);
+      // Calcul du nombre de notifications non lues
+      const unreadNotificationsCount = notifications.filter((notification) => !notification.isRead).length;
+      if (unreadNotificationsCount > 0) {
+        setNotificationsCount(unreadNotificationsCount);
+      } else {
+        setNotificationsCount(0);
+      }
+      console.log("MenuLink notificationsCount", notificationsCount);
     }
-  }, [notifications, userId]);
+  }, [notifications, notificationsCount, userId]);
 
   return (
     <li className="sidemenu__item">
