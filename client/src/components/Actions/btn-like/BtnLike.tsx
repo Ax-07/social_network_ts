@@ -21,10 +21,12 @@ const BtnLike: FunctionComponent<BtnLikeProps> = ({ post, comment }) => {
   const commentId = comment?.id;
   const commentedPostId = comment?.postId;
   const commentedCommentId = comment?.commentId;
-  const postLikers = Array.isArray(post?.likers) ? post?.likers : [];  // S'assurer que c'est un tableau
-  const commentLikers = Array.isArray(comment?.likers) ? comment?.likers : [];  // S'assurer que c'est un tableau
   const pushToast = usePushToast();
-
+  if (!post && !comment) {
+    throw new Error("Vous devez fournir un post ou un commentaire pour BtnLike");
+  }
+  const postLikers = Array.isArray(post?.likers) ? post?.likers : [];  // S'assurer que c'est un tableau
+  const commentLikers = Array.isArray(comment?.commentLikers) ? comment?.commentLikers : [];  // S'assurer que c'est un tableau
   const [isPostLiked, setIsPostLiked] = useState(postLikers.map((liker) => liker.id).includes(userId ?? ""));
   const [isCommentLiked, setIsCommentLiked] = useState(commentLikers.map((liker) => liker.id).includes(userId ?? ""));
 
