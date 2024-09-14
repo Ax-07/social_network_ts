@@ -87,7 +87,8 @@ export const postApi = createApi({
       onQueryStarted: async (formdata, { dispatch, queryFulfilled }) => {
         const userId = formdata.get("userId") as string;
         const originalPostId = formdata.get("originalPostId") as string;
-        updatePostCacheAfterRepost(dispatch, userId, originalPostId, queryFulfilled);
+        const originalCommentId = formdata.get("originalCommentId") as string;
+        updatePostCacheAfterRepost(dispatch, userId, originalPostId, originalCommentId, queryFulfilled);
       },
     }),
     incrementPostViews: builder.mutation<PostResponseArray, {postId: string, count: string}[]>({
