@@ -1,36 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
-import { useGetAllNotificationsByUserIdQuery, useUpdateNotificationsMutation } from '../../services/api/notificationApi';
-import { NotificationTypes } from '../../utils/types/notification.types';
 import TabList from '../../components/Base/tabList/TabList';
 import { Routes, Route } from 'react-router-dom';
 import NotificationsList from './NotificationsList';
-import { updateNotificationStatus } from '../../services/notifications/notificationSlice';
-import { Dispatch } from '@reduxjs/toolkit';
+import useNotifications from './hooks/useNotifications';
 
 const Notifications: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id);
-  const notificationsFromStore = useSelector((state: RootState) => state.notifications.notifications);
-  const { data: { data: notificationFromApi } = {} } = useGetAllNotificationsByUserIdQuery(userId as string, { skip: !userId });
-  const [updateNotifications] = useUpdateNotificationsMutation();
-  const [uniqueNotifications, setUniqueNotifications] = useState<NotificationTypes[]>([]);
-  const dispatch = useDispatch();
-
-  // Fusion des notifications
-  useEffect(() => {
-    if (notificationFromApi) {
-      const mergedNotifications = mergeNotifications(notificationFromApi, notificationsFromStore);
-      setUniqueNotifications(mergedNotifications);
-    }
-  }, [notificationFromApi, notificationsFromStore]);
-
-  // Gestion des notifications non lues
-  useEffect(() => {
-    if (userId) {
-      handleUnreadNotifications(uniqueNotifications, userId, updateNotifications, dispatch);
-    }
-  }, [uniqueNotifications, updateNotifications, dispatch, userId]);
+  const { notifications } = useNotifications(userId as string);
+  console.log(notifications);
 
   return (
     <div className='notification-page'>
@@ -42,7 +21,7 @@ const Notifications: React.FC = () => {
         ]}
       />
       <Routes>
-        <Route path='/' element={<NotificationsList notifications={uniqueNotifications} />} />
+        <Route path='/' element={<NotificationsList notifications={notifications} />} />
         <Route path='/mentions' element={<h2>Mentions</h2>} />
       </Routes>
     </div>
@@ -50,33 +29,3 @@ const Notifications: React.FC = () => {
 };
 
 export default Notifications;
-
-const mergeNotifications = (apiNotifications: NotificationTypes[], storeNotifications: NotificationTypes[]): NotificationTypes[] => {
-  const mergedNotifications = [...storeNotifications];
-
-  apiNotifications.forEach((notif) => {
-    const existsInStore = storeNotifications.some((notifStore) => notif.id === notifStore.id);
-    if (!existsInStore) {
-      mergedNotifications.push(notif);
-    }
-  });
-
-  return mergedNotifications.sort((a, b) => {
-    return new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime();
-  });
-};
-
-const handleUnreadNotifications = (
-  notifications: NotificationTypes[], 
-  userId: string, 
-  updateNotifications: (data: { userId: string; notificationsIds: string }) => void, 
-  dispatch: Dispatch
-) => {
-  const unreadNotifications = notifications.filter((notif) => !notif.isRead);
-  const unreadNotificationsIds = unreadNotifications.map((notif) => notif.id);
-  
-  if (unreadNotificationsIds.length > 0) {
-    updateNotifications({ userId, notificationsIds: unreadNotificationsIds.join(',') });
-    dispatch(updateNotificationStatus({ ids: unreadNotificationsIds, isRead: true }));
-  }
-};
