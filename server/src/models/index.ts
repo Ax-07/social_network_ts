@@ -9,6 +9,7 @@ import { initializeCommentModel, Comment } from "./comments/comment.model";
 import { initializeCommentLikeModel, CommentLike } from "./comments/commentLikes.model";
 import { initializeCommentRepostModel, CommentRepost } from "./comments/commentReposts.model";
 import { initializeNotificationModel, Notification } from "./notification.model";
+import { initializeMessageModel, Message } from "./messages/messages.model";
 import { initializeGroupModel, Group } from "./users/group.model";
 
 const sequelize = new Sequelize({
@@ -29,6 +30,7 @@ interface Database {
   CommentLike: typeof CommentLike;
   CommentRepost: typeof CommentRepost;
   Notification: typeof Notification;
+  Message: typeof Message;
   Group: typeof Group;
 };
 
@@ -45,6 +47,7 @@ const db: Database = {
   CommentLike: initializeCommentLikeModel(sequelize),
   CommentRepost: initializeCommentRepostModel(sequelize),
   Notification: initializeNotificationModel(sequelize),
+  Message: initializeMessageModel(sequelize),
   Group: initializeGroupModel(sequelize),
 };
 
