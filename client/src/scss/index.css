@@ -36,7 +36,7 @@ h1, h2, h3, h4, h5, h6, p {
   font-weight: 400;
 }
 
-.fs-15-700, .post-card__header-username {
+.fs-15-700, .messages-page__title, .post-card__header-username {
   font-size: 0.9375rem;
   font-weight: 700;
 }
@@ -137,7 +137,7 @@ main {
   width: 100%;
 }
 
-.background-blur, .notification-page__item, .auth-page__container, .home, .bookmarks-page, .post-page, .modal-content, .userProfile-card, .userprofile__thumbnail-menu, .addpost, .btn-repost__modal, .sidemenu__container {
+.background-blur, .messages-page, .notification-page__item, .auth-page__container, .home, .bookmarks-page, .post-page, .modal-content, .userProfile-card, .userprofile__thumbnail-menu, .addpost, .btn-repost__modal, .sidemenu__container {
   background-color: rgba(28, 39, 51, 0.3);
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
@@ -1596,4 +1596,16 @@ input:focus-visible ~ .tabs__indicator {
   align-items: flex-end;
   gap: 0;
   margin-bottom: 0.5rem;
+}
+
+.messages-page {
+  width: 100%;
+}
+.messages-page__header {
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
 }/*# sourceMappingURL=index.css.map */
