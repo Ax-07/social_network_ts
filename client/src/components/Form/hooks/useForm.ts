@@ -11,7 +11,7 @@ import {
   selectFormByOrigin,
 } from "../../../services/forms/formSlice";
 import { useRef } from "react";
-import { FormOrigin } from "../Form";
+import { FormOrigin } from "../utils/switchOrigin";
 
 export const useForm = (origin: FormOrigin) => {
   const dispatch = useDispatch();
@@ -25,7 +25,6 @@ export const useForm = (origin: FormOrigin) => {
     return origin ? selectFormByOrigin(state, origin) : {};
   });
   const inputFileRef = useRef<HTMLInputElement>(null);
-
 
   const setFormState = (formState: Partial<FormState>) => {
     dispatch(setForm({ origin, formState }));
