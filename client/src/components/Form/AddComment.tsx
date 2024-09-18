@@ -1,4 +1,4 @@
-import Form, { FormOrigin } from './Form';
+import Form from './Form';
 import { useAddCommentMutation } from '../../services/api/commentApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { ApiError } from '../../utils/types/api.types';
 import { useForm } from './hooks/useForm';
 import { usePushToast } from '../toast/useToast';
+import { FormOrigin } from './utils/switchOrigin';
 
 interface AddCommentProps{
   origin: FormOrigin;
