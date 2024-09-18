@@ -1,0 +1,11 @@
+.messages-page {
+    width: 100%;
+    @extend .background-blur;
+    &__header {
+        padding: 20px;
+        @include flex(row, space-between, center);
+    }
+    &__title {
+        @extend .fs-15-700;
+    }
+}
