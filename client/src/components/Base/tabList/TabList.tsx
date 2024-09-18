@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 import { NavLink } from "react-router-dom";
 
 interface TabListProps {
-  links: { name: string; to: string; end: boolean }[];
+  links: { name: string; to: string; end?: boolean }[];
 }
 
 const TabList: FunctionComponent<TabListProps> = (props) => {
