@@ -2,7 +2,7 @@ import type { FunctionComponent, PropsWithChildren } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { closeModal } from '../../services/modals/modalSlice';
-import { FormOrigin } from '../Form/Form';
+import { FormOrigin } from '../Form/utils/switchOrigin';
 
 interface ModalProps extends PropsWithChildren {
   modalName: FormOrigin;
