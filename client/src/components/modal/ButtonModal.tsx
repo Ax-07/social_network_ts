@@ -1,9 +1,9 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 import Button from '../Base/button/Button';
-import { FormOrigin } from '../Form/Form';
 import { useDispatch } from 'react-redux';
 import { openModal } from '../../services/modals/modalSlice';
 import { useForm } from '../Form/hooks/useForm';
+import { FormOrigin } from '../Form/utils/switchOrigin';
 
 interface ButtonModalProps extends PropsWithChildren {
   modalName: FormOrigin;
