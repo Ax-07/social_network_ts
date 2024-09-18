@@ -1,5 +1,5 @@
 import TabList from "../../components/Base/tabList/TabList";
-import { useGetFollowersNamesQuery, useGetUserByIdQuery } from "../../services/api/userApi";
+import { useGetFollowersQuery, useGetUserByIdQuery } from "../../services/api/userApi";
 import { useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { getFormattedDate } from "../../utils/functions/formatedDate";
@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 const Profile = () => {
   const params = useParams<{ id: string }>();
   const { data: { data: user } = {} } = useGetUserByIdQuery(params.id || "");
-  const { data: followersData } = useGetFollowersNamesQuery(user?.id ?? '');
+  const { data: followersData } = useGetFollowersQuery(user?.id ?? '');
   const [filteredFollowersNames, setFilteredFollowersNames] = useState<string[]>([]);
   const userName = useSelector((state: RootState) => state?.auth?.user?.username);
 
