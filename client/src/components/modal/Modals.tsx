@@ -6,6 +6,7 @@ import AddRepost from "../Form/AddRepost";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import { closeModal } from "../../services/modals/modalSlice";
+import AddMessage from "../Form/AddMessage";
 
 interface ModalsProps {}
 
@@ -46,6 +47,9 @@ const Modals: FunctionComponent<ModalsProps> = () => {
           </Modal>
           <Modal modalName="modal-repost-comment">
             <AddRepost origin="modal-repost-comment" onClose={handleCloseModal} />
+          </Modal>
+          <Modal modalName="modal-message" >
+            <AddMessage origin="modal-message" onClose={handleCloseModal} />
           </Modal>
         </>
       )}
