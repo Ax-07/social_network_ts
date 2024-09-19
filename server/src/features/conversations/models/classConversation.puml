@@ -1,0 +1,39 @@
+@startuml DiagrameClassConversation
+class Conversation {
+    + id: UUID
+    + name: string
+    + description: string
+    + createdAt: Date
+    + updatedAt: Date
+    + messages: Message[]
+}
+
+class Message {
+    + id: UUID
+    + content: string
+    + createdAt: Date
+    + updatedAt: Date
+    + userId: UUID
+}
+
+class User {
+    + id: UUID
+    + name: string
+    + email: string
+    + password: string
+    + createdAt: Date
+    + updatedAt: Date
+}
+
+class ConversationUser {
+    + conversationId: UUID
+    + userId: UUID
+    + createdAt: Date
+    + updatedAt: Date
+}
+
+Conversation "1" *-- "*" Message
+Message "1" *-- "1" User
+Conversation "1" *-- "0..*" ConversationUser
+User "1" *-- "0..*" ConversationUser
+@enduml

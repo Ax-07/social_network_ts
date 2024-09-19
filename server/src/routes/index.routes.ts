@@ -1,14 +1,14 @@
 import { Router } from "express";
-import authRoutes from "./auth.routes";
 import { authRequestLimiter } from "../utils/requestLimiter";
-import userRoutes from "./user.routes";
-import postRoutes from "./post.routes";
-import commentRoutes from "./comment.routes";
-import likeRoutes from "./likes.routes";
-import msgRoutes from "./messenging.routes";
-import followRoutes from "./follow.routes";
-import notificationRoutes from "./notification.routes";
-import messagesRoutes from "./message.routes";
+import likeRoutes from "../features/likes/likes.routes";
+import notificationRoutes from "../features/notifications/notification.routes";
+import authRoutes from "../features/auth/auth.routes";
+import commentRoutes from "../features/comments/comment.routes";
+import followRoutes from "../features/follows/follow.routes";
+import postRoutes from "../features/posts/post.routes";
+import userRoutes from "../features/user/user.routes";
+import messagesRoutes from "../features/messages/message.routes";
+import conversationsRoutes from "../features/conversations/conversations.routes";
 
 const router = Router();
 
@@ -18,9 +18,9 @@ router.use("/", userRoutes);
 router.use("/", postRoutes);
 router.use("/", commentRoutes);
 router.use("/", likeRoutes);
-router.use("/", msgRoutes);
 router.use("/", followRoutes);
 router.use("/", notificationRoutes);
 router.use("/", messagesRoutes);
+router.use("/", conversationsRoutes);
 
 export default router;

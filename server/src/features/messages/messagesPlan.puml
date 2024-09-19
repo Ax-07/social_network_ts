@@ -1,0 +1,185 @@
+@startuml SendAMessagesSequence
+skinparam ArrowColor #0033cc
+skinparam roundcorner 20
+title: Send a Message \n\n User can send a message to another user, with validation, transactions, security, and logging
+
+
+actor UserSender
+participant API
+participant Controller
+database MessageDB
+database ConversationDB
+participant WebSocket
+actor UserReceiver
+
+UserSender -> API : POST /messages (content, roomId)
+API -> API : Validate request & Authenticate token
+API -> Controller : CreateMessage(userId, roomId, content)
+
+alt Transaction
+    Controller -> ConversationDB : FindOrCreateConversation(roomId)
+    Controller -> MessageDB : CreateMessage(userId, roomId, content)
+end
+
+Controller -> WebSocket : emit('messageSentNotification')
+WebSocket -> UserReceiver : on('messageReceived')
+
+API -> UserSender : 201 Message Sent
+@enduml
+
+@startuml CompleteMessagingFlow
+
+actor UserSender
+actor UserReceiver
+
+participant WebSocket
+participant API
+participant Controller
+participant ReduxStore
+participant ReactComponent
+participant ReduxAction
+participant ReduxReducer
+participant Database
+
+'--- Envoi d'un message par l'utilisateur sender ---
+UserSender -> API : POST /messages (content, roomId)
+API -> Controller : CreateMessage(userId, roomId, content)
+
+alt Transaction pour création du message
+    Controller -> Database : FindOrCreateConversation(roomId)
+    Controller -> Database : Insert message (userId, content, roomId)
+    Controller -> WebSocket : emit('messageSentNotification', message)
+end
+API -> UserSender : 201 Message Sent
+
+'--- Réception du message par WebSocket ---
+WebSocket -> UserReceiver : on('messageReceived')
+
+'--- Gestion de la réception du message par Redux ---
+UserReceiver -> ReduxAction : dispatch(receiveMessageAction)
+ReduxAction -> ReduxReducer : Update store with new message
+ReduxReducer --> ReduxStore : Store updated
+
+ReduxStore -> ReactComponent : State change (new message)
+ReactComponent -> UserReceiver : Display new message in UI
+
+'--- Synchronisation du message avec la base de données ---
+ReactComponent -> API : POST /syncMessage (messageData)
+API -> Database : Insert message into DB (if not already exists)
+Database --> API : Success response
+API --> ReactComponent : Synchronization confirmed
+
+@enduml
+
+@startuml CompleteMessagingFlowOptimized
+skinparam sequenceArrowColor #0033cc
+skinparam lifelineBackgroundColor #f0f0f0
+skinparam sequenceBoxBackgroundColor #e6f2ff
+skinparam sequenceBoxBorderColor #0033cc
+skinparam roundcorner 20
+skinparam ArrowThickness 2
+
+' --- Titre du diagramme ---
+title: Envoi et Réception d'un Message avec Synchronisation
+
+' --- Participants ---
+actor UserSender as Sender
+actor UserReceiver as Receiver
+
+participant WebSocket as WS
+participant API
+participant Controller as Ctrl
+participant "Database\n(BD)" as DB
+participant "Redux Store" as Store
+participant "React Component" as React
+
+' --- Envoi du message ---
+box "Envoi d'un message" #e6f2ff
+    Sender -> API : POST /messages
+    API -> Ctrl : Create Message
+    Ctrl -> DB : Save Message\nFind/Create Conversation
+    Ctrl -> WS : emit('messageSentNotification')
+    API --> Sender : 201 Message Sent
+end box
+
+' --- Réception du message ---
+box "Réception du message (temps réel)" #f0f0f0
+    WS -> Receiver : on('messageReceived')
+    Receiver -> Store : dispatch(receiveMessage)
+    Store -> React : Update UI
+    React -> Receiver : Display Message
+end box
+
+' --- Synchronisation avec la base de données ---
+box "Synchronisation avec la base de données" #e6f2ff
+    React -> API : POST /syncMessage
+    API -> DB : Insert Message
+    DB --> API : Success
+    API --> React : Synchronization Confirmed
+end box
+
+@enduml
+#endregion
+
+@startuml HookSyncSequence
+
+actor UserReceiver
+participant WebSocket as WS
+participant useSyncWithWebSocket as Hook
+participant ReduxStore as Store
+participant ReactComponent as React
+
+' --- Réception du message via WebSocket ---
+WS -> Hook : on('messageReceived')
+
+' --- Dispatch vers Redux ---
+Hook -> Store : dispatch(receiveMessage)
+
+' --- Mise à jour de l'UI ---
+Store -> React : Update with new state
+React -> UserReceiver : Display new message
+
+@enduml
+
+@startuml CompleteMessagingFlowWithHook
+
+actor UserSender as Sender
+actor UserReceiver as Receiver
+
+participant "React Component\n(UserSender)" as ReactSender
+participant API
+participant Controller as Ctrl
+participant "Database\n(BD)" as DB
+participant WebSocket as WS
+participant "useSyncWithWebSocket Hook" as Hook
+participant "Redux Store" as Store
+participant "React Component\n(UserReceiver)" as ReactReceiver
+
+' --- Envoi du message ---
+box "Envoi du message" #e6f2ff
+    Sender -> ReactSender : Send message (content, roomId)
+    ReactSender -> API : POST /messages
+    API -> Ctrl : Create Message
+    Ctrl -> DB : Find/Create Conversation
+    Ctrl -> DB : Save Message
+    Ctrl -> WS : emit('messageSentNotification')
+    API --> ReactSender : 201 Message Sent
+end box
+
+' --- Réception via WebSocket ---
+box "Réception du message via WebSocket" #f0f0f0
+    WS -> Hook : on('messageReceived')
+    Hook -> Store : dispatch(receiveMessage)
+    Store -> ReactReceiver : State change (new message)
+    ReactReceiver -> Receiver : Display new message
+end box
+
+' --- Synchronisation avec la base de données (si nécessaire) ---
+box "Synchronisation avec la BD" #e6f2ff
+    ReactReceiver -> API : POST /syncMessage
+    API -> DB : Insert Message
+    DB --> API : Sync confirmed
+    API --> ReactReceiver : Sync Success
+end box
+
+@enduml

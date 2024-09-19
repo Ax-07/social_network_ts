@@ -1,4 +1,4 @@
-import { User } from "../../models/users/user.model";
+import { User } from "../../features/user/models/user.model";
 
 // Générer un handle unique
 const generateUniqueHandle = async (username: string): Promise<string> => {

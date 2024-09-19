@@ -4,10 +4,10 @@ import { Server } from 'socket.io';
 import * as dotenv from "dotenv";
 import path from "path";
 import routes from "./routes/index.routes";
-import db from "./models";
+import db from "./db/models";
 import { configureSocket } from "./services/webSocket";
 import serverError from "./utils/errors/server.error";
-import { initializeNotificationWebSocket } from './services/notifications';
+import { initializeNotificationWebSocket } from './features/notifications/services';
 import { applyServerSecurity } from "./utils/serverSecurity";
 
 dotenv.config();
@@ -28,11 +28,6 @@ app.use('/videos', express.static(path.join(__dirname, '..', 'public', 'videos')
 // route pour verifier que le serveur fonctionne
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
-});
-
-// route pour tester la messagerie instantanée
-app.get("/socket", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '..','src', 'pages', 'socket.html'));
 });
 
 app.use('/api', routes);
