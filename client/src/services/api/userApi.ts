@@ -56,7 +56,7 @@ export const UserApi = createApi({
                 updateUserCacheAfterFollow(userId, userToFollowId, dispatch, queryFulfilled);
             },
         }),
-        getFollowersNames: builder.query<FollowersNamesRequest, string>({
+        getFollowers: builder.query<FollowersNamesRequest, string>({
             query: (id) => `/users/${id}/followers`,
         }),
     }),
@@ -69,5 +69,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useFollowMutation,
-  useGetFollowersNamesQuery,
+  useGetFollowersQuery,
 } = UserApi;
