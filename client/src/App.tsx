@@ -79,7 +79,7 @@ function App() {
       </main>
 
       {!isTablet && (
-        <aside aria-label="Colonne latérale supplémentaire">
+        <aside aria-label="Colonne latérale supplémentaire" className="aside">
           <SideColumn />
         </aside>
       )}
