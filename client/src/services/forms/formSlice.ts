@@ -1,9 +1,13 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormOrigin } from "../../components/Form/Form";
 import { RootState } from "../stores";
+import { FormOrigin } from "../../components/Form/utils/switchOrigin";
 
 interface FormState {
     userId?: string | undefined;
+    senderId?: string | undefined;
+    receiverId?: string | undefined;
+    roomId?: string | undefined;
+    messageType?: "notification" | "media" | "text" | "system";
     content?: string;
     file?: File | string;
     mimetype?: string;
