@@ -94,3 +94,26 @@
     line-height: 100%;
     cursor: pointer;
 }
+
+button {
+    border: none;
+    background-color: transparent;
+}
+.btn-send-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    transition: background-color 0.3s;
+    &:hover {
+        // background-color: darken($color: $color-primary, $amount: 10%);
+        box-shadow: 0 0 10px rgba($color-primary, 0.5);
+    }
+    &:disabled {
+        background-color: lighten($color: $color-primary, $amount: 30%);
+        cursor: not-allowed;
+        & > svg > path {
+            fill: lighten($color: $color-primary, $amount: 30%);
+        }
+    }
+}
