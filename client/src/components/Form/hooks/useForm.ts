@@ -32,6 +32,8 @@ export const useForm = (origin: FormOrigin) => {
 
   const resetFormState = () => {
     dispatch(resetForm({ origin }));
+    changeContent("");
+    resetFile();
   };
 
   const changeFile = (file: File) => {
@@ -70,7 +72,7 @@ export const useForm = (origin: FormOrigin) => {
   };
 
   const resetFile = () => {
-    dispatch(setForm({ origin, formState: { file: "" } }));
+    dispatch(setForm({ origin, formState: { file: "", isPreview: false } }));
     dispatch(setPreview({ origin, preview: "" }));
     dispatch(setMimetype({ origin, mimetype: "" }));
     if (inputFileRef.current) {
