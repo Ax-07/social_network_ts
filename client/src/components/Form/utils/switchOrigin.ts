@@ -14,7 +14,8 @@ export type FormOrigin =
   | "modal-repost" // Repost d'une publication via le modal
   | "btn-repost-with-comment" // Repost d'une publication avec commentaire
   | "modal-repost-comment" // Repost d'une publication avec commentaire via le modal
-  | "modal-message"; // Envoie de message via le modal
+  | "modal-message" // Envoie de message via le modal
+  | "response-message"; // Réponse à un message
 
 /**
  * @description Fonction pour changer le texte du bouton et le placeholder du textarea, en fonction de l'origine du formulaire
@@ -74,6 +75,10 @@ export const switchOrigin = (origin: FormOrigin) => {
     case "modal-message":
       buttonText = "Envoyer";
       placeholder = "Envoyer un message...";
+      break;
+    case "response-message":
+      buttonText = "Répondre";
+      placeholder = "Répondre...";
       break;
     default:
       buttonText = "Publier";
