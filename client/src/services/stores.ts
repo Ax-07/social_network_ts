@@ -13,7 +13,10 @@ import authSlice from "./auth/authSlice";
 import notificationSlice from "./notifications/notificationSlice";
 import modalSlice from "./modals/modalSlice";
 import formSlice from "./forms/formSlice";
+import messageSlice from "./stores/messageSlice";
+import { messagesApi } from "./api/messagesApi";
 import { notificationApi } from "./api/notificationApi";
+import { conversationsApi } from "./api/conversationsApi";
 
 const persistConfig = {
     key: "root",
@@ -35,7 +38,10 @@ const store = configureStore({
         notifications: notificationSlice,
         modals: modalSlice,
         form: formSlice,
+        messages: messageSlice,
         [notificationApi.reducerPath]: notificationApi.reducer,
+        [messagesApi.reducerPath]: messagesApi.reducer,
+        [conversationsApi.reducerPath]: conversationsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -48,6 +54,8 @@ const store = configureStore({
             googleAuthApi.middleware, 
             notificationApi.middleware,
             bookmarkApi.middleware,
+            messagesApi.middleware,
+            conversationsApi.middleware,
         ),
 });
 
