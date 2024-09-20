@@ -1,5 +1,6 @@
 .side-column {
-    max-width: 350px;
+    max-width: 450px;
     min-width: 290px;
     flex: 1;
+    @include flex(column, center, flex-start, 10px);
 }
