@@ -16,7 +16,7 @@
         height: 36px;
         padding-bottom: 12px;
 
-        &> p {
+        & > p {
             padding: 5px 10px;
             font-weight: 700;
             line-height: 100%;
@@ -64,5 +64,109 @@
             color: $color-primary;
             cursor: pointer;
         }
+    }
+}
+
+.add-message {
+    &__title {
+        text-align: center;
+        padding: 8px;
+        @extend .fs-16-700;
+        margin-bottom: 16px;
+    }
+
+    &__search {
+        @include flex(row, center, center);
+        border-bottom: 1px solid $color-primary;
+
+        &>img {
+            width: 18px;
+            height: 18px;
+            margin: 0 12px;
+        }
+
+        &>input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            // font-size: 1.5rem;
+            background: none;
+            color: $color-light;
+            outline: none;
+            @extend .fs-15-500;
+        }
+    }
+
+    &__receiver {
+        &-list {
+            @include flex(row, flex-start, flex-start);
+            padding: 12px;
+        }
+
+        &-item {
+            @include flex(row, center, center);
+            width: fit-content;
+            padding: 6px 6px 6px 12px;
+            border: 1px solid $color-primary;
+            border-radius: 12px;
+        }
+
+        &-name {
+            @extend .fs-15-700;
+            color: $color-light;
+        }
+
+        &-handle {
+            @extend .fs-15-500;
+            color: $color-light;
+        }
+
+        &-remove {
+            margin-left: 12px;
+            font-size: 10px;
+            line-height: 10px;
+            color: $color-danger;
+            cursor: pointer;
+        }
+    }
+
+    &__user {
+        &-list {
+            @include flex(column, flex-start, flex-start);
+        }
+
+        &-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgba($color-primary, 0.1);
+            }
+        }
+
+        &-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        &-name {
+            @extend .fs-16-700;
+            color: $color-light;
+        }
+
+        &-handle {
+            @extend .fs-15-500;
+            color: $color-light;
+        }
+    }
+
+    &__wrapper {
+        @include flex(column, flex-start, flex-start);
     }
 }
