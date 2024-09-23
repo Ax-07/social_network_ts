@@ -9,8 +9,8 @@ export interface User {
     coverPicture?: string; // Image de couverture
     bio?: string; // Biographie
     birthdate?: Date; // Date de naissance
-    followers?: {id: string, username: string, profilPicture: string}[]; // Liste des abonnés
-    followings?: {id: string, username: string, profilPicture: string}[]; // Liste des abonnements
+    followers?: {id: string, username: string, profilPicture: string, handle: string}[]; // Liste des abonnés
+    followings?: {id: string, username: string, profilPicture: string, handle: string}[]; // Liste des abonnements
     bookmarks?: UserBookmarks[]; // Liste des signets (id est l'id du post)
     notifications?: { type: string; message: string; postId: string }[]; // Liste des notifications
     createdAt?: Date; // Date de création
@@ -48,6 +48,8 @@ export interface UserResponse {
     data: User;
     message: string;
 }
+
+
 
 export interface FollowersNamesRequest {
     status: string;
