@@ -45,13 +45,13 @@ const getUserById = async (req: Request, res: Response) => {
           model: db.User, // Inclure les utilisateurs qui suivent cet utilisateur
           as: 'followers', // Alias défini dans l'association belongsToMany pour followers
           through: { attributes: [] }, // Ignorer les attributs de la table de jonction
-          attributes: ['id', 'username', 'profilPicture'], // Sélectionner les informations nécessaires des followers
+          attributes: ['id', 'username', 'profilPicture', 'handle'], // Sélectionner les informations nécessaires des followers
         },
         {
           model: db.User, // Inclure les utilisateurs que cet utilisateur suit
           as: 'followings', // Alias défini dans l'association belongsToMany pour followings
           through: { attributes: [] },
-          attributes: ['id', 'username', 'profilPicture'],
+          attributes: ['id', 'username', 'profilPicture', 'handle'], // Sélectionner les informations nécessaires des followings
         },
         {
           model: db.Post, // Inclure les posts ajoutés en favoris
