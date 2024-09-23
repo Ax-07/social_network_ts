@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormOrigin } from "../../components/Form/Form";
+import { FormOrigin } from "../../components/Form/utils/switchOrigin";
 
 interface ModalState {
     modals: { [key: string]: boolean };
