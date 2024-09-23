@@ -29,7 +29,7 @@ const Login: FunctionComponent<LoginProps> = () => {
         loginSuccess({
           user: data.user,
           accessToken: data.accessToken,
-          refreshToken: "",
+          refreshToken: data.refreshToken,
         })
       );
       navigate("/");
