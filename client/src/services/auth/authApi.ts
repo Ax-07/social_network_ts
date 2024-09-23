@@ -8,7 +8,7 @@ export interface AuthResponse {
   data: {
     user: User;
     accessToken: string;
-    refreshToken?: string;
+    refreshToken: string;
   };
   message: string;
 }
@@ -31,7 +31,14 @@ export const authApi = createApi({
         body: user,
       }),
     }),
+    refreshAccessToken: builder.mutation<AuthResponse, { refreshToken: string }>({
+      query: ({ refreshToken }) => ({
+        url: "/auth/refresh-token",
+        method: "POST",
+        body: { refreshToken },
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useRefreshAccessTokenMutation } = authApi;

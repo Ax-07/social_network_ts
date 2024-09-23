@@ -43,7 +43,7 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
     },
-    refreshToken(state, action: PayloadAction<string>) {
+    refreshedToken(state, action: PayloadAction<string>) {
       state.accessToken = action.payload;
     },
     loginFail: (state, action: PayloadAction<LoginFailPayload>) => {
@@ -60,6 +60,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginRequest, loginSuccess, loginFail, logout } = authSlice.actions;
+export const { loginRequest, loginSuccess, loginFail, logout, refreshedToken } = authSlice.actions;
 export default authSlice.reducer;
 export type { AuthState };
