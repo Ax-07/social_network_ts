@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import { closeModal } from '../../services/modals/modalSlice';
 import { FormOrigin } from '../Form/utils/switchOrigin';
+import { resetForm } from '../../services/forms/formSlice';
 
 interface ModalProps extends PropsWithChildren {
   modalName: FormOrigin;
@@ -16,6 +17,7 @@ const Modal: FunctionComponent<ModalProps> = ({ modalName, children }) => {
 
   const handleOverlayClick = () => {
     dispatch(closeModal(modalName));
+    dispatch(resetForm({ origin: modalName }));
   };
 
   const handleContentClick = (e: React.MouseEvent) => {
