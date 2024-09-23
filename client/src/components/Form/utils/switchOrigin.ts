@@ -2,6 +2,7 @@
  * @description Type pour définir l'origine du formulaire de publication
  */
 export type FormOrigin =
+  | undefined // Par défaut
   | "modal-addPost" // Ajout de publication via le modal
   | "modal-comment" // Ajout de commentaire via le modal
   | "modal-comment-post" // Ajout de commentaire a un post via le boutton addComment de postCard
