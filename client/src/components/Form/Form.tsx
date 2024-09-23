@@ -23,7 +23,7 @@ const Form: FunctionComponent<FormProps> = ({ origin, handleSubmit }) => {
 
   useEffect(() => {
     // Reset le formulaire à chaque ouverture
-    if (origin !== "modal-message") {
+    if (origin && origin !== "modal-message" && form ) {
       setFormState({ userId: user?.id });
     }
   }, [user?.id]);
