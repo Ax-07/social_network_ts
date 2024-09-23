@@ -1,4 +1,4 @@
-import { type FunctionComponent } from "react";
+import { useState, type FunctionComponent } from "react";
 import Form from "./Form";
 import { useForm } from "./hooks/useForm";
 import { ApiError } from "../../utils/types/api.types";
@@ -23,13 +23,18 @@ const AddMessage: FunctionComponent<AddMessageProps> = ({
   const { form, setFormState, resetFormState } = useForm(origin);
   const [addMessage] = useAddMessageMutation();
   const pushToast = usePushToast();
-  console.log("user", user);
+  const [searchTerm, setSearchTerm] = useState(""); // État pour stocker la valeur de recherche
+  const [receiver, setReceiver] = useState({ name: "", handle: "" });
 
-  const userFollowers = user?.followers;
-  const userFollowings = user?.followings;
-  const userFollow = [...(userFollowers || []), ...(userFollowings || [])];
+  if (!user) {
+    return null;
+  }
 
-  const uniqueUserFollow = userFollow.filter(
+  const userFollowers = user.followers;
+  const userFollowings = user.followings;
+  const userFollow = userFollowers?.concat(userFollowings || []);
+
+  const uniqueUserFollow = userFollow?.filter(
     (follower, index, self) =>
       index ===
       self.findIndex(
@@ -37,10 +42,27 @@ const AddMessage: FunctionComponent<AddMessageProps> = ({
       )
   );
 
-  const setReceiverId = (receiverId: string) => {
+  // Filtrer les utilisateurs en fonction de la recherche
+  const filteredUsers = uniqueUserFollow?.filter((follower) =>
+    follower.username.toLowerCase().includes(searchTerm.toLowerCase())
+  ); console.log(filteredUsers);
+
+  const initReceiverName = (receiverId: string) => {
+    const receiver = uniqueUserFollow?.find(
+      (follower) => follower.id === receiverId
+    );
+    setReceiver({name: receiver?.username as string, handle: receiver?.handle as string});
+  }
+
+  const setFormWithReceiverId = (receiverId: string) => {
     const roomId = Math.random().toString(36).substring(7);
     setFormState({ senderId: userId, receiverId, roomId, messageType: "text" });
-    console.log("receiverId", receiverId);
+    initReceiverName(receiverId);
+  };
+
+  const reset = () => {
+    resetFormState();
+    setReceiver({name: "", handle: ""});
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,17 +93,74 @@ const AddMessage: FunctionComponent<AddMessageProps> = ({
       onClose && onClose();
     }
   };
+
   return (
     <>
-      <div>search user</div>
-      <div>create group</div>
-      {uniqueUserFollow &&
-        uniqueUserFollow.map((follower: { id: string; username: string }) => (
-          <button key={follower.id} onClick={() => setReceiverId(follower.id)}>
-            {follower.username}
-          </button>
-        ))}
-      <Form origin={origin} handleSubmit={handleSubmit} aria-live="assertive" />
+      <h2 className="add-message__title">Nouveau Message</h2>
+      {receiver.name &&
+      <ul className="add-message__receiver-list">
+        <li className="add-message__receiver-item">
+          <h3 className="add-message__receiver-name">{receiver.name}</h3>
+          <p className="add-message__receiver-handle">{"- "}{receiver.handle}</p>
+          <span className="add-message__receiver-remove" onClick={reset}>❌</span>
+        </li>
+      </ul>
+      }
+      {!form.receiverId && (
+        <>
+          <div className="add-message__search">
+            <img src={"src/assets/icons/faSearch.svg"} alt="icon loupe" />
+            <input
+              type="search"
+              placeholder="Rechercher un utilisateur..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} // Mettre à jour la valeur de recherche
+            />
+          </div>
+          <div>create group</div>
+          <ul className="add-message__user-list">
+            {filteredUsers &&
+              filteredUsers.map(
+                (follower: {
+                  id: string;
+                  username: string;
+                  profilPicture: string;
+                  handle: string;
+                }) => (
+                  <li
+                    className="add-message__user-item"
+                    key={follower.id}
+                    onClick={() => setFormWithReceiverId(follower.id)}
+                  >
+                    <img
+                      className="add-message__user-picture"
+                      src={
+                        follower.profilPicture ||
+                        "/images/Default-user-picture.png"
+                      }
+                      alt=""
+                    />
+                    <div className="add-message__wrapper">
+                      <h2 className="add-message__user-name">
+                        {follower.username}
+                      </h2>
+                      <p className="add-message__user-handle">
+                        {follower.handle}
+                      </p>
+                    </div>
+                  </li>
+                )
+              )}
+          </ul>
+        </>
+      )}
+      {form.receiverId && (
+        <Form
+          origin={origin}
+          handleSubmit={handleSubmit}
+          aria-live="assertive"
+        />
+      )}
     </>
   );
 };
