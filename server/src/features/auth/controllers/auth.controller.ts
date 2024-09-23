@@ -27,7 +27,8 @@ const register = async (req: Request, res: Response) => {
 
     try {
         const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: '24h' });
-        return apiSuccess(res, 'User created successfully', { user, accessToken}, 201);
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+        return apiSuccess(res, 'User created successfully', { user, accessToken, refreshToken}, 201);
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while creating the user.');
     }
@@ -51,10 +52,37 @@ const login = async (req: Request, res: Response) => {
         }
 
         const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: '24h' });
-        return apiSuccess(res, 'User logged in successfully', { user, accessToken }, 200);
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+        return apiSuccess(res, 'User logged in successfully', { user, accessToken, refreshToken }, 200);
     } catch (error) {
         return handleControllerError(res, error, 'An error occurred while signing in the user.');
     }
 }
 
-export { register, login };
+const refreshToken = async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+  
+    if (!refreshToken) {
+      return apiError(res, 'Refresh token is required', 400);
+    }
+  
+    try {
+      // Vérifie si le refresh token est valide
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+  
+      // Vérifie si l'utilisateur existe toujours
+      const user = await User.findByPk(decoded.id);
+      if (!user) {
+        return apiError(res, 'User not found', 404);
+      }
+  
+      // Génère un nouveau access token
+      const newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: '15m' });
+  
+      return apiSuccess(res, 'Token refreshed successfully', { accessToken: newAccessToken });
+    } catch (error) {
+      return handleControllerError(res, error, 'Failed to refresh token');
+    }
+  };
+
+export { register, login, refreshToken };
