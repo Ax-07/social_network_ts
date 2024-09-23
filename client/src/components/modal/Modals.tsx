@@ -7,13 +7,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
 import { closeModal } from "../../services/modals/modalSlice";
 import AddMessage from "../Form/AddMessage";
+import { resetForm } from "../../services/forms/formSlice";
+import { FormOrigin } from "../Form/utils/switchOrigin";
 
 interface ModalsProps {}
 
 const Modals: FunctionComponent<ModalsProps> = () => {
   const { modals, modalName } = useSelector((state: RootState) => state.modals);
   const dispatch = useDispatch();
-  const handleCloseModal = () => dispatch(closeModal(modalName!));
+  const handleCloseModal = () => {
+    dispatch(closeModal(modalName!))
+    dispatch(resetForm({ origin: modalName as FormOrigin }));
+  };
 
   return (
     <>
