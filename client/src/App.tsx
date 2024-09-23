@@ -11,6 +11,7 @@ import Modals from "./components/modal/Modals";
 import PostPage from "./pages/post/PostPage";
 import CommentPage from "./pages/post/CommentPage";
 import { useCachePostViews } from "./utils/functions/cachePostViews";
+import { useTokenRefresh } from "./services/auth/useRefreshToken";
 
 function App() {
   const { windowWidth } = useWindowSize();
@@ -26,7 +27,8 @@ function App() {
     }, 1000 * 60 * 15); // 15 minutes
     return () => clearInterval(interval);
   }, [isAuth, refreshToken, googleRefreshToken]);
-
+  
+  useTokenRefresh();
   useCachePostViews();
 
   // Gestion du focus pour la navigation
