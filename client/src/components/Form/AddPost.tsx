@@ -70,7 +70,11 @@ const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
   if (isLoading) return <p aria-live="polite">Publication en cours...</p>;
 
   
-  return <Form origin={origin} handleSubmit={handleSubmit} aria-live="assertive"/>
+  return <Form 
+            origin={origin} 
+            handleSubmit={handleSubmit} 
+            aria-live="assertive"
+            />
 };
 
 export default AddPost;
