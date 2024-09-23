@@ -40,15 +40,17 @@ const formSlice = createSlice({
       resetForm: (state, action: PayloadAction<{ origin: FormOrigin }>) => {
         const { origin } = action.payload;
         if (origin) {
-          state[origin] = {};  // Réinitialisation du formulaire si l'origin est valide
+          state[origin] = {};
         }
       },
       handleFileChange: (state, action: PayloadAction<{ origin: FormOrigin; file: File }>) => {
         const { origin, file } = action.payload;
+        if (origin)
         state[origin] = { ...state[origin], file, isPreview: true };
       },
       handleContentChange: (state, action: PayloadAction<{ origin: FormOrigin; content: string }>) => {
         const { origin, content } = action.payload;
+        if (origin)
         state[origin] = {
           ...state[origin],
           content,
@@ -57,10 +59,12 @@ const formSlice = createSlice({
       },
       setPreview: (state, action: PayloadAction<{ origin: FormOrigin; preview: string }>) => {
         const { origin, preview } = action.payload;
+        if (origin)
         state[origin] = { ...state[origin], preview, isPreview: true };
       },
       setMimetype: (state, action: PayloadAction<{ origin: FormOrigin; mimetype: string }>) => {
         const { origin, mimetype } = action.payload;
+        if (origin)
         state[origin] = { ...state[origin], mimetype };
       },
     },
@@ -70,7 +74,7 @@ const formSlice = createSlice({
   export const selectFormByOrigin = createSelector(
       (state: RootState) => state.form,  // Récupérer tous les formulaires
       (_: RootState, origin: FormOrigin) => origin, // Récupérer l'origin en paramètre
-      (forms, origin) => forms[origin] || {}  // Retourner l'état du formulaire pour cet origin
+      (forms, origin) => forms[origin ?? ""] || {}  // Retourner l'état du formulaire pour cet origin
     );
   
   export const { setForm, resetForm, handleFileChange, handleContentChange, setPreview, setMimetype } = formSlice.actions;
