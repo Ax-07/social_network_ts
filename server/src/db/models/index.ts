@@ -12,6 +12,7 @@ import { PostLike, initializePostLikeModel } from "../../features/posts/models/p
 import { PostRepost, initializePostRepostModel } from "../../features/posts/models/postRepost.model";
 import { Group, initializeGroupModel } from "../../features/user/models/group.model";
 import { User, initializeUserModel } from "../../features/user/models/user.model";
+import { GroupMember, initializeGroupMemberModel } from "../../features/conversations/models/groupMembers.model";
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -34,6 +35,7 @@ interface Database {
   Message: typeof Message;
   Conversation: typeof Conversation;
   Group: typeof Group;
+  GroupMember: typeof GroupMember
 };
 
 const db: Database = {
@@ -52,6 +54,7 @@ const db: Database = {
   Message: initializeMessageModel(sequelize),
   Conversation: initializeConversationModel(sequelize),
   Group: initializeGroupModel(sequelize),
+  GroupMember: initializeGroupMemberModel(sequelize),
 };
 
 // Définir les associations après l'initialisation des modèles
@@ -105,29 +108,25 @@ db.Comment.belongsToMany(db.User, { through: db.CommentRepost, as: 'commentRepos
 db.User.hasMany(db.Notification, { foreignKey: 'userId', as: 'userNotifications' }); // Un utilisateur a plusieurs notifications
 db.Notification.belongsTo(db.User, { foreignKey: 'userId', as: 'user' }); // Une notification appartient à un utilisateur
 
+// Association entre Conversation et GroupMember
+db.Conversation.hasMany(db.GroupMember, { foreignKey: 'conversationId', as: 'groupMembers' });
+db.GroupMember.belongsTo(db.Conversation, { foreignKey: 'conversationId', as: 'conversation' });
 
-
-
-
-
-// Association entre User et Message via une table de jonction UserMessages
-// db.User.belongsToMany(db.Message, { through: 'UserMessages', as: 'userMessages', foreignKey: 'senderId' }); // Un utilisateur a plusieurs messages
+// Association entre GroupMember et User
+db.User.hasMany(db.GroupMember, { foreignKey: 'userId', as: 'groupMemberships' });
+db.GroupMember.belongsTo(db.User, { foreignKey: 'userId', as: 'user' });
 
 // Association entre Conversation et Message
-db.User.hasMany(db.Message, { foreignKey: 'senderId', as: 'sentMessages' });
-db.User.hasMany(db.Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
-
-db.Message.belongsTo(db.User, { foreignKey: 'senderId', as: 'sender' });
-db.Message.belongsTo(db.User, { foreignKey: 'receiverId', as: 'receiver' });
-
 db.Conversation.hasMany(db.Message, { foreignKey: 'conversationId', as: 'messages' });
 db.Message.belongsTo(db.Conversation, { foreignKey: 'conversationId', as: 'conversation' });
-// Association entre User et Conversation via une table de jonction UserConversations
-db.User.belongsToMany(db.Conversation, { through: 'UserConversations', as: 'userConversations', foreignKey: 'userId' }); // Un utilisateur a plusieurs conversations
-db.Conversation.belongsToMany(db.User, { through: 'UserConversations', as: 'conversationUsers', foreignKey: 'conversationId' }); // Une conversation a plusieurs utilisateurs
 
+// Association entre User et Message
+db.User.hasMany(db.Message, { foreignKey: 'senderId', as: 'sentMessages' });
+db.Message.belongsTo(db.User, { foreignKey: 'senderId', as: 'sender' });
+
+// Association entre Conversation et Admin (User)
 db.Conversation.belongsTo(db.User, { as: 'admin', foreignKey: 'adminId' });
-db.User.hasMany(db.Conversation, { as: 'conversations', foreignKey: 'adminId' });
+db.User.hasMany(db.Conversation, { as: 'adminConversations', foreignKey: 'adminId' });
 
 
 db.Sequelize = Sequelize;
