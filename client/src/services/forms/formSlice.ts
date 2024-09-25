@@ -6,6 +6,7 @@ interface FormState {
     userId?: string | undefined;
     senderId?: string | undefined;
     receiverId?: string | undefined;
+    receiversIds?: string[] | undefined; // Pour les messages de groupe
     roomId?: string | undefined;
     messageType?: "notification" | "media" | "text" | "system";
     content?: string;
