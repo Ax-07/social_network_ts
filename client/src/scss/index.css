@@ -995,7 +995,7 @@ iframe[name=callout] {
   justify-content: flex-start;
   align-items: flex-start;
   gap: 10px;
-  padding: 1rem;
+  padding: 1rem 1rem 0.5rem 1rem;
   border-radius: 10px 10px 10px 0;
   background-color: rgba(244, 244, 244, 0.1);
   box-shadow: 0 0 10px rgba(29, 155, 240, 0.1);
@@ -1008,7 +1008,7 @@ iframe[name=callout] {
   background-color: #1d9bf0;
   color: #f4f4f4;
 }
-.messages-list__item__content {
+.messages-list__content {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -1017,16 +1017,16 @@ iframe[name=callout] {
   width: 100%;
   max-width: 100%;
 }
-.messages-list__item__text {
+.messages-list__text {
   font-size: 1rem;
   line-height: 1.5;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
 }
-.messages-list__item__date {
-  font-size: 0.8rem;
-  color: #000;
-  align-self: flex-end;
+.messages-list__info {
+  font-size: 0.7rem;
+  color: #f4f4f4;
+  align-self: flex-start;
 }
 
 .message-form {
