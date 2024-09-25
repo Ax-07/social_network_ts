@@ -16,6 +16,7 @@ const MessageList: FunctionComponent<MessageListProps> = () => {
 
   if (!messages) return <div>Loading...</div>;
   const receiverId = messages[0]?.senderId === userId ? messages[0]?.receiverId : messages[0]?.senderId;
+
   return (
     <div className="messages-list">
       <h2>{user?.username}</h2>
@@ -34,11 +35,9 @@ const MessageList: FunctionComponent<MessageListProps> = () => {
       </header>
       <ul className="messages-list__list">
         {messages.map((message) => (
-          <li key={message.id} 
-          className={`messages-list__item ${ message.senderId === userId ? "self" : ""}`}>
-            {/* <p className={`messages-list__item ${ message.senderId === userId ? "self" : ""}`}> {message.sender.username}</p> */}
-            <p>{message.content}</p>
-            <p>{getTimeSinceCreation(message?.createdAt?.toString() ?? "")}</p>
+          <li key={message.id} className={`messages-list__item ${ message.senderId === userId ? "self" : ""}`}>
+            <p className="messages-list__content">{message.content}</p>
+            <p className="messages-list__info">{message.sender.username} {getTimeSinceCreation(message?.createdAt?.toString() ?? "")}</p>
           </li>
         ))}
       </ul>
