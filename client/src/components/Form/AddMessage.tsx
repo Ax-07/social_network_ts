@@ -8,6 +8,7 @@ import { useAddMessageMutation } from "../../services/api/messagesApi";
 import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { useSelector } from "react-redux";
 import { RootState } from "../../services/stores";
+import { User } from "../../utils/types/user.types";
 
 interface AddMessageProps {
   origin: FormOrigin;
@@ -25,22 +26,7 @@ const AddMessage: FunctionComponent<AddMessageProps> = ({
   const pushToast = usePushToast();
   const [searchTerm, setSearchTerm] = useState(""); // État pour stocker la valeur de recherche
   const [receiver, setReceiver] = useState({ name: "", handle: "" });
-
-  if (!user) {
-    return null;
-  }
-
-  const userFollowers = user.followers;
-  const userFollowings = user.followings;
-  const userFollow = userFollowers?.concat(userFollowings || []);
-
-  const uniqueUserFollow = userFollow?.filter(
-    (follower, index, self) =>
-      index ===
-      self.findIndex(
-        (t) => t.id === follower.id && t.username === follower.username
-      )
-  );
+  const uniqueUserFollow = getUniqueFollows(user as User); // Récupérer les utilisateurs que suit ou qui suivent l'utilisateur connecté
 
   // Filtrer les utilisateurs en fonction de la recherche
   const filteredUsers = uniqueUserFollow?.filter((follower) =>
@@ -166,3 +152,22 @@ const AddMessage: FunctionComponent<AddMessageProps> = ({
 };
 
 export default AddMessage;
+
+
+
+const getUniqueFollows = (user: User) => {
+  if (!user) {
+    return null;
+  }
+  const userFollowers = user.followers;
+  const userFollowings = user.followings;
+  const userFollow = userFollowers?.concat(userFollowings || []);
+
+  return userFollow?.filter(
+    (follower, index, self) =>
+      index ===
+      self.findIndex(
+        (t) => t.id === follower.id && t.username === follower.username
+      )
+  );
+}
