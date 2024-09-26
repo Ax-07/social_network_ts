@@ -9,6 +9,7 @@ import { useHoverDisplayCard } from "./hooks/useHoverDisplayCard";
 interface UserHoverDisplayCard {
   user?: User | null;
   createdAt?: string;
+  flexDirection?: string;
 }
 
 const UserThumbnailHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ user }) => {
@@ -43,8 +44,8 @@ const UserThumbnailHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = (
   );
 };
 
-const UserNameHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ user, createdAt }) => {
-    const timeSinceCreation = getTimeSinceCreation(createdAt as string);
+const UserNameHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ user, createdAt, flexDirection }) => {
+  const timeSinceCreation = createdAt && getTimeSinceCreation(createdAt as string);
     const {
         showUserCard,
         handleMouseEnterThumbnail,
@@ -56,7 +57,7 @@ const UserNameHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ use
 
     return (
         <>
-        <Link to={`/profile/${user?.id}`} className="post-card__header" aria-label={`Voir le profil de ${user?.username}`}>
+        <Link to={`/profile/${user?.id}`} className={flexDirection ? `post-card__header--${flexDirection}` : "post-card__header"} aria-label={`Voir le profil de ${user?.username}`}>
             <h2 className="post-card__header-username" 
               onMouseEnter={handleMouseEnterThumbnail}
               onMouseLeave={handleMouseLeaveThumbnail}
@@ -72,8 +73,8 @@ const UserNameHoverDisplayCard: FunctionComponent<UserHoverDisplayCard> = ({ use
               >
                   {user?.handle}
               </p>
-              <span className="post-card__header-point"></span>
-              <p className="post-card__date fs-15-400">{timeSinceCreation}</p>
+              {timeSinceCreation && <span className="post-card__header-point"></span>}
+              {timeSinceCreation && <p className="post-card__date fs-15-400">{timeSinceCreation}</p>}
             </div>
           </Link>
            {showUserCard && (
