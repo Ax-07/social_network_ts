@@ -39,6 +39,13 @@ export const postApi = createApi({
       query: (id) => `/posts/${id}`,
       providesTags: (_result, _error, id) => [{ type: "Posts", id }],
     }),
+    getPostsByUserId: builder.query<PostResponseArray, string>({
+      query: (userId) => `/posts/user/${userId}`,
+      providesTags: (result) =>
+        result && Array.isArray(result.data)
+          ? result.data.map(({ id }) => ({ type: "Posts", id }))
+          : [{ type: "Posts", id: "LIST" }],
+    }),
     addPost: builder.mutation<PostResponse, FormData>({
       query: (formData) => ({
         url: "/posts",
@@ -104,6 +111,7 @@ export const postApi = createApi({
 export const {
   useGetPostsQuery,
   useGetPostByIdQuery,
+  useGetPostsByUserIdQuery,
   useAddPostMutation,
   useUpdatePostMutation,
   useDeletePostMutation,
