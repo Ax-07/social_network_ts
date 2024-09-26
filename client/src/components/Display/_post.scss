@@ -42,7 +42,7 @@
         margin-right: 8px;
         // background-color: $color-light;
 
-        &>img {
+        & > img {
             width: 100%;
             border-radius: 50%;
         }
@@ -56,6 +56,9 @@
         margin-bottom: 10px;
         cursor: pointer;
 
+        &--column {
+            @include flex(column, flex-start, flex-start, 4px);
+        }
         &-wrapper {
             @include flex(row, flex-start, center, 8px);
         }
@@ -129,4 +132,15 @@
         margin-bottom: 10px;
     }
 
+}
+
+.userToFollow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__info {
+        align-self: flex-start;
+        flex: 1;
+    }
 }
