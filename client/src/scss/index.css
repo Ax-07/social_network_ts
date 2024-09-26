@@ -137,6 +137,11 @@ main {
   width: 100%;
 }
 
+section {
+  width: 100%;
+  padding: 10px 50px;
+}
+
 .aside {
   position: sticky;
   top: 0;
@@ -1206,6 +1211,13 @@ iframe[name=callout] {
   margin-bottom: 10px;
   cursor: pointer;
 }
+.post-card__header--column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+}
 .post-card__header-wrapper {
   display: flex;
   flex-direction: row;
@@ -1275,6 +1287,16 @@ iframe[name=callout] {
   border: 1px solid #f4f4f4;
   border-radius: 14px;
   margin-bottom: 10px;
+}
+
+.userToFollow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.userToFollow__info {
+  align-self: flex-start;
+  flex: 1;
 }
 
 .modal-overlay {
