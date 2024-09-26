@@ -1,3 +1,4 @@
+import { ProfilPicture } from './../../components/userProfile/UserProfileThumbnail';
 export interface User {
     id: string; // Identifiant unique de l'utilisateur
     googleId?: string; // Identifiant Google pour l'authentification OAuth
@@ -54,5 +55,15 @@ export interface UserResponse {
 export interface FollowersNamesRequest {
     status: string;
     data: {followersNames: string[];} 
+    message: string;
+}
+
+export interface WhoToFollowResponse {
+    status: string;
+    data: {
+        id: string,
+        username: string,
+        profilPicture: string,
+    }[];
     message: string;
 }
