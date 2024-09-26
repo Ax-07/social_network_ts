@@ -1,7 +1,8 @@
 import { FunctionComponent, memo, useCallback } from 'react';
-import { useFollowMutation, useGetUserByIdQuery } from '../../../services/api/userApi';
+import { useGetUserByIdQuery } from '../../../services/api/userApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../services/stores';
+import { useFollowMutation } from '../../../services/api/followApi';
 
 interface BtnFollowProps {
     userToFollowId: string;
