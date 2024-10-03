@@ -9,6 +9,7 @@ import BtnViews from '../../Actions/btn-views/BtnViews';
 import BtnBookmarks from '../../Actions/btn-bookmarks/BtnBookmarks';
 import { UserThumbnailHoverDisplayCard, UserNameHoverDisplayCard } from '../../userProfile/UserHoverDisplayCard ';
 import MediaDisplay from '../../Base/mediaDisplay/MediaDisplay';
+import ContentWhithHashTagAndMentions from '../../Base/contents/ContentWhithHashTagAndMentions';
 
 interface CommentCardProps {
     comment: CommentTypes;
@@ -27,7 +28,9 @@ const CommentCard: FunctionComponent<CommentCardProps> = ({ comment, origin }) =
                 <UserThumbnailHoverDisplayCard user={commenter} />
                 <div className="post-card__wrapper">
                     <UserNameHoverDisplayCard user={commenter} createdAt={comment.createdAt} />
-                    <p className="post-card__content">{comment.content}</p>
+                    <p className="post-card__content">
+                        <ContentWhithHashTagAndMentions content={comment.content} />
+                    </p>
                     {comment?.media && <MediaDisplay media={comment.media}/>}
                     {origin !== 'repost' && <div className="post-card__footer">
                         <BtnComment commentId={comment.id} commentsCount={commentsCount} />
