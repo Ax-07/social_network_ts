@@ -6,6 +6,7 @@ import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../../u
 import { useGetCommentByIdQuery } from "../../../services/api/commentApi";
 import CommentCard from "../comment/CommentCard";
 import MediaDisplay from "../../Base/mediaDisplay/MediaDisplay";
+import QuestionCard from "../question/QuestionCard";
 
 export type PostProps = {
   originalPostId: string;
@@ -29,8 +30,13 @@ const RepostCard: FunctionComponent<PostProps> = ({ originalPostId, originalComm
         <UserThumbnailHoverDisplayCard user={poster} />
         <div className="post-card__wrapper">
           <UserNameHoverDisplayCard user={poster} createdAt={postByOriginalId.createdAt} /> 
-          <p className="post-card__content">{postByOriginalId.content}</p>
+          {postByOriginalId.content &&
+            <p className="post-card__content">{postByOriginalId.content}</p>
+          }
           <MediaDisplay media={postByOriginalId.media}/>
+          {postByOriginalId.question && 
+            <QuestionCard question={postByOriginalId.question} />
+          }
           {commentByOriginalId && 
             <div>
               <CommentCard comment={commentByOriginalId} origin="repost" />
