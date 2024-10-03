@@ -15,6 +15,7 @@ const ContentField: FunctionComponent<ContentFieldProps> = ({ origin }) => {
   const handleInputTextarea = (e: React.FormEvent<HTMLTextAreaElement>) => {
     const target = e.currentTarget;
     autoResizeTextarea(target);
+    changeContent(target.value); // Mettre à jour le contenu dans l'état
     getTextareaCharacterCount(target);
   };
   
@@ -29,9 +30,8 @@ const ContentField: FunctionComponent<ContentFieldProps> = ({ origin }) => {
         name="content"
         id="content"
         rows={1}
-        onChange={(e) => changeContent(e.currentTarget.value)}
+        onChange={handleInputTextarea}
         value={form.content}
-        onInput={handleInputTextarea}
       />
       <p id="content-description" className="sr-only">
         {`Ajoutez du texte à votre publication. Limite de caractères : ??.`}
