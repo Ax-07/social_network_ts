@@ -14,6 +14,8 @@ import interceptor from "../../../utils/functions/interceptor";
 import { UserNameHoverDisplayCard, UserThumbnailHoverDisplayCard } from "../../userProfile/UserHoverDisplayCard ";
 import { cachePostView } from "../../../utils/functions/cachePostViews";
 import MediaDisplay from "../../Base/mediaDisplay/MediaDisplay";
+import ContentWhithHashTagAndMentions from "../../Base/contents/ContentWhithHashTagAndMentions";
+import QuestionCard from "../question/QuestionCard";
 
 export type PostProps = {
   post: PostTypes;
@@ -36,20 +38,31 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
       {origin !== "post-page" && (
         <NavLink to={`/home/posts/${post.id}`} className="post-card__link" />
       )}
-      <article className="post-card" ref={cardRef} aria-labelledby={`post-title-${post.id}`}>
-      <UserThumbnailHoverDisplayCard user={poster} />
+      <article
+        className="post-card"
+        ref={cardRef}
+        aria-labelledby={`post-title-${post.id}`}
+      >
+        <UserThumbnailHoverDisplayCard user={poster} />
         <div className="post-card__wrapper">
           <UserNameHoverDisplayCard user={poster} createdAt={post.createdAt} />
           {post.content && (
             <p className="post-card__content" id={`post-title-${post.id}`}>
-              {post.content}
+              <ContentWhithHashTagAndMentions content={post.content} />
             </p>
           )}
-          <MediaDisplay media={post.media}/>
-          {post.originalPostId && 
-          (<div className="post-card__repost-card">
-            <RepostCard originalPostId={post.originalPostId as string} originalCommentId={post.originalCommentId as string}/>
-          </div>
+          <MediaDisplay media={post.media} />
+          {post.originalPostId && (
+            <div className="post-card__repost-card">
+              <RepostCard
+                originalPostId={post.originalPostId as string}
+                originalCommentId={post.originalCommentId as string}
+              />
+            </div>
+          )}
+
+          {post.question && (
+            <QuestionCard question={post.question} />
           )}
 
           <div className="post-card__footer">
@@ -57,7 +70,7 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
             <BtnRepost postId={post.id} reposterCount={post.reposters?.length ?? 0}/>
             <BtnLike post={post} />
             <BtnViews viewsCount={post.views} />
-            <BtnBookmarks postId={post.id} userId={userId ?? ""}/>
+            <BtnBookmarks postId={post.id} userId={userId ?? ""} />
           </div>
         </div>
       </article>
