@@ -1,0 +1,134 @@
+.calendar {
+    position: relative;
+    padding: 20px;
+    border: 1px solid $color-primary;
+    border-radius: 5px;
+
+    &__header {
+        @include flex(row, center, center, 20px);
+        & > span {
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        & > h3 {
+            width: 200px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    }
+
+    &__table {
+        width: 100%;
+        & > thead {
+            & > tr {
+                & > th {}
+            }
+        }
+
+        & > tbody {
+            & > tr {
+                & > td {
+                    width: 30px;
+                    height: 30px;
+                    text-align: center;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        background-color: $color-primary;
+                        color: $color-white;
+                    }
+
+                }
+                & > td.current-day {
+                   background-color: $color-primary;
+                   color: $color-white;
+               }
+            }
+        }
+    }
+
+    &__btn {
+        width: 22px;
+    }
+}
+
+.datePicker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    &__wrapper {
+        width: 100%;
+    }
+
+    &__btn-calendar {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.timer {
+    padding: 12px;
+    border-bottom: 1px solid $color-primary;
+
+    &__options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        border-radius: 5px;
+        color: $color-light;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+}
+.drop-menu {
+    position: relative;
+    width: 100%;
+    border: 1px solid $color-primary;
+    border-radius: 5px;
+
+    &>p {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px 0 0px 10px;
+    }
+    &>img {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%) rotate(90deg);
+        width: 20px;
+        height: 20px;
+    }
+    &__select {
+        width: 100%;
+        padding: 30px 10px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        background: none;
+        color: $color-light;
+        outline: none;
+        appearance: none;
+
+    }
+
+    &__option {
+        padding: 10px;
+        border-bottom: 1px solid $color-primary;
+        color: $color-dark;
+        background: none;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba($color-primary, 0.1);
+        }
+    }
+}
