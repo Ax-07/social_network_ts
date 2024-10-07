@@ -44,7 +44,31 @@ const AddPost = ({ origin, onClose }: AddPostProps): JSX.Element => {
     try {
       const formData = new FormData();
       formData.append("userId", form.userId as string);
-      formData.append("content", form.content as string);
+
+      // post ou question
+      if ( form.isQuestion ) {
+        formData.append("question", form.content as string); // Ajoute la question au formulaire
+
+        if (form.expiredAt) {
+          formData.append("expiredAt", form.expiredAt.toISOString()); // Ajoute la date d'expiration en format ISO
+        }
+
+        form.answers?.forEach((answer: string) => {
+          formData.append("answers", answer); // Ajoute les réponses sous forme de tableau
+        });
+
+      } else {
+        formData.append("content", form.content as string);
+      }
+
+      // event
+      if (form.isEvent) {
+        formData.append("title", form.title as string);
+        formData.append("description", form.description as string);
+        formData.append("location", form.location as string);
+        formData.append("startDate", (form.startDate as Date).toISOString());
+      }
+      // media
       if (typeof form.file === "string") {
         formData.append("media", form.file); // Ici on ajoute le lien vers une vidéo YouTube
       } else if (form.file) {
