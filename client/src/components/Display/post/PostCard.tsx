@@ -16,6 +16,7 @@ import { cachePostView } from "../../../utils/functions/cachePostViews";
 import MediaDisplay from "../../Base/mediaDisplay/MediaDisplay";
 import ContentWhithHashTagAndMentions from "../../Base/contents/ContentWhithHashTagAndMentions";
 import QuestionCard from "../question/QuestionCard";
+import EventsCard from "../events/eventsCard";
 
 export type PostProps = {
   post: PostTypes;
@@ -63,6 +64,10 @@ const PostCard: FunctionComponent<PostProps> = ({ post, origin }) => {
 
           {post.question && (
             <QuestionCard question={post.question} />
+          )}
+
+          {post.evenement && (
+            <EventsCard event={post.evenement} />
           )}
 
           <div className="post-card__footer">
