@@ -69,7 +69,7 @@ const googleRefreshToken = async (req: CustomRequest, res: Response) => {
 
   // Vérifiez le refresh token
   try {
-    const accessToken = jwt.sign({ id: decoded.sub }, "access-token-secret", {
+    const accessToken = jwt.sign({ id: decoded.sub }, process.env.JWT_SECRET as string, {
       expiresIn: "15m",
     }); console.log("accessToken: ", accessToken);
 
