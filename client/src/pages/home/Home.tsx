@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import PostList from "../../components/Display/post/PostsList";
 import TabList from "../../components/Base/tabList/TabList";
 import AddPost from "../../components/Form/AddPost";
+import PostListBySubscription from "../../components/Display/post/PostListBySubscription";
 
 const Home = () => {
   return (
@@ -15,7 +16,7 @@ const Home = () => {
       <AddPost origin="page-home" />
       <Routes>
         <Route path="/" element={<PostList />} />
-        <Route path="/abonnements" element={<h2>Abonnements</h2>} />
+        <Route path="/abonnements" element={<PostListBySubscription/>} />
       </Routes>
     </section>
   );
