@@ -1,11 +1,15 @@
 import TabList from "../../components/Base/tabList/TabList";
-import { useGetFollowersQuery, useGetUserByIdQuery } from "../../services/api/userApi";
+import { useGetUserByIdQuery } from "../../services/api/userApi";
 import { useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { getFormattedDate } from "../../utils/functions/formatedDate";
-import { useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { RootState } from "../../services/stores";
 import { useSelector } from "react-redux";
+import { useGetFollowersQuery } from "../../services/api/followApi";
+import WhoToFollowList from "../../components/Display/whoToFollow/WhoToFollowList";
+import { useGetPostsByUserIdQuery } from "../../services/api/postApi";
+import PostCard from "../../components/Display/post/PostCard";
 
 const Profile = () => {
   const params = useParams<{ id: string }>();
@@ -22,6 +26,7 @@ const Profile = () => {
           setFilteredFollowersNames(filteredNames);
       }
   }, [followersData, userName]);
+  
   return (
     <div className="profile">
       <header className="profile__header">
@@ -70,7 +75,7 @@ const Profile = () => {
       </div>
       <TabList 
         links={[
-            {name: "Posts", to: `/profile/${user?.id}`},
+            {name: "Posts", to: `/profile/${user?.id}`, end: true},
             {name: "Reponses", to: `/profile/${user?.id}/with_replies`},
             {name: "Tweets marquants", to: `/profile/${user?.id}/highlights`},
             {name: "Articles", to: `/profile/${user?.id}/articles`},
@@ -78,19 +83,41 @@ const Profile = () => {
             {name:"Likes", to: `/profile/${user?.id}/likes`}
         ]}/>
         <Routes>
-            <Route path="/" element={<h2>Posts</h2>} />
+            <Route path="/" element={<ProfilePosts userId={user?.id as string} />} />
             <Route path="/with_replies" element={<h2>Reponses</h2>} />
             <Route path="/highlights" element={<h2>Tweets marquants</h2>} />
             <Route path="/articles" element={<h2>Articles</h2>} />
             <Route path="/medias" element={<h2>Medias</h2>} />
             <Route path="/likes" element={<h2>Likes</h2>} />
         </Routes>
-        <section>
-            <h2>Who to follow</h2>
-            <p>Note à moi même, fait ca à la fin</p>
-        </section>
+        
     </div>
   );
 };
 
 export default Profile;
+
+interface ProfilePostsProps {
+  userId: string;
+}
+
+const ProfilePosts: FunctionComponent<ProfilePostsProps> = ({userId}) => {
+  const { data: { data: posts } = {} } = useGetPostsByUserIdQuery(userId);
+  return (
+    <section>
+      <WhoToFollowList />
+      {posts && posts.length > 0 && (
+        <div className="profile__posts">
+          <h2 className="profile__posts-title">Posts</h2>
+          <ul className="profile__posts-list">
+            {posts.map((post) => (
+              <li key={post.id} className="profile__posts-item">
+                <PostCard post={post} origin="profile"/>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+};
