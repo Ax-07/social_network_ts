@@ -9,6 +9,7 @@ import More from './more/More';
 import AuthPage from './auth/AuthPage';
 import PostPage from './post/PostPage';
 import CommentPage from './post/CommentPage';
+import ResetPassword from './auth/ResetPassword';
 
 const Pages = {
   Home,
@@ -22,6 +23,7 @@ const Pages = {
   Profile,
   More,
   AuthPage,
+  ResetPassword,
 };
 
 export default Pages;
