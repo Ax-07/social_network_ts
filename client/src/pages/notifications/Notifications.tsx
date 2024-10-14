@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/stores';
 import TabList from '../../components/Base/tabList/TabList';
@@ -6,7 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import NotificationsList from './NotificationsList';
 import useNotifications from './hooks/useNotifications';
 
-const Notifications: React.FC = () => {
+const Notifications = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id);
   const { notifications } = useNotifications(userId as string);
   console.log(notifications);
