@@ -13,6 +13,11 @@ import { PostRepost, initializePostRepostModel } from "../../features/posts/mode
 import { Group, initializeGroupModel } from "../../features/user/models/group.model";
 import { User, initializeUserModel } from "../../features/user/models/user.model";
 import { GroupMember, initializeGroupMemberModel } from "../../features/conversations/models/groupMembers.model";
+import { Hashtag, initializeHashtagModel } from "../../features/posts/models/hashtag";
+import { initializePostHashtagModel, PostHashtag } from "../../features/posts/models/postHashtag";
+import { Mention, initializeMentionModel } from "../../features/posts/models/mention";
+import { initializeQuestionModel, Question } from "../../features/question/models/question.model";
+import { initializeEvenementModel, Evenement } from "../../features/evenements/models/evenement.model";
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -34,8 +39,13 @@ interface Database {
   Notification: typeof Notification;
   Message: typeof Message;
   Conversation: typeof Conversation;
-  Group: typeof Group;
-  GroupMember: typeof GroupMember
+  Group: typeof Group; // ???
+  GroupMember: typeof GroupMember;
+  Hashtag: typeof Hashtag;
+  PostHashtag: typeof PostHashtag;
+  Mention: typeof Mention;
+  Question: typeof Question;
+  Evenement: typeof Evenement;
 };
 
 const db: Database = {
@@ -55,6 +65,11 @@ const db: Database = {
   Conversation: initializeConversationModel(sequelize),
   Group: initializeGroupModel(sequelize),
   GroupMember: initializeGroupMemberModel(sequelize),
+  Hashtag: initializeHashtagModel(sequelize),
+  PostHashtag: initializePostHashtagModel(sequelize),
+  Mention: initializeMentionModel(sequelize),
+  Question: initializeQuestionModel(sequelize),
+  Evenement: initializeEvenementModel(sequelize),
 };
 
 // Définir les associations après l'initialisation des modèles
@@ -65,6 +80,10 @@ const db: Database = {
 // Associations de User
 db.User.belongsToMany(db.User, { through: db.UserFollowers, as: 'followers', foreignKey: 'followedId', otherKey: 'followerId' }); // Un utilisateur a plusieurs followers
 db.User.belongsToMany(db.User, { through: db.UserFollowers, as: 'followings', foreignKey: 'followerId', otherKey: 'followedId' }); // Un utilisateur suit plusieurs autres utilisateurs
+db.UserFollowers.belongsTo(db.User, { foreignKey: 'followerId', as: 'follower' }); // Un follower appartient à un utilisateur
+db.UserFollowers.belongsTo(db.User, { foreignKey: 'followedId', as: 'followed' }); // Un utilisateur suivi appartient à un utilisateur
+db.User.hasMany(db.UserFollowers, { foreignKey: 'followerId', as: 'userFollowers' }); // Un utilisateur a plusieurs followers
+db.User.hasMany(db.UserFollowers, { foreignKey: 'followedId', as: 'userFollowings' }); // Un utilisateur suit plusieurs autres utilisateurs
 
 db.User.hasMany(db.Post, { foreignKey: 'userId', as: 'posts' }); // Un utilisateur a plusieurs posts
 db.Post.belongsTo(db.User, { foreignKey: 'userId', as: 'user' }); // Un post appartient à un utilisateur
@@ -74,9 +93,6 @@ db.Comment.belongsTo(db.User, { foreignKey: 'userId', as: 'user' }); // Un comme
 
 db.Post.hasMany(db.Comment, { foreignKey: 'postId', as: 'comments' }); // Un post a plusieurs commentaires
 db.Comment.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' }); // Un commentaire appartient à un post
-
-db.UserFollowers.belongsTo(db.User, { foreignKey: 'followerId', as: 'follower' }); // Un follower appartient à un utilisateur
-db.UserFollowers.belongsTo(db.User, { foreignKey: 'followedId', as: 'followed' }); // Un utilisateur suivi appartient à un utilisateur
 
 // Association entre User et Post via UserBookmarks (table de jonction)
 db.User.belongsToMany(db.Post, { through: db.UserBookmarks, as: 'bookmarks', foreignKey: 'userId' }); // Un utilisateur a plusieurs posts bookmarkés
@@ -104,6 +120,13 @@ db.Post.belongsToMany(db.User, { through: db.PostRepost, as: 'reposters', foreig
 db.User.belongsToMany(db.Comment, { through: db.CommentRepost, as: 'repostedComments', foreignKey: 'userId' }); // Un utilisateur a plusieurs commentaires repostés
 db.Comment.belongsToMany(db.User, { through: db.CommentRepost, as: 'commentReposters', foreignKey: 'commentId' }); // Un commentaire est reposté par plusieurs utilisateurs
 
+// Association entre Post et Question
+db.Post.hasOne(db.Question, { foreignKey: 'postId', as: 'question' }); // Un post a une question
+db.Question.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' }); // Une question appartient à un post
+
+// Association entre Post et Evenement
+db.Post.hasOne(db.Evenement, { foreignKey: 'postId', as: 'evenement' }); // Un post a un événement
+db.Evenement.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' }); // Un événement appartient à un post
 // Association entre User et Notification
 db.User.hasMany(db.Notification, { foreignKey: 'userId', as: 'userNotifications' }); // Un utilisateur a plusieurs notifications
 db.Notification.belongsTo(db.User, { foreignKey: 'userId', as: 'user' }); // Une notification appartient à un utilisateur
@@ -128,6 +151,15 @@ db.Message.belongsTo(db.User, { foreignKey: 'senderId', as: 'sender' });
 db.Conversation.belongsTo(db.User, { as: 'admin', foreignKey: 'adminId' });
 db.User.hasMany(db.Conversation, { as: 'adminConversations', foreignKey: 'adminId' });
 
+db.Post.belongsToMany(db.Hashtag, { through: db.PostHashtag, as: 'hashtags', foreignKey: 'postId' });
+db.Hashtag.belongsToMany(db.Post, { through: db.PostHashtag, as: 'posts', foreignKey: 'hashtagId' });
+db.PostHashtag.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' });
+db.PostHashtag.belongsTo(db.Hashtag, { foreignKey: 'hashtagId', as: 'hashtag' });
+
+db.Post.belongsToMany(db.User, { through: db.Mention, as: 'mentions', foreignKey: 'postId', otherKey: 'mentionedUserId' });
+db.User.belongsToMany(db.Post, { through: db.Mention, as: 'mentionedPosts', foreignKey: 'userId' });
+db.Mention.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' });
+db.Mention.belongsTo(db.User, { foreignKey: 'mentionedUserId', as: 'mentionedUser' });
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
