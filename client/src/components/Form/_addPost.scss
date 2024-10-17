@@ -1,4 +1,6 @@
 .addpost {
+    position: relative;
+    z-index: 10;
     display: flex;
     @extend .background-blur;
     width: 100%;
@@ -63,6 +65,12 @@
             font-size: 1.5rem;
             color: $color-primary;
             cursor: pointer;
+        }
+
+        &-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     }
 }
@@ -170,3 +178,64 @@
         @include flex(column, flex-start, flex-start);
     }
 }
+
+.question-form {
+    border: 1px solid $color-primary;
+    border-radius: 16px;
+
+    &__btn-delete {
+        padding: 16px;
+        text-align: center;
+        color: $color-danger;
+
+        &:hover {
+            background-color: rgba($color-danger, 0.2);
+        }
+    }
+}
+
+.answers {
+    @include flex(row, flex-start, flex-end);
+    border-bottom: 1px solid $color-primary;
+    padding: 12px;
+
+    &__list {
+        position: relative;
+        @include flex(column, flex-start, flex-start, 10px);
+        width: 100%;
+    }
+    &__item {
+        position: relative;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid $color-primary;
+        border-radius: 5px;
+        color: $color-light;
+        @include flex(column, flex-start, flex-start);
+    }
+    &__input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5rem;
+        resize: none;
+        background: none;
+        color: $color-light;
+        outline: none;
+    }
+    &__btn-addAnswer {
+        @include flex(row, center, center);
+        width: 44px;
+        height: 40px;
+        border: 1px solid $color-primary;
+        border-radius: 50%;
+        margin-left: 10px;
+
+        &>img {
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
