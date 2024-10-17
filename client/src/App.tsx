@@ -69,13 +69,14 @@ function App() {
           <Route path="/home/*" element={<Pages.Home />} />
           <Route path="/home/posts/:id" element={<PostPage />} />
           <Route path="/home/comment/:id" element={<CommentPage />} />
-          <Route path="/explore" element={<Pages.Explore />} />
+          <Route path="/explore/*" element={<Pages.Explore />} />
           <Route path="/notifications/*" element={<Pages.Notifications />} />
           <Route path="/messages" element={<Pages.Messages />} />
           <Route path="/bookmarks" element={<Pages.BooKmarks />} />
           <Route path="/lists" element={<Pages.Lists />} />
           <Route path="/profile/:id/*" element={<Pages.Profile />} />
           <Route path="/more" element={<Pages.More />} />
+          <Route path="/reset-password/:token" element={<Pages.ResetPassword />} />
         </Routes>
         <Modals />
       </main>
