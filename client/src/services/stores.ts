@@ -17,6 +17,8 @@ import messageSlice from "./stores/messageSlice";
 import { messagesApi } from "./api/messagesApi";
 import { notificationApi } from "./api/notificationApi";
 import { conversationsApi } from "./api/conversationsApi";
+import { followApi } from "./api/followApi";
+import { questionApi } from "./api/questionApi";
 
 const persistConfig = {
     key: "root",
@@ -42,6 +44,8 @@ const store = configureStore({
         [notificationApi.reducerPath]: notificationApi.reducer,
         [messagesApi.reducerPath]: messagesApi.reducer,
         [conversationsApi.reducerPath]: conversationsApi.reducer,
+        [followApi.reducerPath]: followApi.reducer,
+        [questionApi.reducerPath]: questionApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -56,6 +60,8 @@ const store = configureStore({
             bookmarkApi.middleware,
             messagesApi.middleware,
             conversationsApi.middleware,
+            followApi.middleware,
+            questionApi.middleware,
         ),
 });
 
