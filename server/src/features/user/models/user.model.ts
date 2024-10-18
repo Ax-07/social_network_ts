@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes, Model, Optional } from "sequelize";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // Définir les attributs du modèle utilisateur
 interface UserAttributes {
@@ -15,9 +16,15 @@ interface UserAttributes {
   birthdate?: Date; // Date de naissance
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, "id" | "handle"> {}
+interface UserCreationAttributes
+  extends Optional<UserAttributes, "id" | "handle"> {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
+
+  // attributs du modèle utilisateur
   public id!: string;
   public googleId!: string;
   public username!: string;
@@ -31,9 +38,20 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-  
+
+  // Méthode
+  // Méthode pour comparer le mot de passe de l'utilisateur
   public comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
+  }
+  // Méthode pour générer un token de réinitialisation de mot de passe
+  public generatePasswordResetToken(): string {
+    const token = jwt.sign(
+      { id: this.id },
+      process.env.JWT_SECRET!, 
+      { expiresIn: "1h" }
+    );
+    return token;
   }
 }
 
@@ -99,9 +117,9 @@ const initializeUserModel = (sequelize: Sequelize): typeof User => {
   User.beforeCreate(async (user: User) => {
     user.password = await bcrypt.hash(user.password, 10);
   });
-  
+
   User.beforeUpdate(async (user: User) => {
-    if (user.changed('password')) {
+    if (user.changed("password")) {
       user.password = await bcrypt.hash(user.password, 10);
     }
   });
