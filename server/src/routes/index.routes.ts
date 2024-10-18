@@ -9,6 +9,7 @@ import postRoutes from "../features/posts/post.routes";
 import userRoutes from "../features/user/user.routes";
 import messagesRoutes from "../features/messages/message.routes";
 import conversationsRoutes from "../features/conversations/conversations.routes";
+import questionsRoutes from "../features/question/question.routes";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/", followRoutes);
 router.use("/", notificationRoutes);
 router.use("/", messagesRoutes);
 router.use("/", conversationsRoutes);
+router.use("/", questionsRoutes);
 
 export default router;
