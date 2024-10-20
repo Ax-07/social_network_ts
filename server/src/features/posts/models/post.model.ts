@@ -45,7 +45,7 @@ const initializePostModel = (sequelize: Sequelize): typeof Post => {
       },
       content: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       media: {
         type: DataTypes.STRING,
