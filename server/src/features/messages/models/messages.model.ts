@@ -4,7 +4,7 @@ import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 interface MessageAttributes {
     id: string; // Identifiant unique du message
     senderId: string; // ID de l'utilisateur qui envoie le message
-    receiverId: string; // ID de l'utilisateur qui reçoit le message
+    receiverId?: string; // ID de l'utilisateur qui reçoit le message
     content?: string; // Contenu du message
     media?: string | null; // Fichier média (image, vidéo, etc.)
     conversationId?: string; // Référence à la conversation via conversationId
@@ -109,7 +109,7 @@ const initializeMessageModel = (sequelize: Sequelize): typeof Message => {
             },
             receiverId: {
                 type: DataTypes.UUID, // UUID de l'utilisateur qui reçoit le message
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'users', // Fait référence à la table 'users'
                     key: 'id',
