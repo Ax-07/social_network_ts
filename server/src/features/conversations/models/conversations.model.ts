@@ -6,7 +6,6 @@ interface ConversationAttributes {
   adminId: string; // Identifiant de l'utilisateur qui a créé la conversation
   title?: string; // Nom de la conversation (facultatif pour les groupes)
   roomId?: string; // Identifiant de la conversation (utilisé pour les messages)
-  isGroup: boolean; // Indique s'il s'agit d'une conversation de groupe ou privée
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -20,7 +19,6 @@ class Conversation extends Model<ConversationAttributes, ConversationCreationAtt
   public adminId!: string;
   public title!: string;
   public roomId!: string;
-  public isGroup!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -45,11 +43,6 @@ const initializeConversationModel = (sequelize: Sequelize): typeof Conversation 
       title: {
         type: DataTypes.STRING, // Nom de la conversation (utile pour les groupes)
         allowNull: true, // Optionnel pour les conversations privées
-      },
-      isGroup: {
-        type: DataTypes.BOOLEAN, // Vrai si c'est une conversation de groupe
-        allowNull: true,
-        defaultValue: false, // Faux pour les conversations privées
       },
     },
     {
