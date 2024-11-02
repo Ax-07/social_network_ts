@@ -78,6 +78,12 @@ const getBookmarks = async (req: Request, res: Response) => {
         {
           model: db.Post,
           as: 'post',
+          include: [
+            {
+              model: db.Question,
+              as: 'question',
+            }
+          ]
         },
         {
           model: db.Comment,
