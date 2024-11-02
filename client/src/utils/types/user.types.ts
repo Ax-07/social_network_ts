@@ -1,4 +1,3 @@
-import { ProfilPicture } from './../../components/userProfile/UserProfileThumbnail';
 export interface User {
     id: string; // Identifiant unique de l'utilisateur
     googleId?: string; // Identifiant Google pour l'authentification OAuth
