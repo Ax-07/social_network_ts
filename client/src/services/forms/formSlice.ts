@@ -3,22 +3,45 @@ import { RootState } from "../stores";
 import { FormOrigin } from "../../components/Form/utils/switchOrigin";
 
 interface FormState {
-    userId?: string | undefined;
+  // base
+  userId?: string ;
+  content?: string;
+  isValidForm?: boolean;  
+    // with media
+    file?: File | string;
+    mimetype?: string;
+
+  // comments
+  commentedPostId?: string;
+  commentedCommentId?: string;
+
+  // reposts
+  originalPostId?: string | undefined;
+  originalCommentId?: string | undefined;
+
+  // messages
     senderId?: string | undefined;
     receiverId?: string | undefined;
     receiversIds?: string[] | undefined; // Pour les messages de groupe
     roomId?: string | undefined;
     messageType?: "notification" | "media" | "text" | "system";
-    content?: string;
-    file?: File | string;
-    mimetype?: string;
-    originalPostId?: string | undefined;
-    originalCommentId?: string | undefined;
-    commentedPostId?: string;
-    commentedCommentId?: string;
-    isValidForm?: boolean;
+
+    // Si media ou repost
     preview?: string | undefined;
     isPreview?: boolean;
+
+    // Pour les sondages
+    isQuestion?: boolean;
+    question?: string;
+    answers?: string[];
+    expiredAt?: Date;
+
+    // Pour les évenements
+    isEvent?: boolean;
+    title?: string;
+    description?: string;
+    location?: string;
+    startDate?: Date;
 }
 
 interface FormsState {
