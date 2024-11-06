@@ -5,7 +5,7 @@ import { updateCommentsCacheAfterAdd, updateCommentsCacheAfterDelete, updateComm
 
 export interface AddCommentArgs {
     formData: FormData;
-    origin: string;
+    origin: string | undefined;
     commentedPostId?: string; // Ajoutez cette ligne
     commentedCommentId?: string; // Ajoutez cette ligne
 }
