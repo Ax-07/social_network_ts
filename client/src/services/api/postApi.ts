@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../stores";
-import { PostResponse, PostResponseArray, PostTypes } from "../../utils/types/post.types";
+import { TrendsResponse, PostResponse, PostResponseArray, PostTypes } from "../../utils/types/post.types";
 import { 
   updatePostCacheAfterAdd,
   updatePostCacheAfterDelete,
@@ -25,6 +25,7 @@ export const postApi = createApi({
   }),
   tagTypes: ["Posts"],
   endpoints: (builder) => ({
+    // Get all posts
     getPosts: builder.query<PostResponseArray, void>({
       query: () => "/posts",
       providesTags: (result) =>
@@ -35,10 +36,40 @@ export const postApi = createApi({
             ]
           : [{ type: "Posts", id: "LIST" }],
     }),
+
+    // Get posts by subscription
+    getPostBySubscription: builder.query<PostResponseArray, string>({
+      query: (userId) => `/posts/user/${userId}/subscription`,
+      providesTags: (result) =>
+        result && Array.isArray(result.data)
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Posts" as const, id })),
+              { type: "Posts", id: "LIST" },
+            ]
+          : [{ type: "Posts", id: "LIST" }],
+    }),
+
+    // Get posts by hashtag
+    getPostsByHashtag: builder.query<PostResponseArray, string>({
+      query: (hashtag) => `/posts/hashtags/${hashtag}`,
+      providesTags: (result) =>
+        result && Array.isArray(result.data)
+          ? result.data.map(({ id }) => ({ type: "Posts", id }))
+          : [{ type: "Posts", id: "LIST" }],
+    }),
+
+    // Get trends hashtags & mentions
+    getTrends: builder.query<TrendsResponse, void>({
+      query: () => "/posts/hashtags/trends",
+    }),
+
+    // Get post by id
     getPostById: builder.query<PostResponse, string>({
       query: (id) => `/posts/${id}`,
       providesTags: (_result, _error, id) => [{ type: "Posts", id }],
     }),
+
+    // Get posts by user id
     getPostsByUserId: builder.query<PostResponseArray, string>({
       query: (userId) => `/posts/user/${userId}`,
       providesTags: (result) =>
@@ -46,6 +77,8 @@ export const postApi = createApi({
           ? result.data.map(({ id }) => ({ type: "Posts", id }))
           : [{ type: "Posts", id: "LIST" }],
     }),
+
+    // Add post
     addPost: builder.mutation<PostResponse, FormData>({
       query: (formData) => ({
         url: "/posts",
@@ -56,6 +89,8 @@ export const postApi = createApi({
         updatePostCacheAfterAdd(dispatch, queryFulfilled);
       },
     }),
+
+    // Update post
     updatePost: builder.mutation<PostTypes, { id: string; patch: Partial<PostTypes> }>({
       query: ({ id, patch }) => ({
         url: `/posts/${id}`,
@@ -66,6 +101,8 @@ export const postApi = createApi({
         updatePostCacheAfterUpdate(dispatch, id, queryFulfilled);
       },
     }),
+
+    // Delete post
     deletePost: builder.mutation<{ success: boolean; id: string }, string>({
       query: (id) => ({
         url: `/posts/${id}`,
@@ -75,6 +112,8 @@ export const postApi = createApi({
         updatePostCacheAfterDelete(dispatch, id);
       }
     }),
+
+    // Like post
     likePost: builder.mutation<PostResponse, { id: string; likerId: string }>({
       query: ({ id, likerId }) => ({
         url: `/like-post`,
@@ -85,6 +124,8 @@ export const postApi = createApi({
         updatePostCacheAfterLike(dispatch, id, queryFulfilled);
       },
     }),
+
+    // Repost
     repost: builder.mutation<PostResponse, FormData>({
       query: (formdata) => ({
         url: `/reposts`,
@@ -98,6 +139,8 @@ export const postApi = createApi({
         updatePostCacheAfterRepost(dispatch, userId, originalPostId, originalCommentId, queryFulfilled);
       },
     }),
+
+    // Increment post views
     incrementPostViews: builder.mutation<PostResponseArray, {postId: string, count: string}[]>({
       query: (postViewCounts) => ({
         url: `/posts/views`,
@@ -110,6 +153,9 @@ export const postApi = createApi({
 
 export const {
   useGetPostsQuery,
+  useGetPostBySubscriptionQuery,
+  useGetPostsByHashtagQuery,
+  useGetTrendsQuery,
   useGetPostByIdQuery,
   useGetPostsByUserIdQuery,
   useAddPostMutation,
